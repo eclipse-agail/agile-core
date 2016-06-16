@@ -1,4 +1,5 @@
  This repository contain the alpha version of the following AGILE componets:
+ 
 	- iot.agile.protocol.BLE:
                DBus interface name = "iot.agile.protocol.BLE"
 							 DBus interface path = "/iot/agile/protocol/ble";
