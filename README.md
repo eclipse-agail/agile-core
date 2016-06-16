@@ -1,6 +1,9 @@
 This repository contain the alpha version of the following AGILE componets:
+
 	- iot.agile.protocol.BLE:
+
                DBus interface name = "iot.agile.protocol.BLE"
+							 
                DBus interface path = "/iot/agile/protocol/ble";
                Label: Agile Bluetooh Low Energy
                Description: allows clients to discover, connect, and disconnect BLE devices(All implemented).Moreover, provides methods to write and read into/from BLE Devices.
