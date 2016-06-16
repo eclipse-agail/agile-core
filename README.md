@@ -1,4 +1,4 @@
- This repository contain the alpha version of the following AGILE componets:
+ This repository contains the alpha version of the following AGILE componets:
 
 	- iot.agile.protocol.BLE:
                DBus interface name = "iot.agile.protocol.BLE"
@@ -20,7 +20,7 @@
                Label: AGILE Device Manager
                Description: Allows clients to create/register a new device
 							 object in the device manager
-               Example:
+               Example: Device manager examples
 	- AGILE Device (iot.agile.Device)
                DBus interface base name = "iot.agile.device"
                DBus interface base path = "/iot/agile/Device/";
