@@ -56,7 +56,9 @@
                 Bluetooth adapter must be turned on to run the examples  
                 TI SensorTag
           -  Libraries:
-
+                - Add dbus-java2.7.jar on your local maven repository
+                - Add tinyb.1.0.0.jar on your local maven repository (https://github.com/intel-iot-devkit/tinyb )
+                - install libjavatinyb.so shared library  
 
 Execution order:
 
