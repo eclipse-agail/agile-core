@@ -24,8 +24,9 @@
                Description: Allows clients to create/register a new device
 							 object in the device manager
                Example: Register BLE Device
-                    The package iot.agile.devicemanager.example contains an example file(i.e RegisterDevice.java)
-                    to demonstrate the usage of Agile Device Manager for device registration and creation of DBus interface for the registered device   
+                    The package iot.agile.devicemanager.example contains an example
+                    file (i.e RegisterDevice.java) to demonstrate the usage of Agile Device Manager
+                     for device registration and creation of DBus interface for the registered device   
   	- AGILE Device (iot.agile.Device)
                DBus interface base name = "iot.agile.device"
                DBus interface base path = "/iot/agile/Device/";
@@ -34,7 +35,9 @@
 							 (both implemented for BLE), and to read/write data from/to the
 							  device and to subcribe for notification.
                Example One:Connect BLE Device(TI SensorTag)
-                     The ConnectDevice.java file in iot.agile.devicemanager.example package demonstrates the usage of
-                       Agile iot.agile.Device Dbus interface to connect a TI SensorTag device.
+                     The ConnectDevice.java file in iot.agile.devicemanager.example package demonstrates
+                     the usage of Agile iot.agile.Device Dbus interface to connect a TI SensorTag device.
                 Example two: Read Data
-                     The ReadData.java file in iot.agile.devicemanager.example package demonstrates the usage of iot.agile.Device DBus interface in order to read temperature data from TI SensorTag temperature sensor/service.
+                     The ReadData.java file in iot.agile.devicemanager.example package demonstrates the
+                     usage of iot.agile.Device DBus interface in order to read temperature data from
+                     TI SensorTag temperature sensor/service.
