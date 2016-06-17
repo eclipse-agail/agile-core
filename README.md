@@ -1,8 +1,7 @@
  This repository contains the alpha version of the following AGILE components:
 
-iot.agile.protocol.BLE:
-
-  - DBus interface name = "iot.agile.protocol.BLE"
+    iot.agile.protocol.BLE:
+               DBus interface name = "iot.agile.protocol.BLE"
 							 DBus interface path = "/iot/agile/protocol/ble";
                Label: Agile Bluetooth Low Energy
                Description: allows clients to discover, connect, and disconnect
@@ -19,7 +18,7 @@ iot.agile.protocol.BLE:
                  file (i.e BLEDeviceDiscovery.java) to demonstrate the use of AGILE Protocol Manager
                  to discover BLE devices through DBus interface.
 	- iot.agile.DeviceManager
-	       DBus interface name = "iot.agile.DeviceManger"
+	             DBus interface name = "iot.agile.DeviceManger"
                DBus interface path = "/iot/agile/DeviceManager";
                Label: AGILE Device Manager
                Description: Allows clients to create/register a new device
@@ -46,12 +45,13 @@ iot.agile.protocol.BLE:
      Prerequisite:
 
        To run the examples above installation of the following hardwares and libraries are required:
-           Hardwares:
-             -  Bluetooth adapter must be turned on to run the examples(or at least to get the expected outcomes).
-             -  TI SensorTag
-           Libraries:
-             -
-             -
+
+          - Hardwares:
+                Bluetooth adapter must be turned on to run the examples(or at least to get the expected outcomes).
+                TI SensorTag
+          -  Libraries:
+
+
      Execution order:
 
             Step one: First the BLE Protcol API must run, for this compile and run BLEProtocolImp.java file
