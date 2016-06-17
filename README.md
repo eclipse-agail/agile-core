@@ -59,25 +59,31 @@
 
 Execution order:
 
-     - Step one: First the BLE Protcol API must run, for this compile and run BLEProtocolImp.java file
-               from iot.agile.protocol.BLE package.
-     -  Step two: Start the Agile protocol manager DBus interface, for this compile and run
-                      ProtocolManagerImp.java from iot.agile.ProtocolManager package.
-     -  Step three: Start the device manger DBus interface, by compile and run DeviceManagerImp.java
-                       file from iot.agile.DeviceManager package.
-     -  Step four: Compile and run BLEDeviceDiscovery.java file from iot.agile.protocolmanager.example
-                       package to discover active BLE devices. This will print the name of all discovered
-                        BLE devices.
-     -  Step five: Compile and run RegisterDevice.java file from iot.agile.devicemanager.examples package
-                       to register TI SensorTag.
-                       Prerequisite: A device must be first discovered before registration.
-                       Note: Make sure the hard-coded device address(i.e C4:BE:84:70:69:09) is the correct for
-                             your TI-Sensor tag, if not change it.
-     -  Step six: Compile and run ConnectDevice.java from iot.agile.devicemanager.examples package to connect
-                      the device (i.e. TI SensorTag)
-                      Prerequisite: A device must be registered to be connected.
-     -  Step seven: Compile and run ReadData.java from iot.agile.devicemanager.examples package to read current
-                       temperature data from the sensor tag.
-                        Prerequisite : A device must be connected first.
+      Step one: First the BLE Protcol API must run, for this compile and run BLEProtocolImp.java
+                file from iot.agile.protocol.BLE package.
 
-    Note 1: step one to three are all mandatory to run any of the example files provided.
+      Step two: Start the Agile protocol manager DBus interface, for this compile and run
+                      ProtocolManagerImp.java from iot.agile.ProtocolManager package.
+
+      Step three: Start the device manger DBus interface, by compile and run DeviceManagerImp.java
+                       file from iot.agile.DeviceManager package.
+
+      Step four: Compile and run BLEDeviceDiscovery.java file from iot.agile.protocolmanager.example
+                       package to discover active BLE devices. This will print the name of all
+                        discovered BLE devices.
+
+      Step five: Compile and run RegisterDevice.java file from iot.agile.devicemanager.examples
+                 package to register TI SensorTag.
+                 Prerequisite: A device must be first discovered before registration.
+                 Note: Make sure the hard-coded device address(i.e C4:BE:84:70:69:09) is the correct
+                       for your TI-Sensor tag, if not change it.
+
+      Step six: Compile and run ConnectDevice.java from iot.agile.devicemanager.examples package to
+                 connect the device (i.e. TI SensorTag)
+                 Prerequisite: A device must be registered to be connected.
+
+      Step seven: Compile and run ReadData.java from iot.agile.devicemanager.examples package to
+                  read current temperature data from the sensor tag.
+                  Prerequisite : A device must be connected first.
+
+    Note: step one to three are all mandatory to run any of the example files provided.
