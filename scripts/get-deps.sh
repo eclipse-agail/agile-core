@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sudo apt install --no-install-recommends -y gettext
+sudo apt install --no-install-recommends -y gettext git cmake
 # needed for docs only
 # sudo apt install --no-install-recommends -y texlive-latex-base texlive-latex-extra tex4ht
 
@@ -20,7 +20,7 @@ DEPS=`pwd`/deps
 BUILD=$DEPS/build
 
 if [ -e "$DEPS" ]; then
-  rm $DEPS -r
+  rm $DEPS -rf
 fi
 
 mkdir -p $BUILD
@@ -38,12 +38,18 @@ cd $BUILD/dbus-java-$DBUSJAVA
 PREFIX=$BUILD JAVAUNIXLIBDIR=$BUILD/lib/jni JAVAUNIXJARDIR=$BUILD/share/java make bin
 
 cp ./*.jar $DEPS
-echo "rm -r $BUILD"
 
-mvn install:install-file \
-   -Dfile=$DEPS/dbus-java-bin-2.7.jar \
-   -DgroupId=org.freedesktop.dbus \
-   -DartifactId=dbus-java \
-   -Dversion=$DBUSJAVA \
-   -Dpackaging=org.freedesktop.dbus \
-   -DgeneratePom=true
+cd $BUILD
+git clone https://github.com/intel-iot-devkit/tinyb.git
+cd $BUILD/tinyb
+
+mkdir build
+cd build
+
+cmake .. -DBUILDJAVA=ON -DCMAKE_INSTALL_PREFIX=`pwd`
+make tinyb
+make install
+
+cp lib/java/tinyb.jar $DEPS
+
+rm -rf $BUILD
