@@ -18,161 +18,156 @@ package iot.agile.protocolmanager;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.freedesktop.DBus.Error.ServiceUnknown;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-import iot.agile.protocolmanager.protocol.BLEProtocol;
+import iot.agile.protocolmanager.protocol.Protocol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
- 
 /**
  * @author dagi
- * 
- * AGILE Protocol Manager Implementation 
+ *
+ * AGILE Protocol Manager Implementation
  *
  */
 public class ProtocolManagerImp implements ProtocolManager {
-	/**
-	 * DBus bus name for the protocol manager
-	 */
-	private static final String AGILE_PROTOCOL_MANAGER_BUS_NAME = "iot.agile.ProtocolManager";
-	/**
-	 * DBus bus path for the protocol manager
-	 */
-	private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
-	/**
-	 * BLE Protocol imp DBus interface id
-	 */
-	private static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
-	/**
-	 * BLE Protocol imp DBus interface path
-	 */
-	private static final String BLE_PROTOCOL_PATH = "/iot/agile/protocol/ble";
-	/**
-	 * DBus connection for the protocol manager
-	 */
-	private static DBusConnection protocolManagerConnection;
-	/**
-	 * DBus session bus connection
-	 */
-	private static DBusConnection connection;
-	/**
-	 * List of supported protocols
-	 */
-	private static List<String> protocols;
-	/**
-	 * List of discovered devices from all the protocols
-	 */
-	private static List<String> devices;
 
+  protected final Logger logger = LoggerFactory.getLogger(ProtocolManagerImp.class);
 
-	static {
-		if (connection == null) {
-			try {
-				connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			} catch (DBusException e) {
-				e.printStackTrace();
-			}
-		}
+  /**
+   * DBus bus name for the protocol manager
+   */
+  private static final String AGILE_PROTOCOL_MANAGER_BUS_NAME = "iot.agile.ProtocolManager";
+  /**
+   * DBus bus path for the protocol manager
+   */
+  private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
 
-		if (protocolManagerConnection == null) {
-			try {
-				protocolManagerConnection = DBusConnection.getConnection(DBusConnection.SESSION);
-				protocolManagerConnection.requestBusName(AGILE_PROTOCOL_MANAGER_BUS_NAME);
-				protocolManagerConnection.exportObject(AGILE_PROTOCOL_MANAGER_BUS_PATH, new ProtocolManagerImp());
+  /**
+   * List of supported protocols
+   */
+  final private List<String> protocols = new ArrayList();
+  /**
+   * List of discovered devices from all the protocols
+   */
+  final private List<String> devices = new ArrayList();
 
-			} catch (DBusException e) {
-				e.printStackTrace();
-			}
-		}
+  private final DBusConnection connection;
 
-		if (devices == null) {
-			devices = new ArrayList<String>();
-		}
+  public ProtocolManagerImp() throws DBusException {
 
-		if (protocols == null) {
-			protocols = new ArrayList<String>();
-		}
-		if (!protocols.isEmpty()) {
-			if (!protocols.contains(BLE_PROTOCOL_ID)) {
-				protocols.add(BLE_PROTOCOL_ID);
-			}
-		} else {
-			protocols.add(BLE_PROTOCOL_ID);
-		}
-	}
+    connection = DBusConnection.getConnection(DBusConnection.SESSION);
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-	}
+    connection.requestBusName(AGILE_PROTOCOL_MANAGER_BUS_NAME);
+    connection.exportObject(AGILE_PROTOCOL_MANAGER_BUS_PATH, this);
 
-	/**
-	 * 
-	 * 
-	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Devices()
-	 */
-	public List<String> Devices() {
-		return devices;
-	}
+    logger.debug("Exposed ProtocolManager class {}", this.getClass().getName());
+  }
 
-	/**
-	 * 
-	 * 
-	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Protocols()
-	 */
-	public List<String> Protocols() {
-		return protocols;
-	}
+  /**
+   *
+   *
+   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Devices()
+   */
+  public List<String> Devices() {
+    return devices;
+  }
 
-	/**
-	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Discover()
-	 */
-	public void Discover() {
-		
-		try {
-			BLEProtocol ble = (BLEProtocol) connection.getRemoteObject(BLE_PROTOCOL_ID,BLE_PROTOCOL_PATH ,
-					BLEProtocol.class);
-			ble.Discover();
-			for(String device : ble.Devices()){
-				if(!devices.contains(device)){
-					devices.add(device);
-				}
-			}
-// 			ble.StopDiscovery();
-		}catch (ServiceUnknown e) {
-			   System.err.println("Can not find the DBus object "+BLE_PROTOCOL_PATH);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (DBusException e) {
-			e.printStackTrace();
-		}
-	}
+  /**
+   *
+   *
+   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Protocols()
+   */
+  public List<String> Protocols() {
+    return protocols;
+  }
 
-	/**
-	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Add(java.lang.String)
-	 */
-	public void Add(String protocol) {
-		// TODO 
-	}
+  /**
+   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Discover()
+   */
+  public void Discover() {
 
-	/**
-	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Remove(java.lang.String)
-	 */
-	public void Remove(String protocol) {
-		// TODO 
-	}
+    logger.debug("Initialized discovery");
 
-	public boolean isRemote() {
-		return false;
-	}
-	
-	/**
-	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#DropBus()
-	 */
-	public void DropBus() {
-		protocolManagerConnection.disconnect();
-	}
+    for (String protocol : protocols) {
+
+      String objectPath = "/" + protocol.replace(".", "/");
+      logger.debug("Discovery for protocol {} : {}", protocol, objectPath);
+
+      Protocol protocolInstance;
+      try {
+
+        protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
+        protocolInstance.Discover();
+
+        for (String device : protocolInstance.Devices()) {
+          if (!devices.contains(device)) {
+            devices.add(device);
+          }
+        }
+
+        protocolInstance.StopDiscovery();
+
+      } catch (DBusException ex) {
+        logger.error("DBus exception on protocol {}", protocol, ex);
+      } catch (InterruptedException ex) {
+        logger.error("Interruption exception on protocol {}", protocol, ex);
+      }
+
+    }
+
+  }
+
+  /**
+   * @see
+   * iot.agile.protocol.ble.protocolmanager.ProtocolManager#Add(java.lang.String)
+   */
+  public void Add(String protocol) {
+    addProtocol(protocol);
+  }
+
+  /**
+   * @see
+   * iot.agile.protocol.ble.protocolmanager.ProtocolManager#Remove(java.lang.String)
+   */
+  public void Remove(String protocol) {
+    removeProtocol(protocol);
+  }
+
+  public boolean isRemote() {
+    return false;
+  }
+
+  /**
+   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#DropBus()
+   */
+  public void DropBus() {
+    connection.disconnect();
+  }
+
+  public void addDevice(String deviceId) {
+    if (!devices.contains(deviceId)) {
+      devices.add(deviceId);
+    }
+  }
+
+  public void removeDevice(String deviceId) {
+    if (devices.contains(deviceId)) {
+      devices.remove(deviceId);
+    }
+  }
+
+  protected void addProtocol(String protocolId) {
+    if (!protocols.contains(protocolId)) {
+      protocols.add(protocolId);
+    }
+  }
+
+  protected void removeProtocol(String protocolId) {
+    if (protocols.contains(protocolId)) {
+      protocols.remove(protocolId);
+    }
+  }
 
 }
