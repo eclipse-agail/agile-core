@@ -30,26 +30,92 @@ mv libmatthew-java-$LMLIB $BUILD
 
 cd $BUILD/libmatthew-java-$LMLIB
 
-make
-PREFIX=$BUILD make install
+make >> /dev/null
+PREFIX=$BUILD make install >> /dev/null
+
+cp ./*.jar $DEPS
+cp ./*.so $DEPS
 
 cd $BUILD/dbus-java-$DBUSJAVA
 
-PREFIX=$BUILD JAVAUNIXLIBDIR=$BUILD/lib/jni JAVAUNIXJARDIR=$BUILD/share/java make bin
+PREFIX=$BUILD JAVAUNIXLIBDIR=$BUILD/lib/jni JAVAUNIXJARDIR=$BUILD/share/java make bin >> /dev/null
 
 cp ./*.jar $DEPS
 
 cd $BUILD
-git clone https://github.com/intel-iot-devkit/tinyb.git
+git clone https://github.com/intel-iot-devkit/tinyb.git >> /dev/null
 cd $BUILD/tinyb
 
 mkdir build
 cd build
 
-cmake .. -DBUILDJAVA=ON -DCMAKE_INSTALL_PREFIX=`pwd`
-make tinyb
-make install
+echo "add_compile_options(-std=c++)" >> ../CMakeLists.txt
+cmake .. -DBUILDJAVA=ON -DCMAKE_INSTALL_PREFIX=`pwd` >> /dev/null
+make tinyb >> /dev/null
+make install >> /dev/null
 
 cp lib/java/tinyb.jar $DEPS
+cp lib/*.so $DEPS
+cp lib/*.so* $DEPS
 
-rm -rf $BUILD
+cd $DEPS/../
+
+mvn install:install-file -Dfile=$DEPS/dbus-java-bin-2.7.jar \
+                         -DgroupId=org.freedesktop.dbus \
+                         -DartifactId=dbus-java \
+                         -Dversion=2.7 \
+                         -Dpackaging=jar \
+                         -DgeneratePom=true \
+                         -DlocalRepositoryPath=$DEPS
+
+
+mvn install:install-file -Dfile=$DEPS/libdbus-java-2.7.jar \
+                         -DgroupId=org.freedesktop.dbus \
+                         -DartifactId=libdbus-java \
+                         -Dversion=2.7 \
+                         -Dpackaging=jar \
+                         -DgeneratePom=true \
+                         -DlocalRepositoryPath=$DEPS
+
+mvn install:install-file -Dfile=$DEPS/unix-0.5.jar \
+                         -DgroupId=cx.ath.matthew \
+                         -DartifactId=unix \
+                         -Dversion=0.5 \
+                         -Dpackaging=jar \
+                         -DgeneratePom=true \
+                         -DlocalRepositoryPath=$DEPS
+
+mvn install:install-file -Dfile=$DEPS/cgi-0.6.jar \
+                         -DgroupId=cx.ath.matthew \
+                         -DartifactId=cgi \
+                         -Dversion=0.6 \
+                         -Dpackaging=jar \
+                         -DgeneratePom=true \
+                         -DlocalRepositoryPath=$DEPS
+
+mvn install:install-file -Dfile=$DEPS/hexdump-0.2.jar \
+                         -DgroupId=cx.ath.matthew \
+                         -DartifactId=hexdump \
+                         -Dversion=0.2 \
+                         -Dpackaging=jar \
+                         -DgeneratePom=true \
+                         -DlocalRepositoryPath=$DEPS
+
+mvn install:install-file -Dfile=$DEPS/io-0.1.jar \
+                         -DgroupId=cx.ath.matthew \
+                         -DartifactId=io \
+                         -Dversion=0.1 \
+                         -Dpackaging=jar \
+                         -DgeneratePom=true \
+                         -DlocalRepositoryPath=$DEPS
+
+mvn install:install-file -Dfile=$DEPS/tinyb.jar \
+                         -DgroupId=tinyb \
+                         -DartifactId=tinyb \
+                         -Dversion=1.0 \
+                         -Dpackaging=jar \
+                         -DgeneratePom=true \
+                         -DlocalRepositoryPath=$DEPS
+
+
+# rm -rf $BUILD
