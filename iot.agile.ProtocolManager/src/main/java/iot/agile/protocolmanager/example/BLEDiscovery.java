@@ -18,7 +18,7 @@ package iot.agile.protocolmanager.example;
 import org.freedesktop.DBus.Error.ServiceUnknown;
 import org.freedesktop.dbus.DBusConnection;
 
-import iot.agile.protocolmanager.ProtocolManager;
+import iot.agile.agile.interfaces.ProtocolManager;
 
 /**
  * 

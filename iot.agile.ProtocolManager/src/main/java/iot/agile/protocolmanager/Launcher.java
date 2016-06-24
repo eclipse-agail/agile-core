@@ -15,6 +15,7 @@
  */
 package iot.agile.protocolmanager;
 
+import iot.agile.agile.interfaces.ProtocolManager;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**

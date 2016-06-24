@@ -15,13 +15,14 @@
  */
 package iot.agile.protocolmanager;
 
+import iot.agile.agile.interfaces.Protocol;
+import iot.agile.agile.interfaces.ProtocolManager;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-import iot.agile.protocolmanager.protocol.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,8 +112,6 @@ public class ProtocolManagerImp implements ProtocolManager {
 
       } catch (DBusException ex) {
         logger.error("DBus exception on protocol {}", protocol, ex);
-      } catch (InterruptedException ex) {
-        logger.error("Interruption exception on protocol {}", protocol, ex);
       }
 
     }

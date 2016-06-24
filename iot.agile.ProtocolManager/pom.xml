@@ -8,11 +8,52 @@
     <version>1.0</version>
   </parent>
   
-  <groupId>iot.agile</groupId>
+  <name>Protocol Manager</name>  
   <artifactId>protocol-manager</artifactId>
   <packaging>jar</packaging>
 
-  <name>Protocol Manager</name>
-  <url>http://maven.apache.org</url>
+  <repositories>
+    <repository>
+      <id>local-dbus</id>
+      <url>file://${basedir}/../deps</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>iot.agile.protocolmanager.Launcher</mainClass>
+          <arguments>
+            <argument>-Djava.library.path=${basedir}/../deps</argument>
+          </arguments>
+          <systemProperties>
+            <systemProperty>
+              <key>java.library.path</key>
+              <value>${basedir}/../deps</value>
+            </systemProperty>
+          </systemProperties>          
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>agile-interfaces</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
 </project>
