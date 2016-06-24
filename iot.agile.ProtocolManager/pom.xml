@@ -33,7 +33,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>iot.agile.protocolmanager.Launcher</mainClass>
+          <mainClass>iot.agile.protocolmanager.ProtocolManagerImp</mainClass>
           <arguments>
             <argument>-Djava.library.path=${basedir}/../deps</argument>
           </arguments>

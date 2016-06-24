@@ -56,6 +56,16 @@ public class ProtocolManagerImp implements ProtocolManager {
 
   private final DBusConnection connection;
 
+  
+  public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
+  
+  public static void main(String[] args) throws DBusException {
+    ProtocolManager protocolManager = new ProtocolManagerImp();
+    
+    // for demo purposes
+    protocolManager.Add(BLE_PROTOCOL_ID);
+  }  
+  
   public ProtocolManagerImp() throws DBusException {
 
     connection = DBusConnection.getConnection(DBusConnection.SESSION);
