@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Dagmawi Neway Mekuria <d.mekuria@create-net.org>.
+ * Copyright 2016 CREATE-NET
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package iot.agile.protocolmanager.protocol;
+package iot.agile.agile.interfaces;
 
 import java.util.List;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
  * Agile BLE Protocol interface
@@ -75,7 +76,7 @@ public interface Protocol extends DBusInterface {
    * and retrieve the id and other properties from it
    */
   @org.freedesktop.DBus.Description("Setup connection and initialize protocol connection for the given device")
-  public boolean Connect(String deviceAddress);
+  public boolean Connect(String deviceAddress) throws DBusException;
 
   /**
    *
@@ -94,7 +95,7 @@ public interface Protocol extends DBusInterface {
    * TODO - return list of devices
    */
   @org.freedesktop.DBus.Description("Lists all discovered BLE devices")
-  public void Discover() throws InterruptedException;
+  public void Discover() throws DBusException;
 
   public void StopDiscovery();
 
@@ -103,13 +104,13 @@ public interface Protocol extends DBusInterface {
    *
    * TODO: Detail of this method should be discussed
    */
-  public void Write();
+  public void Write() throws DBusException;
 
   /**
    * Read data over the Protocol, may be cached in the Data property depending
    * on implementation to save resources
    */
-  public String Read(String deviceAddress, Map<String, String> profile);
+  public String Read(String deviceAddress, Map<String, String> profile) throws DBusException;
 
   /**
    * Subscribe to data update over the protocol
