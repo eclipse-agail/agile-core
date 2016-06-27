@@ -17,7 +17,7 @@ fi
 echo "Launching Dbus"
 Xvfb :1 -screen 0 1x1x8 &
 export DISPLAY=:1
-dbus-launch
+export `dbus-launch`
 
 
 export MAVEN_OPTS="-Djava.library.path=$DEPS -DDISPLAY=$DISPLAY"
