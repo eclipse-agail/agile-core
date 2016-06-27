@@ -17,6 +17,10 @@ fi
 export MAVEN_OPTS="-Djava.library.path=$DEPS"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib
 
+cd agile-interfaces
+mvn clean install
+cd ..
+
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
   cd iot.agile.protocol.BLE
