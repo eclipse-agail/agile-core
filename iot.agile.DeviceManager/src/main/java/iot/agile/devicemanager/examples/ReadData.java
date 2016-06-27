@@ -18,7 +18,7 @@ package iot.agile.devicemanager.examples;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-import iot.agile.devicemanager.device.Device;
+import iot.agile.agile.interfaces.Device;
 
 /**
  * @author dagi

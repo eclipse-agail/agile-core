@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Dagmawi Neway Mekuria <d.mekuria@create-net.org>.
+ * Copyright 2016 CREATE-NET
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package iot.agile.devicemanager;
+package iot.agile.agile.interfaces;
 
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 //import iot.agile.protocol.ble.device.utils.DeviceDescription;
 
@@ -52,7 +53,7 @@ public interface DeviceManager extends DBusInterface {
 	 * Creates devices
 	 */
 	@org.freedesktop.DBus.Description("Returns all registered devices")
-	public String Create(String deviceID, String deviceName, String protocol);
+	public String Create(String deviceID, String deviceName, String protocol) throws DBusException;
 
 	/**
 	 * Load a device definition by its ID
