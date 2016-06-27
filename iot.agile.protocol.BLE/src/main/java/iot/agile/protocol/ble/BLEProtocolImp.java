@@ -25,7 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -58,7 +57,7 @@ public class BLEProtocolImp implements Protocol {
   /**
    * Bus path for AGILE BLE Protocol
    */
-  private static final String AGILE_BLUETOOTH_BUS_PATH = "/iot/agile/protocol/ble";
+  private static final String AGILE_BLUETOOTH_BUS_PATH = "/iot/agile/protocol/BLE";
 
   /**
    * Protocol name
@@ -102,7 +101,6 @@ public class BLEProtocolImp implements Protocol {
   protected final State state = new State();
 
   public class State {
-
     public boolean isDiscovering = false;
   }
 
@@ -227,9 +225,11 @@ public class BLEProtocolImp implements Protocol {
 
     logger.debug("Started discovery of BLE devices");
 
-    bleManager.startDiscovery();
-
     Runnable task = () -> {
+      
+      logger.debug("Checking for new devices");
+      bleManager.startDiscovery();      
+
       int newDevices = 0;
       List<BluetoothDevice> list = bleManager.getDevices();
       for (BluetoothDevice device : list) {
