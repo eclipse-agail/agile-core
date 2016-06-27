@@ -18,8 +18,8 @@ cd $BUILD/tinyb
 mkdir -p build
 cd build
 
-echo "add_compile_options(-std=c++)" >> ../CMakeLists.txt
-cmake .. -DBUILDJAVA=ON -DCMAKE_INSTALL_PREFIX=$DEPS >> /dev/null
+# echo "add_compile_options(-std=c++11)" >> ../CMakeLists.txt
+cmake .. -DBUILDJAVA=ON -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_INSTALL_PREFIX=$DEPS >> /dev/null
 make tinyb >> /dev/null
 make install >> /dev/null
 
