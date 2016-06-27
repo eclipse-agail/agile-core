@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DEPS=`basedir ./deps`
+DEPS=`dirname ./deps`
 
 if [ ! -e "$DEPS" ] then
   echo "Installing dependencies"
