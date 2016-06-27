@@ -15,7 +15,7 @@
  */
 package iot.agile.protocol.ble;
 
-import iot.agile.agile.interfaces.Protocol;
+import iot.agile.Protocol;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

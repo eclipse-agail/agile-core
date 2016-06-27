@@ -15,8 +15,8 @@
  */
 package iot.agile.devicemanager.device;
 
-import iot.agile.agile.interfaces.Device;
-import iot.agile.agile.interfaces.Protocol;
+import iot.agile.Device;
+import iot.agile.Protocol;
 import java.util.HashMap;
 import java.util.Map;
 

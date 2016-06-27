@@ -15,8 +15,8 @@
  */
 package iot.agile.protocolmanager;
 
-import iot.agile.agile.interfaces.Protocol;
-import iot.agile.agile.interfaces.ProtocolManager;
+import iot.agile.Protocol;
+import iot.agile.ProtocolManager;
 import java.util.ArrayList;
 import java.util.List;
 

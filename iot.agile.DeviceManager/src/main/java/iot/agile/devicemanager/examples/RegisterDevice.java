@@ -19,7 +19,7 @@ import org.freedesktop.DBus.Error.ServiceUnknown;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-import iot.agile.agile.interfaces.DeviceManager;
+import iot.agile.DeviceManager;
 
 /**
  * @author dagi

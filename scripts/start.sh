@@ -20,7 +20,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
   cd iot.agile.protocol.BLE
-  mvn exec:java &
+  mvn clean install exec:java &
   echo "Started AGILE BLE protocol"
   cd ../
 fi
@@ -28,7 +28,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "protocolmanager"
   cd iot.agile.ProtocolManager
-  mvn exec:java &
+  mvn clean install exec:java &
   echo "Started AGILE Protocol Manager"
   cd ..
 fi
@@ -36,7 +36,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "devicemanager"
   cd iot.agile.DeviceManager
-  mvn exec:java &
+  mvn clean install exec:java &
   echo "Started AGILE Device Manager"
   cd ..
 fi
