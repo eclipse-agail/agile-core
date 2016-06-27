@@ -19,6 +19,13 @@ import iot.agile.agile.interfaces.Protocol;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -90,6 +97,15 @@ public class BLEProtocolImp implements Protocol {
 
   private static final String TEMPERATURE = "Temperature";
 
+  ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+  protected final State state = new State();
+
+  public class State {
+
+    public boolean isDiscovering = false;
+  }
+
   public static void main(String[] args) throws DBusException {
     Protocol bleProtocol = new BLEProtocolImp();
   }
@@ -108,6 +124,19 @@ public class BLEProtocolImp implements Protocol {
     } catch (Exception e) {
       logger.error("Error getting BluetoothManager instance", e);
     }
+    
+    // ensure DBus object is unregistered
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        try {
+          connection.releaseBusName(AGILE_BLUETOOTH_BUS_NAME);
+        } catch (DBusException ex) {
+          logger.error("Cannot release DBus name {}", AGILE_BLUETOOTH_BUS_NAME, ex);
+        }
+      }
+    });
+
+    logger.debug("BLE Protocol is running");
 
   }
 
@@ -155,6 +184,7 @@ public class BLEProtocolImp implements Protocol {
    */
   @Override
   public boolean Connect(String deviceAddress) {
+    logger.debug("Connecting to BLE device {}", deviceAddress);
     BluetoothDevice bleDevice;
     try {
       bleDevice = getDevice(deviceAddress);
@@ -176,6 +206,7 @@ public class BLEProtocolImp implements Protocol {
    */
   @Override
   public boolean Disconnect(String deviceAddress) {
+    logger.debug("Disconntectin from BLE device {}", deviceAddress);
     BluetoothDevice bleDevice;
     try {
       bleDevice = getDevice(deviceAddress);
@@ -193,15 +224,37 @@ public class BLEProtocolImp implements Protocol {
    */
   @Override
   public void Discover() {
-    if (bleManager.startDiscovery()) {
+
+    logger.debug("Started discovery of BLE devices");
+
+    bleManager.startDiscovery();
+
+    Runnable task = () -> {
+      int newDevices = 0;
       List<BluetoothDevice> list = bleManager.getDevices();
       for (BluetoothDevice device : list) {
         if (!deviceList.contains(device.getName())) {
           deviceList.add(device.getName());
           printDevice(device);
+          newDevices++;
         }
       }
+
+      if (newDevices > 0) {
+        logger.debug("Found {} new device(s)", newDevices);
+      }
+
+    };
+
+    ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
+    try {
+      future.get(10, TimeUnit.SECONDS);
+    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+      logger.debug("Aborted execution scheduler: {}", ex.getMessage());
+    } finally {
+      logger.debug("Stopped BLE discovery");
     }
+
   }
 
   /**

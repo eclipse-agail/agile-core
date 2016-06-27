@@ -8,9 +8,7 @@
     <version>1.0</version>
   </parent>
 
-  <groupId>iot.agile</groupId>
   <artifactId>device-manager</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Device Manager</name>
@@ -38,15 +36,6 @@
         </executions>
         <configuration>
           <mainClass>iot.agile.devicemanager.DeviceManagerImp</mainClass>
-          <arguments>
-            <argument>-Djava.library.path=${basedir}/../deps</argument>
-          </arguments>
-          <systemProperties>
-            <systemProperty>
-              <key>java.library.path</key>
-              <value>${basedir}/../deps</value>
-            </systemProperty>
-          </systemProperties>          
         </configuration>
       </plugin>
     </plugins>

@@ -34,15 +34,6 @@
         </executions>
         <configuration>
           <mainClass>iot.agile.protocolmanager.ProtocolManagerImp</mainClass>
-          <arguments>
-            <argument>-Djava.library.path=${basedir}/../deps</argument>
-          </arguments>
-          <systemProperties>
-            <systemProperty>
-              <key>java.library.path</key>
-              <value>${basedir}/../deps</value>
-            </systemProperty>
-          </systemProperties>          
         </configuration>
       </plugin>
     </plugins>

@@ -66,6 +66,18 @@ public class DeviceManagerImp implements DeviceManager {
     connection.requestBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
     connection.exportObject(AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 
+    // ensure DBus object is unregistered
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        try {
+          connection.releaseBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
+        } catch (DBusException ex) {
+          logger.error("Cannot release DBus name {}", AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, ex);
+        }
+      }
+    });
+    
+    
     logger.debug("Started Device Manager");
   }
 

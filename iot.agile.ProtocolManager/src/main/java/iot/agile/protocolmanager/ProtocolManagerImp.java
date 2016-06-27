@@ -56,16 +56,15 @@ public class ProtocolManagerImp implements ProtocolManager {
 
   private final DBusConnection connection;
 
-  
   public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
-  
+
   public static void main(String[] args) throws DBusException {
     ProtocolManager protocolManager = new ProtocolManagerImp();
-    
+
     // for demo purposes
     protocolManager.Add(BLE_PROTOCOL_ID);
-  }  
-  
+  }
+
   public ProtocolManagerImp() throws DBusException {
 
     connection = DBusConnection.getConnection(DBusConnection.SESSION);
@@ -73,7 +72,18 @@ public class ProtocolManagerImp implements ProtocolManager {
     connection.requestBusName(AGILE_PROTOCOL_MANAGER_BUS_NAME);
     connection.exportObject(AGILE_PROTOCOL_MANAGER_BUS_PATH, this);
 
-    logger.debug("Exposed ProtocolManager class {}", this.getClass().getName());
+    // ensure DBus object is unregistered
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        try {
+          connection.releaseBusName(AGILE_PROTOCOL_MANAGER_BUS_NAME);
+        } catch (DBusException ex) {
+          logger.error("Cannot release DBus name {}", AGILE_PROTOCOL_MANAGER_BUS_NAME, ex);
+        }
+      }
+    });
+
+    logger.debug("ProtocolManager is running");
   }
 
   /**
