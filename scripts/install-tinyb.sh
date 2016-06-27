@@ -19,11 +19,11 @@ mkdir -p build
 cd build
 
 # echo "add_compile_options(-std=c++11)" >> ../CMakeLists.txt
-cmake .. -DBUILDJAVA=ON -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_INSTALL_PREFIX=$DEPS >> /dev/null
+cmake .. -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_INSTALL_PREFIX=$DEPS -DBUILDJAVA=ON >> /dev/null
 make tinyb >> /dev/null
 make install >> /dev/null
 
-# cp lib/java/tinyb.jar $DEPS
+cp java/tinyb.jar $DEPS
 # cp lib/*.so $DEPS
 # cp lib/*.so* $DEPS
 
