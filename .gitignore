@@ -1,2 +1,5 @@
 deps
 /agile-interfaces/target/
+.settings/
+.classpath
+.project
