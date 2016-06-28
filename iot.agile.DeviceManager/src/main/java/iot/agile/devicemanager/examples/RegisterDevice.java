@@ -18,6 +18,8 @@ package iot.agile.devicemanager.examples;
 import org.freedesktop.DBus.Error.ServiceUnknown;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import iot.agile.DeviceManager;
 
@@ -26,6 +28,7 @@ import iot.agile.DeviceManager;
  *
  */
 public class RegisterDevice {
+	protected final static Logger logger = LoggerFactory.getLogger(RegisterDevice.class);
 
 	/**
 	 * DBus interface name for the device manager
@@ -45,14 +48,14 @@ public class RegisterDevice {
 					AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
 			//Register device
 			String deviceAgileID = deviceManager.Create("C4:BE:84:70:69:09", "TISensorTag", "BLE");
-			System.out.println(deviceManager.devices().get("C4:BE:84:70:69:09"));
-			System.out.println("Device ID:" + deviceAgileID);
-
+			logger.info(deviceManager.devices().get("C4:BE:84:70:69:09"));
+			logger.info("Device ID: {}" ,deviceAgileID);
+  
 		}  catch (ServiceUnknown e) {
-			System.err.println("Can not find the DBus object " + AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
+			logger.error("Can not find the DBus object : {}" ,AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, e);
 		}catch (DBusException e) {
-			e.printStackTrace();
-		}
+			logger.error("Error in registering device :", e);
+  		}
 	}
 
 }

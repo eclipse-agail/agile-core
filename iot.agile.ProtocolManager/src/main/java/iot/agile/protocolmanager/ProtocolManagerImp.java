@@ -48,11 +48,11 @@ public class ProtocolManagerImp implements ProtocolManager {
   /**
    * List of supported protocols
    */
-  final private List<String> protocols = new ArrayList();
+  final private List<String> protocols = new ArrayList<String>();
   /**
    * List of discovered devices from all the protocols
    */
-  final private List<String> devices = new ArrayList();
+  final private List<String> devices = new ArrayList<String>();
 
   private final DBusConnection connection;
 

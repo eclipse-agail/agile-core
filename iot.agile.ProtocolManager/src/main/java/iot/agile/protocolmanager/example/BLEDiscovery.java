@@ -17,6 +17,8 @@ package iot.agile.protocolmanager.example;
 
 import org.freedesktop.DBus.Error.ServiceUnknown;
 import org.freedesktop.dbus.DBusConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import iot.agile.ProtocolManager;
 
@@ -32,6 +34,8 @@ import iot.agile.ProtocolManager;
  */
 
 public class BLEDiscovery {
+	protected final static Logger logger = LoggerFactory.getLogger(BLEDiscovery.class);
+
 	/**
 	 * DBus bus name for the protocol manager
 	 */
@@ -50,14 +54,16 @@ public class BLEDiscovery {
 			// Start device discovery
 			protocolManager.Discover();
 			// Print discovered devices
+			logger.info("Discovered devices");
+
 			for (String device : protocolManager.Devices()) {
-				System.out.println(device);
+				logger.info(device);
 			}
 
 		} catch (ServiceUnknown e) {
-			System.err.println("Can not find the DBus object " + AGILE_PROTOCOL_MANAGER_BUS_NAME);
+			logger.error("Can not find the DBus object : {}", AGILE_PROTOCOL_MANAGER_BUS_PATH, e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in discovering devices :", e);
 		}
 	}
 

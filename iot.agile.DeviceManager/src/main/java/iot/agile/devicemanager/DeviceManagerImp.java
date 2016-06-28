@@ -15,17 +15,17 @@
  */
 package iot.agile.devicemanager;
 
-import iot.agile.Device;
-import iot.agile.DeviceManager;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
-
-import iot.agile.devicemanager.device.DeviceImp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import iot.agile.Device;
+import iot.agile.DeviceManager;
+import iot.agile.devicemanager.device.DeviceImp;
 
 /**
  * @author dagi
@@ -53,7 +53,7 @@ public class DeviceManagerImp implements DeviceManager {
   /**
    * registered devices
    */
-  protected final Map<String, String> devices = new HashMap();
+  protected final Map<String, String> devices = new HashMap<String, String>();
 
   public static void main(String[] args) throws DBusException {
     DeviceManager deviceManager = new DeviceManagerImp();
@@ -174,8 +174,7 @@ public class DeviceManagerImp implements DeviceManager {
    */
   @Override
   public boolean isRemote() {
-    // TODO
-    return false;
+     return false;
   }
 
   // ====================Utility methods

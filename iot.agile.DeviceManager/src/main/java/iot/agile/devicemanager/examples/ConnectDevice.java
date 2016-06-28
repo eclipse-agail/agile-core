@@ -17,20 +17,26 @@ package iot.agile.devicemanager.examples;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 
 /**
  * @author dagi
  * 
- * This program demonstrates how client programs connect to a BLE Device(i.e TI Sensor Tag) through DBus 
+ *         This program demonstrates how client programs connect to a BLE
+ *         Device(i.e TI Sensor Tag) through DBus
  * 
- * NOTE: A device should be discovered and registered before gets connected
- *    
+ *         NOTE: A device should be discovered and registered before gets
+ *         connected
+ * 
  *
  */
 public class ConnectDevice {
 	
+	protected final static Logger logger = LoggerFactory.getLogger(ConnectDevice.class);
+
 	/**
 	 * Bus name for AGILE BLE Device interface
 	 */
@@ -40,21 +46,21 @@ public class ConnectDevice {
 	 * Bus path for AGILE BLE Device interface
 	 */
 	private static final String TISENSORTAG_AGILE_BUS_PATH = "/iot/agile/Device/TISensorTag";
-	
-	
+
 	public static void main(String[] args) {
- 		try {
+		try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			Device sensorTag = (Device) connection.getRemoteObject(TISENSORTAG_AGILE_ID, TISENSORTAG_AGILE_BUS_PATH, Device.class);
-			if(sensorTag.Connect()){
-				System.out.println("Device Connected: "+sensorTag.Name());
-			}else{
-				System.out.println("Falied to connect : "+sensorTag.Name());
+			Device sensorTag = (Device) connection.getRemoteObject(TISENSORTAG_AGILE_ID, TISENSORTAG_AGILE_BUS_PATH,
+					Device.class);
+			if (sensorTag.Connect()) {
+				logger.debug("Device Connected: {}", sensorTag.Name());
+			} else {
+				logger.debug("Falied to connect : {}", sensorTag.Name());
 			}
 		} catch (DBusException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }

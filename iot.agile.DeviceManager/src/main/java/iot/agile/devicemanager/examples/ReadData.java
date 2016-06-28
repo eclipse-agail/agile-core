@@ -17,6 +17,8 @@ package iot.agile.devicemanager.examples;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 
@@ -31,7 +33,8 @@ import iot.agile.Device;
  *
  */
 public class ReadData {
-	
+	protected final static Logger logger = LoggerFactory.getLogger(ReadData.class);
+
 	/**
 	 * Bus name for AGILE BLE Device interface
 	 */
@@ -56,8 +59,7 @@ public class ReadData {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 			Device sensorTag = (Device) connection.getRemoteObject(TI_SENSORTAG_AGILE_ID, TI_SENSORTAG_AGILE_BUS_PATH, Device.class);
  			String currentTemp = sensorTag.Read(TEMPERATURE);
-			
-			 System.out.println("Temperature : "+currentTemp);
+			logger.info("Temperature: {}", currentTemp);
 		} catch (DBusException e) {
 			e.printStackTrace();
 		}
