@@ -11,7 +11,9 @@ fi
 echo "DEPS dir $DEPS"
 
 if [ "${MODULE}" = 'all' ]; then
-  echo "To start a single module use:\n $0 DeviceManager\|ProtocolManager\|BLE"
+  echo ""
+  echo "To start a single module use:\n $0 DeviceManager|ProtocolManager|BLE"
+  echo ""
 fi
 
 if [ -z "$DISPLAY" ]; then
@@ -22,11 +24,10 @@ else
   echo "Using current DISPLAY at $DISPLAY"
 fi
 
-if [ `ps aux | grep "dbus-daemon" | wc -l` -gt 1 ]; then
-  DBUSINFO=`dbus-launch`
+if [ `ps aux | grep "dbus-daemon" | wc -l` -eq 1 ]; then
+  export `dbus-launch`
   echo "Launched new DBus instance"
-  echo $DBUSINFO
-  export $DBUSINFO
+  echo $DBUS_SESSION_BUS_ADDRESS
 else
   echo "DBus instance available"
   echo $DBUS_SESSION_BUS_ADDRESS
@@ -38,7 +39,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
   cd iot.agile.protocol.BLE
-  DISPLAY=:1 mvn exec:java &
+  DISPLAY=:1 mvn -q exec:java &
   echo "Started AGILE BLE protocol"
   cd ../
 fi
@@ -46,7 +47,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "protocolmanager"
   cd iot.agile.ProtocolManager
-  DISPLAY=:1 mvn exec:java &
+  DISPLAY=:1 mvn -q exec:java &
   echo "Started AGILE Protocol Manager"
   cd ..
 fi
@@ -54,7 +55,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "devicemanager"
   cd iot.agile.DeviceManager
-  DISPLAY=:1 mvn exec:java &
+  DISPLAY=:1 mvn -q exec:java &
   echo "Started AGILE Device Manager"
   cd ..
 fi
