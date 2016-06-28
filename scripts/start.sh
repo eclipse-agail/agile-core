@@ -14,11 +14,23 @@ if [ "${MODULE}" = 'all' ]; then
   echo "To start a single module use:\n $0 DeviceManager\|ProtocolManager\|BLE"
 fi
 
-echo "Launching Dbus"
-Xvfb :1 -screen 0 1x1x8 &
-export DISPLAY=:1
-export `dbus-launch`
+if [ -z "$DISPLAY" ]; then
+  Xvfb :1 -screen 0 1x1x8 &
+  export DISPLAY=:1
+  echo "Created new DISPLAY at $DISPLAY"
+else
+  echo "Using current DISPLAY at $DISPLAY"
+fi
 
+if [ `ps aux | grep "dbus-daemon" | wc -l` -gt 1 ]; then
+  DBUSINFO=`dbus-launch`
+  echo "Launched new DBus instance"
+  echo $DBUSINFO
+  export $DBUSINFO
+else
+  echo "DBus instance available"
+  echo $DBUS_SESSION_BUS_ADDRESS
+fi
 
 export MAVEN_OPTS="-Djava.library.path=$DEPS -DDISPLAY=$DISPLAY"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib
