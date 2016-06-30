@@ -48,8 +48,6 @@ public class ReadData {
 	 * Sensor name
 	 */
 	private static final String TEMPERATURE = "Temperature";
-	
-	
 
 	/**
 	 * @param args

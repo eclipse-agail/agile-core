@@ -104,7 +104,7 @@ public interface Protocol extends DBusInterface {
    *
    * TODO: Detail of this method should be discussed
    */
-  public void Write() throws DBusException;
+  public String Write(String deviceAddress, Map<String, String> profile) throws DBusException;
 
   /**
    * Read data over the Protocol, may be cached in the Data property depending

@@ -15,8 +15,6 @@
  */
 package iot.agile.devicemanager.device;
 
-import iot.agile.Device;
-import iot.agile.Protocol;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +22,9 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import iot.agile.Device;
+import iot.agile.Protocol;
 
 /**
  * @author dagi
@@ -43,7 +44,7 @@ public class DeviceImp implements Device {
 	/**
 	 * Bus path for AGILE BLE Device interface
 	 */
-	private static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
+	protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
 	/**
 	 * BLE Protocol imp DBus interface id
 	 */
@@ -51,22 +52,22 @@ public class DeviceImp implements Device {
 	/**
 	 * BLE Protocol imp DBus interface path
 	 */
-	private static final String BLE_PROTOCOL_PATH = "/iot/agile/protocol/ble";
+	private static final String BLE_PROTOCOL_PATH = "/iot/agile/protocol/BLE";
 
 	/**
 	 * Device status
 	 */
-	private static final String CONNECTED = "Connected";
+	protected static final String CONNECTED = "Connected";
 
-	private static final String DISCONNECTED = "Disconnected";
+	protected static final String DISCONNECTED = "Disconnected";
 	/**
 	 * Protocol
 	 */
-	private static final String BLUETOOTH_LOW_ENERGY = "BLE";
+	protected static final String BLUETOOTH_LOW_ENERGY = "BLE";
 	/**
 	 * Device status TODO: Needs implementation Default : Disconnected
 	 */
-	private static String deviceStatus = DISCONNECTED;
+	protected static String deviceStatus = DISCONNECTED;
 	/**
 	 * GATT service and characteristics for TI Sensor Tag temperature service
 	 */
@@ -87,39 +88,63 @@ public class DeviceImp implements Device {
 	private static final String TEMP_CONFIGURATION_GATT_CHARACTERSTICS_UUID = "f000aa02-0451-4000-b000-000000000000";
 
 	/**
-	 * Agile specific device ID TODO:
+	 * Agile specific device ID
 	 */
-	private String deviceAgileID;
+	protected String deviceAgileID;
+	/**
+	 * Device name
+	 */
+	protected String deviceName;
 	/**
 	 * Device ID
 	 *
 	 */
-	private String deviceName;
-
-	private String deviceID;
-
-	private String protocol;
-
-	protected final DBusConnection connection;
-
+	protected String deviceID;
 	/**
-	 *
-	 * @param deviceName
-	 *            Device Name
+	 * The protocol the device supports
 	 */
-	public DeviceImp(String deviceID, String deviceName, String protocol) throws DBusException {
+	protected String protocol;
+	
+	/**
+	 * The device protocol interface
+	 */
+	protected Protocol  deviceProtocol;
+	/**
+	 * DBus connection
+	 */
+	protected  DBusConnection connection;
 
+	
+	
+	
+	
+	
+	 /**
+	  * 
+	  * @param deviceID
+	  * 			the device address (MAC in BLE case)
+	  * @param deviceName
+	  * 		    discovered named of the device
+	  * @param protocol
+	  * 		   the protocol the device supports
+	  * 
+	  * @throws DBusException
+	  */
+	public DeviceImp(String deviceID, String deviceName, String protocol) throws DBusException {
 		this.deviceName = deviceName;
 		this.deviceID = deviceID;
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID + deviceName.trim();
 		this.protocol = protocol;
-
-		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + deviceName.trim();
-
-		connection = DBusConnection.getConnection(DBusConnection.SESSION);
+ 		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + deviceName.trim();
+ 		connection = DBusConnection.getConnection(DBusConnection.SESSION);
 		connection.requestBusName(deviceAgileID);
 		connection.exportObject(devicePath, this);
-
+		
+		if(protocol.equals(BLUETOOTH_LOW_ENERGY)){
+			deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH,
+						Protocol.class);
+		}
+		
 		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
 
 	}
@@ -200,11 +225,8 @@ public class DeviceImp implements Device {
 	 */
 	public boolean Connect() {
 		try {
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			if (protocol.equals(BLUETOOTH_LOW_ENERGY)) {
-				Protocol ble = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH,
-						Protocol.class);
-				if (ble.Connect(deviceID)) {
+			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
+				if (deviceProtocol.Connect(deviceID)) {
 					deviceStatus = CONNECTED;
 					logger.info("Device Connected {}", deviceID);
 					return true;
@@ -224,12 +246,8 @@ public class DeviceImp implements Device {
 	 * @see iot.agile.devicemanager.device.Device#Disconnect()
 	 */
 	public boolean Disconnect() {
-		try {
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			if (protocol.equals(BLUETOOTH_LOW_ENERGY)) {
-				Protocol ble = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH,
-						Protocol.class);
-				if (ble.Disconnect(deviceID)) {
+			if (protocol.equals(BLUETOOTH_LOW_ENERGY)&& deviceProtocol != null) {
+				if (deviceProtocol.Disconnect(deviceID)) {
 					deviceStatus = DISCONNECTED;
 					logger.info("Device disconnected {}", deviceID);
 					return true;
@@ -238,9 +256,6 @@ public class DeviceImp implements Device {
 				logger.debug("Protocol not supported: {}", protocol);
 			}
 
-		} catch (DBusException e) {
-			e.printStackTrace();
-		}
 		return false;
 	}
 
@@ -260,19 +275,15 @@ public class DeviceImp implements Device {
 	 *
 	 */
 	public String Read(String sensorName) {
-		if (protocol.equals(BLUETOOTH_LOW_ENERGY)) {
+		if (protocol.equals(BLUETOOTH_LOW_ENERGY)&& deviceProtocol != null) {
 			if (sensorName.equals(TEMPERATURE)) {
 				if (deviceStatus.equals(CONNECTED)) {
 
-					try {
-						DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-						Protocol ble = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH,
-								Protocol.class);
-
-						return ble.Read(deviceID, getTemperatureProfile());
-					} catch (DBusException e) {
-						e.printStackTrace();
-					}
+						try {
+							return deviceProtocol.Read(deviceID, getTemperatureProfile());
+						} catch (DBusException e) {
+ 							e.printStackTrace();
+						}
 
 				} else {
 					logger.debug("BLE Device not connected: {}", deviceName);
@@ -290,13 +301,7 @@ public class DeviceImp implements Device {
 		return null;
 	}
 
-	/**
-	 * @return the deviceAgileID
-	 */
-	public String getDeviceAgileID() {
-		return deviceAgileID;
-	}
-
+	
 	/**
 	 * Writes data into the given sensor
 	 *
@@ -305,6 +310,22 @@ public class DeviceImp implements Device {
 	public void Write() {
 		logger.debug("Device. Write not implemented");
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @return the deviceAgileID
+	 */
+	public String getDeviceAgileID() {
+		return deviceAgileID;
+	}
+
 
 	/**
 	 *

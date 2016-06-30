@@ -33,11 +33,13 @@ public class RegisterDevice {
 	/**
 	 * DBus interface name for the device manager
 	 */
-	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_NAME = "iot.agile.DeviceManger";
+	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_NAME = "iot.agile.DeviceManager";
 	/**
 	 * DBus interface path for the device manager
 	 */
 	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
+	
+	private static final String TI_SENSORTAG_MAC_ADDRESS = "78:C5:E5:6E:E4:CF";
 
 	public static void main(String[] args) {
 		// DBus connection
@@ -47,8 +49,8 @@ public class RegisterDevice {
 			DeviceManager deviceManager = (DeviceManager) connection.getRemoteObject(
 					AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
 			//Register device
-			String deviceAgileID = deviceManager.Create("C4:BE:84:70:69:09", "TISensorTag", "BLE");
-			logger.info(deviceManager.devices().get("C4:BE:84:70:69:09"));
+			String deviceAgileID = deviceManager.Create(TI_SENSORTAG_MAC_ADDRESS, "TISensorTag", "BLE");
+			logger.info(deviceManager.devices().get(TI_SENSORTAG_MAC_ADDRESS));
 			logger.info("Device ID: {}" ,deviceAgileID);
   
 		}  catch (ServiceUnknown e) {

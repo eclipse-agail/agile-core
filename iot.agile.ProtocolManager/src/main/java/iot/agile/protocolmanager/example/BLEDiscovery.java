@@ -52,7 +52,7 @@ public class BLEDiscovery {
 			ProtocolManager protocolManager = connection.getRemoteObject(AGILE_PROTOCOL_MANAGER_BUS_NAME,
 					AGILE_PROTOCOL_MANAGER_BUS_PATH, ProtocolManager.class);
 			// Start device discovery
-			protocolManager.Discover();
+ 			protocolManager.Discover();
 			// Print discovered devices
 			logger.info("Discovered devices");
 

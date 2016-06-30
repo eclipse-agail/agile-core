@@ -15,7 +15,6 @@
  */
 package iot.agile.protocol.ble;
 
-import iot.agile.Protocol;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import iot.agile.Protocol;
 import tinyb.BluetoothDevice;
 import tinyb.BluetoothException;
 import tinyb.BluetoothGattCharacteristic;
@@ -95,6 +95,11 @@ public class BLEProtocolImp implements Protocol {
 	private static final String SENSOR_NAME = "SensorName";
 
 	private static final String TEMPERATURE = "Temperature";
+	
+	private static final String WRITE_VALUE = "WriteValue";
+
+
+	private BluetoothGattCharacteristic sensorValue;
 
 	ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
@@ -109,9 +114,7 @@ public class BLEProtocolImp implements Protocol {
 	}
 
 	public BLEProtocolImp() throws DBusException {
-
 		this.connection = DBusConnection.getConnection(DBusConnection.SESSION);
-
 		connection.requestBusName(AGILE_BLUETOOTH_BUS_NAME);
 		connection.exportObject(AGILE_BLUETOOTH_BUS_PATH, this);
 
@@ -204,7 +207,7 @@ public class BLEProtocolImp implements Protocol {
 	 */
 	@Override
 	public boolean Disconnect(String deviceAddress) {
-		logger.debug("Disconntectin from BLE device {}", deviceAddress);
+		logger.debug("Disconnecting from BLE device {}", deviceAddress);
 		BluetoothDevice bleDevice;
 		try {
 			bleDevice = getDevice(deviceAddress);
@@ -222,7 +225,6 @@ public class BLEProtocolImp implements Protocol {
 	 */
 	@Override
 	public void Discover() {
-
 		logger.debug("Started discovery of BLE devices");
 
 		Runnable task = () -> {
@@ -243,7 +245,6 @@ public class BLEProtocolImp implements Protocol {
 			if (newDevices > 0) {
 				logger.debug("Found {} new device(s)", newDevices);
 			}
-
 		};
 
 		ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
@@ -291,8 +292,49 @@ public class BLEProtocolImp implements Protocol {
 	 * @see iot.agile.protocol.ble.Protocol#write()
 	 */
 	@Override
-	public void Write() {
-		logger.debug("Protocol.Write not implemented");
+	public String Write(String deviceAddress, Map<String, String> profile) {
+		BluetoothDevice device;
+		try {
+			device = getDevice(deviceAddress);
+			if (device == null) {
+				logger.error("Device not found: {}", deviceAddress);
+				return "Device not found";
+			}
+			if (!device.getConnected()) {
+				logger.error("Device not connected: {}", deviceAddress);
+				return "Device not connected";
+			} else if (profile.get(SENSOR_NAME).equals(TEMPERATURE)) {
+				BluetoothGattService sensorService = getService(device, profile.get(TEMP_GATT_SERVICE));
+				if (sensorService == null) {
+					logger.error("The device does not have temperature service: {}", deviceAddress);
+					return "Temperature service not found";
+				} else {
+					sensorValue = getCharacteristic(sensorService,
+							profile.get(TEMP_VALUE_GATT_CHARACTERSTICS));
+					BluetoothGattCharacteristic sensorConfig = getCharacteristic(sensorService,
+							profile.get(TEMP_CONFIGURATION_GATT_CHARACTERSTICS));
+
+					if (sensorValue == null || sensorConfig == null) {
+						logger.error("Could not find the correct characterstics");
+						return "Incorrect characterstics";
+					}
+					byte[] config = { 0x01 };
+
+					/**
+					 * The first write in configuration value always returns
+					 * ZERO Therefore, we make two consecutive write
+					 */
+					sensorConfig.writeValue(config);
+					Thread.sleep(1000);
+					sensorConfig.writeValue(config);
+ 				}
+ 			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "Done";
 	}
 
 	/**
@@ -309,65 +351,32 @@ public class BLEProtocolImp implements Protocol {
 				logger.error("Device not found: {}", deviceAddress);
 				return "Device not found";
 			}
-			if (device.getConnected() == false) {
+			if (!device.getConnected()) {
 				logger.error("Device not connected: {}", deviceAddress);
 				return "Device not connected";
 			} else if (profile.get(SENSOR_NAME).equals(TEMPERATURE)) {
-				BluetoothGattService tempService = getService(device, profile.get(TEMP_GATT_SERVICE));
-				if (tempService == null) {
-					logger.error("The device does not have temperature service: {}", deviceAddress);
-					return "Temperature service not found";
-				} else {
-					BluetoothGattCharacteristic tempValue = getCharacteristic(tempService,
-							profile.get(TEMP_VALUE_GATT_CHARACTERSTICS));
-					BluetoothGattCharacteristic tempConfig = getCharacteristic(tempService,
-							profile.get(TEMP_CONFIGURATION_GATT_CHARACTERSTICS));
+				/**
+				 * Read the temperature value from value characteristics and
+				 * convert it to human readable format
+				 */
+				byte[] tempRaw = sensorValue.readValue();
+			
+				/**
+				 * The temperature service returns the data in an encoded format
+				 * which can be found in the wiki. Convert the raw temperature
+				 * format to celsius and print it. Conversion for object
+				 * temperature depends on ambient according to wiki, but assume
+				 * result is good enough for our purposes without conversion.
+				 */
+				int objectTempRaw = (tempRaw[0] & 0xff) | (tempRaw[1] << 8);
+				int ambientTempRaw = (tempRaw[2] & 0xff) | (tempRaw[3] << 8);
 
-					if (tempValue == null || tempConfig == null) {
-						logger.error("Could not find the correct characterstics");
-						return "Incorrect characterstics";
-					}
-
-					/**
-					 * Turn on the temperature service by writing One in the
-					 * configuration characteristics
-					 */
-					byte[] config = { 0x01 };
-					/**
-					 * The first write in configuration value always returns
-					 * ZERO Therefore, we make two consecutive write
-					 */
-					tempConfig.writeValue(config);
-					Thread.sleep(1000);
-					tempConfig.writeValue(config);
-
-					/**
-					 * Read the temperature value from value characteristics and
-					 * convert it to human readable format
-					 */
-					byte[] tempRaw = tempValue.readValue();
-
-					/**
-					 * The temperature service returns the data in an encoded
-					 * format which can be found in the wiki. Convert the raw
-					 * temperature format to celsius and print it. Conversion
-					 * for object temperature depends on ambient according to
-					 * wiki, but assume result is good enough for our purposes
-					 * without conversion.
-					 */
-					int objectTempRaw = (tempRaw[0] & 0xff) | (tempRaw[1] << 8);
-					int ambientTempRaw = (tempRaw[2] & 0xff) | (tempRaw[3] << 8);
-
-					float objectTempCelsius = convertCelsius(objectTempRaw);
-					float ambientTempCelsius = convertCelsius(ambientTempRaw);
-					lastRead = String.format(" Temp: Object = %fC, Ambient = %fC", objectTempCelsius,
-							ambientTempCelsius);
-					return lastRead;
-				}
-
+				float objectTempCelsius = convertCelsius(objectTempRaw);
+				float ambientTempCelsius = convertCelsius(ambientTempRaw);
+				lastRead = String.format(" Temp: Object = %fC, Ambient = %fC", objectTempCelsius, ambientTempCelsius);
+				return lastRead;
 			}
-
-		} catch (InterruptedException e) {
+		}	catch (InterruptedException e) {
 			logger.error("InterruptedException occured", e);
 			throw new DBusException("Operation interrupted abnormally");
 		}

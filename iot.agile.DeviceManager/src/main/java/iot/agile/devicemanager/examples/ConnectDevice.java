@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
+import iot.agile.devicemanager.device.TISensorTag;
 
 /**
  * @author dagi

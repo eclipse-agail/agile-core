@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import iot.agile.Device;
 import iot.agile.DeviceManager;
 import iot.agile.devicemanager.device.DeviceImp;
+import iot.agile.devicemanager.device.TISensorTag;
 
 /**
  * @author dagi
@@ -40,11 +41,14 @@ public class DeviceManagerImp implements DeviceManager {
   /**
    * Bus name for the device manager
    */
-  private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_NAME = "iot.agile.DeviceManger";
+  private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_NAME = "iot.agile.DeviceManager";
   /**
    * Bus path for the device manager
    */
   private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
+
+  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device.";
+
   /**
    * DBus connection to the device manager
    */
@@ -99,16 +103,15 @@ public class DeviceManagerImp implements DeviceManager {
    */
   @Override
   public String Create(String deviceID, String deviceName, String protocol) throws DBusException {
-    
-    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
-    
-    // check if it not registered or not connected
-    Device device = new DeviceImp(deviceID, deviceName, protocol);
-    if (!isRegistered(device.Id())) {
-      devices.put(deviceID, device.Id());
-    }
+	    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
+	    
+	    // check if it not registered or not connected
+	    Device device = new TISensorTag(deviceID, deviceName, protocol);
+	    if (!isRegistered(device.Id())) {
+	      devices.put(deviceID, device.Id());
+	    }
 
-    return device.Id();
+	    return device.Id();
   }
 
   /**
