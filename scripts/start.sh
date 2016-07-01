@@ -16,12 +16,12 @@ if [ "${MODULE}" = 'all' ]; then
   echo ""
 fi
 
-if [ -z "$DISPLAY" ]; then
+if [ `xdpyinfo -display :1 >/dev/null 2>&1 && echo 1 || echo 0 ` -eq 1 ]; then
+  echo "Using current DISPLAY at $DISPLAY"
+else
   Xvfb :1 -screen 0 1x1x8 &
   export DISPLAY=:1
   echo "Created new DISPLAY at $DISPLAY"
-else
-  echo "Using current DISPLAY at $DISPLAY"
 fi
 
 if [ `ps aux | grep "dbus-daemon" | wc -l` -eq 1 ]; then
