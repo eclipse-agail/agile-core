@@ -31,10 +31,15 @@ if [ `ps aux | grep "dbus-daemon" | wc -l` -eq 1 ]; then
   echo $DBUS_SESSION_BUS_ADDRESS
 else
   echo "DBus instance available"
-  MID=`cat /var/lib/dbus/machine-id`
+  MID=`sed "s/\n//" /var/lib/dbus/machine-id`
   ME=`whoami`
   source "/home/$ME/.dbus/session-bus/$MID-0"
   echo $DBUS_SESSION_BUS_ADDRESS
+fi
+
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+  echo "Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
+  exit 1
 fi
 
 export MAVEN_OPTS="-Djava.library.path=$DEPS -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
