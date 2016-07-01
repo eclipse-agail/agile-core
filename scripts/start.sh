@@ -17,6 +17,7 @@ if [ "${MODULE}" = 'all' ]; then
 fi
 
 if [ `xdpyinfo -display :1 >/dev/null 2>&1 && echo 1 || echo 0 ` -eq 1 ]; then
+  export DISPLAY=:1
   echo "Using current DISPLAY at $DISPLAY"
 else
   Xvfb :1 -screen 0 1x1x8 &
