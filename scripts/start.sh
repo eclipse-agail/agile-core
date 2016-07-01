@@ -25,22 +25,19 @@ else
   echo "Created new DISPLAY at $DISPLAY"
 fi
 
-if [ `ps aux | grep "dbus-daemon" | wc -l` -eq 1 ]; then
+
+MID=`sed "s/\n//" /var/lib/dbus/machine-id`
+ME=`whoami`
+
+. "/home/$ME/.dbus/session-bus/$MID-0"
+
+# if [ `ps aux | grep "dbus-daemon" | wc -l` -eq 1 ]; then
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
   export `dbus-launch`
   echo "Launched new DBus instance"
   echo $DBUS_SESSION_BUS_ADDRESS
 else
-
-  echo "DBus instance available"
-
-  MID=`sed "s/\n//" /var/lib/dbus/machine-id`
-  ME=`whoami`
-  
-  # use . instead of source in dash
-  . "/home/$ME/.dbus/session-bus/$MID-0"
-
-  echo "ls -l /home/$ME/.dbus/session-bus/"
-
+  echo "Reusing available DBus instance"
   echo $DBUS_SESSION_BUS_ADDRESS
 fi
 
