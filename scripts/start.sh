@@ -31,7 +31,8 @@ if [ `ps aux | grep "dbus-daemon" | wc -l` -eq 1 ]; then
   echo $DBUS_SESSION_BUS_ADDRESS
 else
   echo "DBus instance available"
-  source  ~/.dbus/session-bus/$(cat /var/lib/dbus/machine-id)-0
+  MID=$(cat /var/lib/dbus/machine-id)
+  source " ~/.dbus/session-bus/$MID-0"
   echo $DBUS_SESSION_BUS_ADDRESS
 fi
 
