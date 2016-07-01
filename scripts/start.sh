@@ -30,10 +30,17 @@ if [ `ps aux | grep "dbus-daemon" | wc -l` -eq 1 ]; then
   echo "Launched new DBus instance"
   echo $DBUS_SESSION_BUS_ADDRESS
 else
+
   echo "DBus instance available"
+
   MID=`sed "s/\n//" /var/lib/dbus/machine-id`
   ME=`whoami`
-  source "/home/$ME/.dbus/session-bus/$MID-0"
+  
+  # use . instead of source in dash
+  . "/home/$ME/.dbus/session-bus/$MID-0"
+
+  echo "ls -l /home/$ME/.dbus/session-bus/"
+
   echo $DBUS_SESSION_BUS_ADDRESS
 fi
 
