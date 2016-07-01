@@ -35,7 +35,7 @@ else
   echo $DBUS_SESSION_BUS_ADDRESS
 fi
 
-export MAVEN_OPTS="-Djava.library.path=$DEPS -DDISPLAY=$DISPLAY"
+export MAVEN_OPTS="-Djava.library.path=$DEPS -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
