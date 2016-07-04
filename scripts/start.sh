@@ -25,16 +25,14 @@ else
   echo "Created new DISPLAY at $DISPLAY"
 fi
 
-
 MID=`sed "s/\n//" /var/lib/dbus/machine-id`
 ME=`whoami`
 
 . "/home/$ME/.dbus/session-bus/$MID-0"
 
-# if [ `ps aux | grep "dbus-daemon" | wc -l` -eq 1 ]; then
-if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+if [ `pgrep -U $(whoami) dbus-daemon && echo 1 || echo 0` -eq 1 ]; then
   export `dbus-launch`
-  echo "Launched new DBus instance"
+  echo "No DBus session instance running, launched new DBus instance"
   echo $DBUS_SESSION_BUS_ADDRESS
 else
   echo "Reusing available DBus instance"
