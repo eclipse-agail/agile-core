@@ -30,7 +30,7 @@ ME=`whoami`
 
 . "/home/$ME/.dbus/session-bus/$MID-0"
 
-if [ `pgrep -U $(whoami) dbus-daemon && echo 1 || echo 0` -eq 1 ]; then
+if [ `pgrep -U $(whoami) dbus-daemon >> /dev/null && echo 1 || echo 0` -eq 1 ]; then
   export `dbus-launch`
   echo "No DBus session instance running, launched new DBus instance"
   echo $DBUS_SESSION_BUS_ADDRESS
