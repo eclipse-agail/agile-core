@@ -62,7 +62,6 @@ else
 fi
 
 TOEXPORT="\n$TOEXPORT\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
-exit
 
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
   echo "!! Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
@@ -97,5 +96,5 @@ if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
 fi
 
 
-echo "Modules launched use this variables in the shell:\n"
+echo "Modules launched use this variables in the shell:"
 echo $TOEXPORT
