@@ -16,15 +16,17 @@ if [ "${MODULE}" = 'all' ]; then
   echo ""
 fi
 
+TOEXPORT=""
+
 if [ `xdpyinfo -display :0 >/dev/null 2>&1 && echo 1 || echo 0 ` -eq 1 ]; then
   export DISPLAY=:0
   echo ">> Using current DISPLAY at $DISPLAY"
-  echo "DISPLAY=$DISPLAY"
+  TOEXPORT="\n$TOEXPORT\nDISPLAY=$DISPLAY"
 else
   Xvfb :0 -screen 0 1x1x8 &
   export DISPLAY=:0
   echo "++ Created new DISPLAY"
-  echo "DISPLAY=$DISPLAY"
+  TOEXPORT="\n$TOEXPORT\nDISPLAY=$DISPLAY"
 fi
 
 ME=`whoami`
@@ -33,11 +35,11 @@ MID=`sed "s/\n//" /var/lib/dbus/machine-id`
 if [ `pgrep -U $ME dbus-daemon -c` -eq 0 ]; then
   export `dbus-launch`
   echo "++ Start new DBus session instance"
-  echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+  TOEXPORT="\n$TOEXPORT\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 else
   echo ">> Reusing available DBus instance"
   . "/home/$ME/.dbus/session-bus/$MID-0"
-  echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+  TOEXPORT="\n$TOEXPORT\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 fi
 
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
@@ -71,3 +73,7 @@ if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   echo "Started AGILE Device Manager"
   cd ..
 fi
+
+
+echo "Modules launched use this variables in the shell:\n"
+echo $TOEXPORT
