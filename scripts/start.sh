@@ -30,18 +30,39 @@ else
 fi
 
 ME=`whoami`
-MID=`sed "s/\n//" /var/lib/dbus/machine-id`
 
-if [ `pgrep -U $ME dbus-daemon -c` -gt 0 ]; then
-  echo "!! Killing current session bus instance"
-  kill `ps aux | grep dbus-daemon | grep session | awk '{print $2}'`
+if [ ! -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+  echo ">> DBUS_SESSION_BUS_ADDRESS available, reusing current instance"
+else
+
+  if [ `pgrep -U $ME dbus-daemon -c` -gt 0 ]; then
+
+    echo ">> DBus session available"
+
+    MID=`sed "s/\n//" /var/lib/dbus/machine-id`
+    DISPLAYID=`echo $DISPLAY | sed "s/://"`
+    SESSFILEPATH="/home/$ME/.dbus/session-bus/$MID-$DISPLAYID"
+
+    if [ -e $SESSFILEPATH ]; then
+      echo ">> Loading DBus session instance address from local file"
+      echo ">> Source: $SESSFILEPATH"
+      . "$SESSFILEPATH"
+    else
+      # echo "!! Killing current session bus instance"
+      # kill `ps aux | grep dbus-daemon | grep session | awk '{print $2}'`
+      echo "Cannot get Dbus session address. Panic!"
+    fi
+
+  else
+    export `dbus-launch`
+    sleep 2
+    echo "++ Started a new DBus session instance"
+  fi
+
 fi
 
-export `dbus-launch`
-echo "++ Start new DBus session instance"
 TOEXPORT="\n$TOEXPORT\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
-
-sleep 2
+exit
 
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
   echo "!! Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
