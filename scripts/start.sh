@@ -41,6 +41,8 @@ export `dbus-launch`
 echo "++ Start new DBus session instance"
 TOEXPORT="\n$TOEXPORT\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 
+sleep 2
+
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
   echo "!! Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
   exit 1
