@@ -32,15 +32,14 @@ fi
 ME=`whoami`
 MID=`sed "s/\n//" /var/lib/dbus/machine-id`
 
-if [ `pgrep -U $ME dbus-daemon -c` -eq 0 ]; then
-  export `dbus-launch`
-  echo "++ Start new DBus session instance"
-  TOEXPORT="\n$TOEXPORT\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
-else
-  echo ">> Reusing available DBus instance"
-  . "/home/$ME/.dbus/session-bus/$MID-0"
-  TOEXPORT="\n$TOEXPORT\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+if [ `pgrep -U $ME dbus-daemon -c` -gt 0 ]; then
+  echo "!! Killing current session bus instance"
+  kill `ps aux | grep dbus-daemon | grep session | awk '{print $2}'`
 fi
+
+export `dbus-launch`
+echo "++ Start new DBus session instance"
+TOEXPORT="\n$TOEXPORT\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
   echo "!! Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
