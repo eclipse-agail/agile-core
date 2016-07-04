@@ -3,12 +3,11 @@ package iot.agile.devicemanager.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.Device;
 
-public class TISensorTag extends DeviceImp implements   Device{
+public class TISensorTag extends DeviceImp implements Device {
 
 	/**
 	 * GATT service and characteristics for TI Sensor Tag temperature service
@@ -29,18 +28,9 @@ public class TISensorTag extends DeviceImp implements   Device{
 
 	private static final String TEMP_CONFIGURATION_GATT_CHARACTERSTICS_UUID = "f000aa02-0451-4000-b000-000000000000";
 
-	public TISensorTag(String deviceID, String deviceName, String protocol) throws DBusException {
+	public TISensorTag(String deviceID, String deviceName, String protocol) {
 		super(deviceID, deviceName, protocol);
-// 		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + deviceName.trim();
-//		connection = DBusConnection.getConnection(DBusConnection.SESSION);
-//		connection.requestBusName(deviceAgileID);
-//		connection.exportObject(devicePath, this);
 	}
-	
-	
-	
-	
-	
 
 	@Override
 	public String Read(String sensorName) {
@@ -52,13 +42,13 @@ public class TISensorTag extends DeviceImp implements   Device{
 					 * Turn on the temperature service by writing One in the
 					 * configuration characteristics
 					 */
- 					try {
-						deviceProtocol.Write(deviceID, getTemperatureProfile());
-						return deviceProtocol.Read(deviceID, getTemperatureProfile());
+					try {
+				 
+					 deviceProtocol.Write(deviceID, getTemperatureProfile());
+					 return deviceProtocol.Read(deviceID,
+						 getTemperatureProfile());
 
-					} catch (DBusException e) {
-						logger.debug("dag: {}", sensorName);
-
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
@@ -75,13 +65,7 @@ public class TISensorTag extends DeviceImp implements   Device{
 			return "Protocol not supported: " + protocol;
 		}
 
-		return null;
-
-		// Should be two operation
-
-		// Write
-
-		// Read
+		return "TestValuenotNUll";
 
 	}
 

@@ -25,172 +25,170 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
-import iot.agile.devicemanager.device.DeviceImp;
 import iot.agile.devicemanager.device.TISensorTag;
 
 /**
  * @author dagi
  *
- * Agile Device manager implementation
+ *         Agile Device manager implementation
  *
  */
 public class DeviceManagerImp implements DeviceManager {
-  
-  protected final Logger logger = LoggerFactory.getLogger(DeviceManagerImp.class);
-  
-  /**
-   * Bus name for the device manager
-   */
-  private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_NAME = "iot.agile.DeviceManager";
-  /**
-   * Bus path for the device manager
-   */
-  private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
 
-  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device.";
+	protected final Logger logger = LoggerFactory.getLogger(DeviceManagerImp.class);
 
-  /**
-   * DBus connection to the device manager
-   */
-  protected final DBusConnection connection;
+	/**
+	 * Bus name for the device manager
+	 */
+	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_NAME = "iot.agile.DeviceManager";
+	/**
+	 * Bus path for the device manager
+	 */
+	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
 
-  /**
-   * registered devices
-   */
-  protected final Map<String, String> devices = new HashMap<String, String>();
+	private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device.";
 
-  public static void main(String[] args) throws DBusException {
-    DeviceManager deviceManager = new DeviceManagerImp();
-  }
+	/**
+	 * DBus connection to the device manager
+	 */
+	protected final DBusConnection connection;
 
-  public DeviceManagerImp() throws DBusException {
-    
-    connection = DBusConnection.getConnection(DBusConnection.SESSION);
-    
-    connection.requestBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
-    connection.exportObject(AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
+	/**
+	 * registered devices
+	 */
+	protected final Map<String, String> devices = new HashMap<String, String>();
 
-    // ensure DBus object is unregistered
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        try {
-          connection.releaseBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
-        } catch (DBusException ex) {
-          logger.error("Cannot release DBus name {}", AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, ex);
-        }
-      }
-    });
-    
-    
-    logger.debug("Started Device Manager");
-  }
+	public static void main(String[] args) throws DBusException {
+		DeviceManager deviceManager = new DeviceManagerImp();
+	}
 
-  /**
-   *
-   *
-   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Find()
-   */
-  @Override
-  public String Find() {
-    // TODO
-    return null;
-  }
+	public DeviceManagerImp() throws DBusException {
 
-  /**
-   *
-   *
-   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Create()
-   */
-  @Override
-  public String Create(String deviceID, String deviceName, String protocol) throws DBusException {
-	    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
-	    
-	    // check if it not registered or not connected
-	    Device device = new TISensorTag(deviceID, deviceName, protocol);
-	    if (!isRegistered(device.Id())) {
-	      devices.put(deviceID, device.Id());
-	    }
+		connection = DBusConnection.getConnection(DBusConnection.SESSION);
 
-	    return device.Id();
-  }
+		connection.requestBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
+		connection.exportObject(AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 
-  /**
-   *
-   *
-   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Read(java.lang.
-   * String)
-   */
-  @Override
-  public void Read(String id) {
-    logger.debug("DeviceManager.Read not implemented");
-  }
+		// ensure DBus object is unregistered
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				try {
+					connection.releaseBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
+				} catch (DBusException ex) {
+					logger.error("Cannot release DBus name {}", AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, ex);
+				}
+			}
+		});
 
-  /**
-   *
-   *
-   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Update(java.lang.
-   * String, java.lang.String)
-   */
-  @Override
-  public boolean Update(String id, String definition) {
-    logger.debug("DeviceManager.Update not implemented");
-    return false;
-  }
+		logger.debug("Started Device Manager");
+	}
 
-  /**
-   *
-   *
-   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#devices()
-   */
-  @Override
-  public Map<String, String> devices() {
-    return devices;
-  }
+	/**
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Find()
+	 */
+	@Override
+	public String Find() {
+		// TODO
+		return null;
+	}
 
-  /**
-   *
-   *
-   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Delete(java.lang.
-   * String, java.lang.String)
-   */
-  @Override
-  public void Delete(String id, String definition) {
-    logger.debug("DeviceManager.Delete not implemented");
-  }
+	/**
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Create()
+	 */
+	@Override
+	public String Create(String deviceID, String deviceName, String protocol) throws DBusException {
+		logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
 
-  /**
-   *
-   *
-   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Batch(java.lang.
-   * String, java.lang.String)
-   */
-  @Override
-  public boolean Batch(String operation, String arguments) {
-    logger.debug("DeviceManager.Batch not implemented");
-    return false;
-  }
+		// check if it not registered or not connected
+		Device device = new TISensorTag(deviceID, deviceName, protocol);
+		if (!isRegistered(device.Id())) {
+			devices.put(deviceID, device.Id());
+		}
 
-  /**
-   * (non-Javadoc)
-   *
-   * @see org.freedesktop.dbus.DBusInterface#isRemote()
-   */
-  @Override
-  public boolean isRemote() {
-     return false;
-  }
+		return device.Id();
+	}
 
-  // ====================Utility methods
-  @Override
-  public void DropBus() {
-    connection.disconnect();
-  }
+	/**
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Read(java.lang.
+	 *      String)
+	 */
+	@Override
+	public void Read(String id) {
+		logger.debug("DeviceManager.Read not implemented");
+	}
 
-  private boolean isRegistered(String deviceAgileID) {
-    if (devices.isEmpty()) {
-      return false;
-    }
-    return devices.containsKey(deviceAgileID);
-  }
+	/**
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Update(java.lang.
+	 *      String, java.lang.String)
+	 */
+	@Override
+	public boolean Update(String id, String definition) {
+		logger.debug("DeviceManager.Update not implemented");
+		return false;
+	}
+
+	/**
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.devicemanager.DeviceManager#devices()
+	 */
+	@Override
+	public Map<String, String> devices() {
+		return devices;
+	}
+
+	/**
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Delete(java.lang.
+	 *      String, java.lang.String)
+	 */
+	@Override
+	public void Delete(String id, String definition) {
+		logger.debug("DeviceManager.Delete not implemented");
+	}
+
+	/**
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Batch(java.lang.
+	 *      String, java.lang.String)
+	 */
+	@Override
+	public boolean Batch(String operation, String arguments) {
+		logger.debug("DeviceManager.Batch not implemented");
+		return false;
+	}
+
+	/**
+	 * (non-Javadoc)
+	 *
+	 * @see org.freedesktop.dbus.DBusInterface#isRemote()
+	 */
+	@Override
+	public boolean isRemote() {
+		return false;
+	}
+
+	// ====================Utility methods
+	@Override
+	public void DropBus() {
+		connection.disconnect();
+	}
+
+	private boolean isRegistered(String deviceAgileID) {
+		if (devices.isEmpty()) {
+			return false;
+		}
+		return devices.containsKey(deviceAgileID);
+	}
 
 }

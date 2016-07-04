@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,19 +131,33 @@ public class DeviceImp implements Device {
 	  * 
 	  * @throws DBusException
 	  */
-	public DeviceImp(String deviceID, String deviceName, String protocol) throws DBusException {
+	public DeviceImp(String deviceID, String deviceName, String protocol) {
 		this.deviceName = deviceName;
 		this.deviceID = deviceID;
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID + deviceName.trim();
 		this.protocol = protocol;
  		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + deviceName.trim();
- 		connection = DBusConnection.getConnection(DBusConnection.SESSION);
-		connection.requestBusName(deviceAgileID);
-		connection.exportObject(devicePath, this);
+ 		try {
+			connection = DBusConnection.getConnection(DBusConnection.SESSION);
+			connection.requestBusName(deviceAgileID);
+			connection.exportObject(devicePath, this);
+		} catch (DBusExecutionException e) {
+			logger.debug("The device is already registered {} {}", deviceAgileID, devicePath);
+		}catch (DBusException e){
+			logger.debug("The device is already registered {} {}", deviceAgileID, devicePath);
+			//e.printStackTrace();
+
+		}
+		
 		
 		if(protocol.equals(BLUETOOTH_LOW_ENERGY)){
-			deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH,
-						Protocol.class);
+			try {
+				deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH,
+							Protocol.class);
+			} catch (DBusException e) {
+				logger.debug("Protocol not found: {}", BLUETOOTH_LOW_ENERGY);
+				e.printStackTrace();
+			}
 		}
 		
 		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
@@ -278,10 +293,11 @@ public class DeviceImp implements Device {
 		if (protocol.equals(BLUETOOTH_LOW_ENERGY)&& deviceProtocol != null) {
 			if (sensorName.equals(TEMPERATURE)) {
 				if (deviceStatus.equals(CONNECTED)) {
-
 						try {
 							return deviceProtocol.Read(deviceID, getTemperatureProfile());
 						} catch (DBusException e) {
+							logger.error("Error on reading data:");
+
  							e.printStackTrace();
 						}
 

@@ -24,8 +24,8 @@ make tinyb >> /dev/null
 make install >> /dev/null
 
 cp java/tinyb.jar $DEPS
-# cp lib/*.so $DEPS
-# cp lib/*.so* $DEPS
+#cp lib/*.so $DEPS
+#cp lib/*.so* $DEPS
 
 rm -rf $BUILD
 

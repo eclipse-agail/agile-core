@@ -138,7 +138,6 @@ public class BLEProtocolImp implements Protocol {
 		});
 
 		logger.debug("BLE Protocol is running");
-
 	}
 
 	/**
@@ -227,7 +226,7 @@ public class BLEProtocolImp implements Protocol {
 	public void Discover() {
 		logger.debug("Started discovery of BLE devices");
 
-		Runnable task = () -> {
+		//Runnable task = () -> {
 
 			logger.debug("Checking for new devices");
 			bleManager.startDiscovery();
@@ -245,16 +244,16 @@ public class BLEProtocolImp implements Protocol {
 			if (newDevices > 0) {
 				logger.debug("Found {} new device(s)", newDevices);
 			}
-		};
+	//	};
 
-		ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
+		/*ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
 		try {
 			future.get(10, TimeUnit.SECONDS);
 		} catch (InterruptedException | ExecutionException | TimeoutException ex) {
 			logger.debug("Aborted execution scheduler: {}", ex.getMessage());
 		} finally {
 			logger.debug("Stopped BLE discovery");
-		}
+		}*/
 
 	}
 
@@ -283,7 +282,6 @@ public class BLEProtocolImp implements Protocol {
 	 */
 	public void Execute(String... executeParams) {
 		logger.debug("Protocol.Execute not implemented");
-
 	}
 
 	/**
@@ -327,6 +325,25 @@ public class BLEProtocolImp implements Protocol {
 					sensorConfig.writeValue(config);
 					Thread.sleep(1000);
 					sensorConfig.writeValue(config);
+					
+					
+					//??
+					byte[] tempRaw = sensorValue.readValue();
+					
+					/**
+					 * The temperature service returns the data in an encoded format
+					 * which can be found in the wiki. Convert the raw temperature
+					 * format to celsius and print it. Conversion for object
+					 * temperature depends on ambient according to wiki, but assume
+					 * result is good enough for our purposes without conversion.
+					 */
+					int objectTempRaw = (tempRaw[0] & 0xff) | (tempRaw[1] << 8);
+					int ambientTempRaw = (tempRaw[2] & 0xff) | (tempRaw[3] << 8);
+
+					float objectTempCelsius = convertCelsius(objectTempRaw);
+					float ambientTempCelsius = convertCelsius(ambientTempRaw);
+					lastRead = String.format(" Temp: Object = %fC, Ambient = %fC", objectTempCelsius, ambientTempCelsius);
+					return lastRead;
  				}
  			}
 
