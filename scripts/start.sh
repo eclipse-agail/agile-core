@@ -16,36 +16,37 @@ if [ "${MODULE}" = 'all' ]; then
   echo ""
 fi
 
-if [ `xdpyinfo -display :1 >/dev/null 2>&1 && echo 1 || echo 0 ` -eq 1 ]; then
-  export DISPLAY=:1
-  echo "Using current DISPLAY at $DISPLAY"
+if [ `xdpyinfo -display :0 >/dev/null 2>&1 && echo 1 || echo 0 ` -eq 1 ]; then
+  export DISPLAY=:0
+  echo ">> Using current DISPLAY at $DISPLAY"
+  echo "DISPLAY=$DISPLAY"
 else
-  Xvfb :1 -screen 0 1x1x8 &
-  export DISPLAY=:1
-  echo "Created new DISPLAY at $DISPLAY"
+  Xvfb :0 -screen 0 1x1x8 &
+  export DISPLAY=:0
+  echo "++ Created new DISPLAY"
+  echo "DISPLAY=$DISPLAY"
 fi
 
-MID=`sed "s/\n//" /var/lib/dbus/machine-id`
 ME=`whoami`
+MID=`sed "s/\n//" /var/lib/dbus/machine-id`
 
-. "/home/$ME/.dbus/session-bus/$MID-0"
-
-if [ `pgrep -U $(whoami) dbus-daemon >> /dev/null && echo 1 || echo 0` -eq 1 ]; then
+if [ `pgrep -U $ME dbus-daemon -c` -eq 0 ]; then
   export `dbus-launch`
-  echo "No DBus session instance running, launched new DBus instance"
-  echo $DBUS_SESSION_BUS_ADDRESS
+  echo "++ Start new DBus session instance"
+  echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 else
-  echo "Reusing available DBus instance"
-  echo $DBUS_SESSION_BUS_ADDRESS
+  echo ">> Reusing available DBus instance"
+  . "/home/$ME/.dbus/session-bus/$MID-0"
+  echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 fi
 
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
-  echo "Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
+  echo "!! Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
   exit 1
 fi
 
-export MAVEN_OPTS="-Djava.library.path=$DEPS -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib
+export MAVEN_OPTS="-Djava.library.path=$DEPS: -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib:/usr/lib:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/arm
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
