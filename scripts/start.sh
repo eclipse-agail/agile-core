@@ -21,12 +21,12 @@ TOEXPORT=""
 if [ `xdpyinfo -display :0 >/dev/null 2>&1 && echo 1 || echo 0 ` -eq 1 ]; then
   export DISPLAY=:0
   echo ">> Using current DISPLAY at $DISPLAY"
-  TOEXPORT="\n$TOEXPORT\nDISPLAY=$DISPLAY"
+  TOEXPORT="\n$TOEXPORT\nexport DISPLAY=$DISPLAY"
 else
   Xvfb :0 -screen 0 1x1x8 &
   export DISPLAY=:0
   echo "++ Created new DISPLAY"
-  TOEXPORT="\n$TOEXPORT\nDISPLAY=$DISPLAY"
+  TOEXPORT="\n$TOEXPORT\nexport DISPLAY=$DISPLAY"
 fi
 
 ME=`whoami`
