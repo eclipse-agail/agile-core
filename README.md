@@ -7,7 +7,7 @@ This repository contains the alpha version of the following AGILE components:
 Agile Bluetooth Low Energy
 ---
 
-Exposes the [iot.agile.Protocol](http://agile-iot.github.io/agile-api-spec/build/html/api.html#iot_agile_Protocol) interface
+Exposes the [iot.agile.Protocol](http://agile-iot.github.io/agile-api-spec/docs/html/api.html#iot_agile_Protocol) interface
 
 - DBus interface name **iot.agile.protocol.BLE**
 - DBus interface path **/iot/agile/protocol/BLE**
@@ -15,7 +15,7 @@ Exposes the [iot.agile.Protocol](http://agile-iot.github.io/agile-api-spec/build
 Agile Protocol Manager
 ---
 
-Exposes the [iot.agile.ProtocolManager](http://agile-iot.github.io/agile-api-spec/build/html/api.html#iot_agile_ProtocolManager) interface
+Exposes the [iot.agile.ProtocolManager](http://agile-iot.github.io/agile-api-spec/docs/html/api.html#iot_agile_ProtocolManager) interface
 
 - DBus interface name **iot.agile.ProtocolManager**
 - DBus interface path **/iot/agile/ProtocolManager**
@@ -28,7 +28,7 @@ file (i.e BLEDeviceDiscovery.java) to demonstrate the use of AGILE Protocol Mana
 AGILE Device Manager
 ---
 
-Exposes the [iot.agile.DeviceManager](http://agile-iot.github.io/agile-api-spec/build/html/api.html#iot_agile_DeviceManager) interface
+Exposes the [iot.agile.DeviceManager](http://agile-iot.github.io/agile-api-spec/docs/html/api.html#iot_agile_DeviceManager) interface
 
 - DBus interface name **iot.agile.DeviceManger**
 - DBus interface path **/iot/agile/DeviceManager**
@@ -39,7 +39,7 @@ Register BLE Device The package iot.agile.devicemanager.example contains an exam
 
 **Additional interfaces**
 
-- [iot.agile.Device](http://agile-iot.github.io/agile-api-spec/build/html/api.html#iot_agile_Device)
+- [iot.agile.Device](http://agile-iot.github.io/agile-api-spec/docs/html/api.html#iot_agile_Device)
   - DBus interface base name *iot.agile.device.[device name]*
   - DBus interface base path */iot/agile/Device/[device name]*
 
