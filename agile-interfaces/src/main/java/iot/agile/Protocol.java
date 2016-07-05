@@ -119,5 +119,4 @@ public interface Protocol extends DBusInterface {
    */
   public void Subscribe(String... subscribeParams);
 
-  public void DropBus();
 }

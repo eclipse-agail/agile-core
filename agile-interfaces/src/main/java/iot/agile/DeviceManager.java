@@ -20,8 +20,6 @@ import java.util.Map;
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-//import iot.agile.protocol.ble.device.utils.DeviceDescription;
-
 /**
  * AGILE Device Manager Interface
  * 
@@ -40,7 +38,6 @@ public interface DeviceManager extends DBusInterface {
 	@org.freedesktop.DBus.Description("Returns all registered devices")
 	public Map<String, String> devices();
 
-	//Methods
 	/**
 	 * search for devices based on specific criteria
 	 * 
@@ -92,7 +89,5 @@ public interface DeviceManager extends DBusInterface {
 	 */
 	@org.freedesktop.DBus.Description("Perform a batch operation")
 	public boolean Batch(String operation, String arguments);
-
-	public void DropBus();
 
 }

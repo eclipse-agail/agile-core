@@ -60,5 +60,4 @@ public interface ProtocolManager extends DBusInterface {
   @org.freedesktop.DBus.Description("Removes a protocol from the managed protocol list")
   public void Remove(String protocol);
 
-  public void DropBus();
 }

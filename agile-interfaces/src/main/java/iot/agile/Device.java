@@ -130,6 +130,4 @@ public interface Device extends DBusInterface {
 	 */
 	@org.freedesktop.DBus.Description("Enable subscription")
 	public void Subscribe();
-
-	public void DropBus();
 }
