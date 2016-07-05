@@ -22,7 +22,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
@@ -242,11 +243,11 @@ public class BLEProtocolImp implements Protocol {
 				logger.debug("Found {} new device(s)", newDevices);
 			}
 	};
+	ScheduledFuture<?> future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
 
-		ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
 		try {
 			future.get(10, TimeUnit.SECONDS);
-		} catch () {
+		} catch (InterruptedException | ExecutionException | TimeoutException ex) {
 			logger.debug("Aborted execution scheduler: {}", ex.getMessage());
 		} finally {
 			logger.debug("Stopped BLE discovery");

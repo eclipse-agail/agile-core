@@ -63,7 +63,7 @@ public class TISensorTag extends DeviceImp implements Device {
 			return "Protocol not supported: " + protocol;
 		}
 
-		return "TestValuenotNUll";
+		return null;
 
 	}
 

@@ -115,12 +115,7 @@ public class DeviceImp implements Device {
 	 */
 	protected  DBusConnection connection;
 
-	
-	
-	
-	
-	
-	 /**
+	/**
 	  * 
 	  * @param deviceID
 	  * 			the device address (MAC in BLE case)
@@ -144,9 +139,8 @@ public class DeviceImp implements Device {
 		} catch (DBusExecutionException e) {
 			logger.debug("The device is already registered {} {}", deviceAgileID, devicePath);
 		}catch (DBusException e){
-			logger.debug("The device is already registered {} {}", deviceAgileID, devicePath);
-			//e.printStackTrace();
-
+               logger.debug("Error during device registration");
+               e.printStackTrace();
 		}
 		
 		
@@ -326,14 +320,6 @@ public class DeviceImp implements Device {
 	public void Write() {
 		logger.debug("Device. Write not implemented");
 	}
-
-	
-	
-	
-	
-	
-	
-	
 	
 	/**
 	 * @return the deviceAgileID
@@ -376,7 +362,6 @@ public class DeviceImp implements Device {
 		profile.put(TEMP_GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
 		profile.put(TEMP_VALUE_GATT_CHARACTERSTICS, TEMP_VALUE_GATT_CHARACTERSTICS_UUID);
 		profile.put(TEMP_CONFIGURATION_GATT_CHARACTERSTICS, TEMP_CONFIGURATION_GATT_CHARACTERSTICS_UUID);
-
 		return profile;
 	}
 
