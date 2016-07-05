@@ -3,8 +3,6 @@ package iot.agile.devicemanager.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.freedesktop.dbus.exceptions.DBusException;
-
 import iot.agile.Device;
 
 public class TISensorTag extends DeviceImp implements Device {

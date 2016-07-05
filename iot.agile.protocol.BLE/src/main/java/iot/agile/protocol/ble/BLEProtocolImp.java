@@ -18,12 +18,10 @@ package iot.agile.protocol.ble;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -95,9 +93,8 @@ public class BLEProtocolImp implements Protocol {
 	private static final String SENSOR_NAME = "SensorName";
 
 	private static final String TEMPERATURE = "Temperature";
-	
-	private static final String WRITE_VALUE = "WriteValue";
 
+	private static final String WRITE_VALUE = "WriteValue";
 
 	private BluetoothGattCharacteristic sensorValue;
 
@@ -226,7 +223,7 @@ public class BLEProtocolImp implements Protocol {
 	public void Discover() {
 		logger.debug("Started discovery of BLE devices");
 
-		//Runnable task = () -> {
+		 Runnable task = () -> {
 
 			logger.debug("Checking for new devices");
 			bleManager.startDiscovery();
@@ -244,16 +241,16 @@ public class BLEProtocolImp implements Protocol {
 			if (newDevices > 0) {
 				logger.debug("Found {} new device(s)", newDevices);
 			}
-	//	};
+	};
 
-		/*ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
+		ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
 		try {
 			future.get(10, TimeUnit.SECONDS);
-		} catch (InterruptedException | ExecutionException | TimeoutException ex) {
+		} catch () {
 			logger.debug("Aborted execution scheduler: {}", ex.getMessage());
 		} finally {
 			logger.debug("Stopped BLE discovery");
-		}*/
+		}
 
 	}
 
@@ -307,8 +304,7 @@ public class BLEProtocolImp implements Protocol {
 					logger.error("The device does not have temperature service: {}", deviceAddress);
 					return "Temperature service not found";
 				} else {
-					sensorValue = getCharacteristic(sensorService,
-							profile.get(TEMP_VALUE_GATT_CHARACTERSTICS));
+					sensorValue = getCharacteristic(sensorService, profile.get(TEMP_VALUE_GATT_CHARACTERSTICS));
 					BluetoothGattCharacteristic sensorConfig = getCharacteristic(sensorService,
 							profile.get(TEMP_CONFIGURATION_GATT_CHARACTERSTICS));
 
@@ -325,27 +321,28 @@ public class BLEProtocolImp implements Protocol {
 					sensorConfig.writeValue(config);
 					Thread.sleep(1000);
 					sensorConfig.writeValue(config);
-					
-					
-					//??
+
+					// ??
 					byte[] tempRaw = sensorValue.readValue();
-					
+
 					/**
-					 * The temperature service returns the data in an encoded format
-					 * which can be found in the wiki. Convert the raw temperature
-					 * format to celsius and print it. Conversion for object
-					 * temperature depends on ambient according to wiki, but assume
-					 * result is good enough for our purposes without conversion.
+					 * The temperature service returns the data in an encoded
+					 * format which can be found in the wiki. Convert the raw
+					 * temperature format to celsius and print it. Conversion
+					 * for object temperature depends on ambient according to
+					 * wiki, but assume result is good enough for our purposes
+					 * without conversion.
 					 */
 					int objectTempRaw = (tempRaw[0] & 0xff) | (tempRaw[1] << 8);
 					int ambientTempRaw = (tempRaw[2] & 0xff) | (tempRaw[3] << 8);
 
 					float objectTempCelsius = convertCelsius(objectTempRaw);
 					float ambientTempCelsius = convertCelsius(ambientTempRaw);
-					lastRead = String.format(" Temp: Object = %fC, Ambient = %fC", objectTempCelsius, ambientTempCelsius);
+					lastRead = String.format(" Temp: Object = %fC, Ambient = %fC", objectTempCelsius,
+							ambientTempCelsius);
 					return lastRead;
- 				}
- 			}
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -377,7 +374,7 @@ public class BLEProtocolImp implements Protocol {
 				 * convert it to human readable format
 				 */
 				byte[] tempRaw = sensorValue.readValue();
-			
+
 				/**
 				 * The temperature service returns the data in an encoded format
 				 * which can be found in the wiki. Convert the raw temperature
@@ -393,7 +390,7 @@ public class BLEProtocolImp implements Protocol {
 				lastRead = String.format(" Temp: Object = %fC, Ambient = %fC", objectTempCelsius, ambientTempCelsius);
 				return lastRead;
 			}
-		}	catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			logger.error("InterruptedException occured", e);
 			throw new DBusException("Operation interrupted abnormally");
 		}
@@ -432,9 +429,6 @@ public class BLEProtocolImp implements Protocol {
 	/**
 	 * Disconnect the bus, and drop the Dbus interface
 	 */
-	public void DropBus() {
-		connection.disconnect();
-	}
 
 	void printDevice(BluetoothDevice device) {
 		logger.debug("Address = {}", device.getAddress());

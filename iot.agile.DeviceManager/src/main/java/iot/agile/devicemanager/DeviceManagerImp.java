@@ -63,9 +63,7 @@ public class DeviceManagerImp implements DeviceManager {
 	}
 
 	public DeviceManagerImp() throws DBusException {
-
 		connection = DBusConnection.getConnection(DBusConnection.SESSION);
-
 		connection.requestBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
 		connection.exportObject(AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 
@@ -90,7 +88,6 @@ public class DeviceManagerImp implements DeviceManager {
 	 */
 	@Override
 	public String Find() {
-		// TODO
 		return null;
 	}
 
@@ -179,11 +176,6 @@ public class DeviceManagerImp implements DeviceManager {
 	}
 
 	// ====================Utility methods
-	@Override
-	public void DropBus() {
-		connection.disconnect();
-	}
-
 	private boolean isRegistered(String deviceAgileID) {
 		if (devices.isEmpty()) {
 			return false;
