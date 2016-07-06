@@ -21,78 +21,79 @@ import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 //import iot.agile.protocol.ble.device.utils.DeviceDescription;
-
 /**
  * AGILE Device Manager Interface
- * 
+ *
  * @author dagi
- * 
- * 
+ *
+ *
  *
  */
-public interface DeviceManager extends DBusInterface {
+public interface DeviceManager extends AgileDbusInterface {
 
-	/**
-	 * Return all registered devices
-	 * 
-	 * @return
-	 */
-	@org.freedesktop.DBus.Description("Returns all registered devices")
-	public Map<String, String> devices();
+  public static String AGILE_INTERFACE = "iot.agile.DeviceManager";
 
-	//Methods
-	/**
-	 * search for devices based on specific criteria
-	 * 
-	 * @return
-	 */
-	@org.freedesktop.DBus.Description("Returns all registered devices")
-	public String Find();
+  /**
+   * Return all registered devices
+   *
+   * @return
+   */
+  @org.freedesktop.DBus.Description("Returns all registered devices")
+  public Map<String, String> devices();
 
-	/**
-	 * Creates devices
-	 */
-	@org.freedesktop.DBus.Description("Returns all registered devices")
-	public String Create(String deviceID, String deviceName, String protocol) throws DBusException;
+  //Methods
+  /**
+   * search for devices based on specific criteria
+   *
+   * @return
+   */
+  @org.freedesktop.DBus.Description("Returns all registered devices")
+  public String Find();
 
-	/**
-	 * Load a device definition by its ID
-	 * 
-	 * @param id
-	 */
-	@org.freedesktop.DBus.Description("Load a device definition by its ID")
-	public void Read(String id);
+  /**
+   * Creates devices
+   */
+  @org.freedesktop.DBus.Description("Returns all registered devices")
+  public String Create(String deviceID, String deviceName, String protocol) throws DBusException;
 
-	/**
-	 * UPdate a device definition by its ID
-	 * 
-	 * @param id
-	 * @param definition
-	 * @return
-	 */
-	@org.freedesktop.DBus.Description("UPdate a device definition by its ID")
-	public boolean Update(String id, String definition);
+  /**
+   * Load a device definition by its ID
+   *
+   * @param id
+   */
+  @org.freedesktop.DBus.Description("Load a device definition by its ID")
+  public void Read(String id);
 
-	/**
-	 * Delete a device definition by its ID. this will deactivate the Device
-	 * DBus object
-	 * 
-	 * @param id
-	 * @param definition
-	 */
-	@org.freedesktop.DBus.Description("Delete a device definition by its ID")
-	public void Delete(String id, String definition);
+  /**
+   * UPdate a device definition by its ID
+   *
+   * @param id
+   * @param definition
+   * @return
+   */
+  @org.freedesktop.DBus.Description("UPdate a device definition by its ID")
+  public boolean Update(String id, String definition);
 
-	/**
-	 * Perform a batch operation over a set of devices
-	 * 
-	 * @param operation
-	 * @param arguments
-	 * @return
-	 */
-	@org.freedesktop.DBus.Description("Perform a batch operation")
-	public boolean Batch(String operation, String arguments);
+  /**
+   * Delete a device definition by its ID. this will deactivate the Device DBus
+   * object
+   *
+   * @param id
+   * @param definition
+   */
+  @org.freedesktop.DBus.Description("Delete a device definition by its ID")
+  public void Delete(String id, String definition);
 
-	public void DropBus();
+  /**
+   * Perform a batch operation over a set of devices
+   *
+   * @param operation
+   * @param arguments
+   * @return
+   */
+  @org.freedesktop.DBus.Description("Perform a batch operation")
+  public boolean Batch(String operation, String arguments);
+
+  public void DropBus();
 
 }

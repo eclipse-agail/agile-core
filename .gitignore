@@ -4,3 +4,4 @@ deps
 .classpath
 .project
 .log
+/api.http/target/

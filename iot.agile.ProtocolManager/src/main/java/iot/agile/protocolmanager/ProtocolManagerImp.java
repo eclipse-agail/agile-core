@@ -67,10 +67,7 @@ public class ProtocolManagerImp implements ProtocolManager {
 
   public ProtocolManagerImp() throws DBusException {
 
-    connection = DBusConnection.getConnection(DBusConnection.SESSION);
-
-    connection.requestBusName(AGILE_PROTOCOL_MANAGER_BUS_NAME);
-    connection.exportObject(AGILE_PROTOCOL_MANAGER_BUS_PATH, this);
+    connection = dbusConnect();
 
     // ensure DBus object is unregistered
     Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -162,7 +159,7 @@ public class ProtocolManagerImp implements ProtocolManager {
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#DropBus()
    */
   public void DropBus() {
-    connection.disconnect();
+    
   }
 
   public void addDevice(String deviceId) {
@@ -187,6 +184,21 @@ public class ProtocolManagerImp implements ProtocolManager {
     if (protocols.contains(protocolId)) {
       protocols.remove(protocolId);
     }
+  }
+
+  @Override
+  public DBusConnection dbusConnect() throws DBusException {
+    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+
+    connection.requestBusName(AGILE_PROTOCOL_MANAGER_BUS_NAME);
+    connection.exportObject(AGILE_PROTOCOL_MANAGER_BUS_PATH, this);    
+    
+    return connection;
+  }
+
+  @Override
+  public void dbusDisconnect() {
+    connection.disconnect();
   }
 
 }

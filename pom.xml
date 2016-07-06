@@ -13,6 +13,7 @@
     <module>iot.agile.ProtocolManager</module>
     <module>iot.agile.protocol.BLE</module>
     <module>agile-interfaces</module>
+    <module>api.http</module>
   </modules>
 
   <properties>

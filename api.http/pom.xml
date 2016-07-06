@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>iot.agile</groupId>
+    <artifactId>dbus-api</artifactId>
+    <version>1.0</version>
+  </parent>
+  
+  <artifactId>http</artifactId>
+  <packaging>jar</packaging>
+  <name>HTTP API</name>
+
+  <properties>
+    <jersey.config.test.container.port>8080</jersey.config.test.container.port>
+    <jersey.version>8080</jersey.version>
+  </properties>    
+    
+  <dependencies>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>agile-interfaces</artifactId>
+      <version>${project.version}</version>
+    </dependency>    
+    
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-server</artifactId>
+      <version>2.23.1</version>
+    </dependency>
+    
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>9.3.10.v20160621</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>9.3.10.v20160621</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-server</artifactId>
+      <version>2.23.1</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet-core</artifactId>
+      <version>2.23.1</version>
+    </dependency>
+
+  </dependencies>
+            
+</project>

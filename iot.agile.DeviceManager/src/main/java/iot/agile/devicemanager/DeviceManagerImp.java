@@ -65,10 +65,7 @@ public class DeviceManagerImp implements DeviceManager {
 
   public DeviceManagerImp() throws DBusException {
     
-    connection = DBusConnection.getConnection(DBusConnection.SESSION);
-    
-    connection.requestBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
-    connection.exportObject(AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
+    connection = dbusConnect();
 
     // ensure DBus object is unregistered
     Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -191,6 +188,22 @@ public class DeviceManagerImp implements DeviceManager {
       return false;
     }
     return devices.containsKey(deviceAgileID);
+  }
+
+  @Override
+  public DBusConnection dbusConnect() throws DBusException {
+    
+    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+    
+    connection.requestBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
+    connection.exportObject(AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
+    
+    return connection;
+  }
+
+  @Override
+  public void dbusDisconnect() {
+    connection.disconnect();
   }
 
 }
