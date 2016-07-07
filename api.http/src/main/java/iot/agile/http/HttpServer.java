@@ -15,9 +15,12 @@
  */
 package iot.agile.http;
 
+import iot.agile.http.ws.MyEchoSocket;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
@@ -40,7 +43,24 @@ public class HttpServer {
     server = new Server(8080);
 
     ResourceConfig res = new AgileApplication();
+    
     ServletHolder servlet = new ServletHolder(new ServletContainer(res));
+    
+    // register WS handler
+    ServletContextHandler wsContext = new ServletContextHandler(server, "/*");
+    WebSocketHandler wsHandler = new WebSocketHandler()
+    {
+        @Override
+        public void configure(WebSocketServletFactory factory)
+        {
+            factory.register(MyEchoSocket.class);
+        }
+    };
+    
+    wsContext.setContextPath("/*");
+    wsContext.setHandler(wsHandler);
+    
+    // register HTTP API servlet
     ServletContextHandler context = new ServletContextHandler(server, "/*");
     context.addServlet(servlet, "/*");
 
