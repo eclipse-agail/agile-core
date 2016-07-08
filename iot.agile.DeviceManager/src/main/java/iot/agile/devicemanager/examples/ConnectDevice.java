@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
-import iot.agile.devicemanager.device.TISensorTag;
 
 /**
  * @author dagi
@@ -54,9 +53,9 @@ public class ConnectDevice {
 			Device sensorTag = (Device) connection.getRemoteObject(TISENSORTAG_AGILE_ID, TISENSORTAG_AGILE_BUS_PATH,
 					Device.class);
 			if (sensorTag.Connect()) {
-				logger.debug("Device Connected: {}", sensorTag.Name());
+				logger.info("Device Connected: {}", sensorTag.Name());
 			} else {
-				logger.debug("Falied to connect : {}", sensorTag.Name());
+				logger.info("Falied to connect : {}", sensorTag.Name());
 			}
 		} catch (DBusException e) {
 			e.printStackTrace();

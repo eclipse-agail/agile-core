@@ -51,11 +51,8 @@ public class BLEDiscovery {
 			// Get Agile protocol manger interfaces from DBbus
 			ProtocolManager protocolManager = connection.getRemoteObject(AGILE_PROTOCOL_MANAGER_BUS_NAME,
 					AGILE_PROTOCOL_MANAGER_BUS_PATH, ProtocolManager.class);
-			// Start device discovery
- 			protocolManager.Discover();
-			// Print discovered devices
+			protocolManager.Discover();
 			logger.info("Discovered devices");
-
 			for (String device : protocolManager.Devices()) {
 				logger.info(device);
 			}
@@ -66,5 +63,4 @@ public class BLEDiscovery {
 			logger.error("Error in discovering devices :", e);
 		}
 	}
-
 }

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
+import iot.agile.devicemanager.device.DeviceImp;
 import iot.agile.devicemanager.device.TISensorTag;
 
 /**
@@ -167,7 +168,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
   // ====================Utility methods
   @Override
   public void DropBus() {
-    dbusDisconnect();
+    connection.disconnect();
   }
 
   private boolean isRegistered(String deviceAgileID) {

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * AGILE Protocol Manager Implementation
  *
  */
-public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolManager {
+public class ProtocolManagerImp implements ProtocolManager {
 
   protected final Logger logger = LoggerFactory.getLogger(ProtocolManagerImp.class);
 
@@ -54,6 +54,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    * List of discovered devices from all the protocols
    */
   final private List<String> devices = new ArrayList<String>();
+
+  private final DBusConnection connection;
 
   public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
 

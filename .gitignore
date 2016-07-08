@@ -5,3 +5,5 @@ deps
 .project
 .log
 /api.http/target/
+.metadata/
+.recommenders
