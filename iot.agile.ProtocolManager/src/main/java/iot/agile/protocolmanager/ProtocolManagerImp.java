@@ -21,7 +21,6 @@ import iot.agile.ProtocolManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import org.slf4j.Logger;

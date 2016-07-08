@@ -43,9 +43,6 @@ public class HttpServer {
 
     server = new Server(8080);
 
-    ResourceConfig res = new AgileApplication();
-    
-    ServletHolder servlet = new ServletHolder(new ServletContainer(res));
     
     // register WS handler
     ServletContextHandler wsContext = new ServletContextHandler(server, "/*");
@@ -63,12 +60,13 @@ public class HttpServer {
     
     // register HTTP API servlet
     ServletContextHandler apiContext = new ServletContextHandler(server, "/*");
+    
+    ResourceConfig res = new AgileApplication();
+    ServletHolder servlet = new ServletHolder(new ServletContainer(res));
     apiContext.addServlet(servlet, "/api/*");
     
-    
     ServletHolder logbackServlet = new ServletHolder(new ViewStatusMessagesServlet());
-    ServletContextHandler logbackContext = new ServletContextHandler(server, "/*");
-    logbackContext.addServlet(logbackServlet, "/logs");
+    apiContext.addServlet(logbackServlet, "/logs");
     
     
     server.start();
