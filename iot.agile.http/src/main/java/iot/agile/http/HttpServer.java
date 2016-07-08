@@ -15,6 +15,7 @@
  */
 package iot.agile.http;
 
+import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import iot.agile.http.ws.MyEchoSocket;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -61,9 +62,15 @@ public class HttpServer {
     wsContext.setHandler(wsHandler);
     
     // register HTTP API servlet
-    ServletContextHandler context = new ServletContextHandler(server, "/*");
-    context.addServlet(servlet, "/api/*");
-
+    ServletContextHandler apiContext = new ServletContextHandler(server, "/*");
+    apiContext.addServlet(servlet, "/api/*");
+    
+    
+    ServletHolder logbackServlet = new ServletHolder(new ViewStatusMessagesServlet());
+    ServletContextHandler logbackContext = new ServletContextHandler(server, "/*");
+    logbackContext.addServlet(logbackServlet, "/logs");
+    
+    
     server.start();
   }
   

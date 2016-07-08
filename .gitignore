@@ -7,3 +7,4 @@ deps
 /api.http/target/
 .metadata/
 .recommenders
+/iot.agile.http/target/

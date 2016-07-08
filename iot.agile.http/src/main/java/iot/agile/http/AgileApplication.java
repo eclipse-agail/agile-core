@@ -15,6 +15,7 @@
  */
 package iot.agile.http;
 
+import iot.agile.http.exception.AgileExceptionMapper;
 import iot.agile.http.service.DbusClient;
 import javax.inject.Singleton;
 import javax.ws.rs.ApplicationPath;
@@ -28,16 +29,20 @@ import org.glassfish.jersey.server.ResourceConfig;
 @ApplicationPath("/")
 public class AgileApplication extends ResourceConfig {
 
+  protected class AgileBinder extends AbstractBinder {
+
+    @Override
+    protected void configure() {
+      bind(DbusClient.class).to(DbusClient.class)
+              .in(Singleton.class);
+    }
+  }
+
   public AgileApplication() {
-
-    register(new AbstractBinder() {
-      @Override
-      protected void configure() {
-        bind(DbusClient.class).to(DbusClient.class)
-          .in(Singleton.class);
-      }
-    });
-
+    
+    register(new AgileBinder());
+    register(new AgileExceptionMapper());
+    
     packages("iot.agile.http.resource;");
 
   }

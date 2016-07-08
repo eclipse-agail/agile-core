@@ -12,7 +12,7 @@ echo "DEPS dir $DEPS"
 
 if [ "${MODULE}" = 'all' ]; then
   echo ""
-  echo "To start a single module use:\n $0 DeviceManager|ProtocolManager|BLE"
+  echo "To start a single module use:\n $0 DeviceManager|ProtocolManager|BLE|http"
   echo ""
 fi
 
@@ -74,7 +74,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib:/usr/lib:/usr/lib/jvm/jd
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
   cd iot.agile.protocol.BLE
-  mvn -X -q exec:java &
+  mvn -q exec:java &
   echo "Started AGILE BLE protocol"
   cd ../
 fi
@@ -82,7 +82,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "protocolmanager"
   cd iot.agile.ProtocolManager
-  mvn -X -q exec:java &
+  mvn -q exec:java &
   echo "Started AGILE Protocol Manager"
   cd ..
 fi
@@ -90,8 +90,16 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "devicemanager"
   cd iot.agile.DeviceManager
-  mvn -X -q exec:java &
+  mvn -q exec:java &
   echo "Started AGILE Device Manager"
+  cd ..
+fi
+
+if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
+  ./scripts/stop.sh "http"
+  cd iot.agile.http
+  mvn -q exec:java &
+  echo "Started AGILE HTTP API"
   cd ..
 fi
 
