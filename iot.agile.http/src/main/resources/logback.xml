@@ -28,10 +28,14 @@
   </appender>
 
 
-  <root level="debug">
+<!--  <root level="debug">
     <appender-ref ref="STDOUT" />
-  </root>
+  </root>-->
 
+  <logger name="iot.agile.http" level="DEBUG">
+    <appender-ref ref="application_file" />     
+  </logger>
+  
   <logger name="application" level="INFO">
     <appender-ref ref="application_file" />     
   </logger>
