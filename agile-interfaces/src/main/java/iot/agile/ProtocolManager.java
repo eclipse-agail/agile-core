@@ -22,7 +22,7 @@ import org.freedesktop.dbus.DBusInterface;
 /**
  * @author dagi AGILE Protocol Manager Interface
  */
-public interface ProtocolManager extends AgileDbusInterface {
+public interface ProtocolManager extends DBusInterface {
   
   public static String AGILE_INTERFACE = "iot.agile.ProtocolManager";
   

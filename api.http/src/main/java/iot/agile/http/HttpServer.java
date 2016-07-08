@@ -57,12 +57,12 @@ public class HttpServer {
         }
     };
     
-    wsContext.setContextPath("/*");
+    wsContext.setContextPath("/ws/*");
     wsContext.setHandler(wsHandler);
     
     // register HTTP API servlet
     ServletContextHandler context = new ServletContextHandler(server, "/*");
-    context.addServlet(servlet, "/*");
+    context.addServlet(servlet, "/api/*");
 
     server.start();
   }

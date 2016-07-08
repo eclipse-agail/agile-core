@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.Protocol;
+import iot.agile.object.AbstractAgileObject;
 
 /**
  * @author dagi
@@ -32,7 +33,7 @@ import iot.agile.Protocol;
  * Agile Device implementation
  *
  */
-public class DeviceImp implements Device {
+public class DeviceImp extends AbstractAgileObject implements Device {
 
   protected final Logger logger = LoggerFactory.getLogger(DeviceImp.class);
 
@@ -109,10 +110,6 @@ public class DeviceImp implements Device {
    * The device protocol interface
    */
   protected Protocol deviceProtocol;
-  /**
-   * DBus connection
-   */
-  protected DBusConnection connection;
 
   protected String devicePath;
   
@@ -125,14 +122,16 @@ public class DeviceImp implements Device {
    * @throws DBusException
    */
   public DeviceImp(String deviceID, String deviceName, String protocol) throws DBusException {
+    
     this.deviceName = deviceName;
     this.deviceID = deviceID;
+    
     this.deviceAgileID = AGILE_DEVICE_BASE_ID + deviceName.trim();
     this.protocol = protocol;
     
     this.devicePath = AGILE_DEVICE_BASE_BUS_PATH + deviceName.trim();
     
-    connection = dbusConnect();
+    dbusConnect(deviceAgileID, devicePath, this);
 
     if (protocol.equals(BLUETOOTH_LOW_ENERGY)) {
       deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH,
@@ -153,6 +152,7 @@ public class DeviceImp implements Device {
    *
    * @see iot.agile.protocol.ble.device.Device#Id()
    */
+  @Override
   public String Id() {
     return deviceAgileID;
   }
@@ -160,6 +160,7 @@ public class DeviceImp implements Device {
   /**
    * returns the name of the device
    */
+  @Override
   public String Name() {
     return deviceName;
   }
@@ -167,6 +168,7 @@ public class DeviceImp implements Device {
   /**
    * returns the status of the device
    */
+  @Override
   public String Status() {
     return deviceStatus;
   }
@@ -174,6 +176,7 @@ public class DeviceImp implements Device {
   /**
    * Returns the configuration of the devices
    */
+  @Override
   public String Configuration() {
     logger.debug("Device. Subscribe not implemented");
     return null;
@@ -182,6 +185,7 @@ public class DeviceImp implements Device {
   /**
    * Returns the profile of the device
    */
+  @Override
   public String Profile() {
     logger.debug("Device. Subscribe not implemented");
     return null;
@@ -190,6 +194,7 @@ public class DeviceImp implements Device {
   /**
    * Returns the last update of value
    */
+  @Override
   public int LastUpdate() {
     logger.debug("Device. LastUpdate not implemented");
     return 0;
@@ -200,6 +205,7 @@ public class DeviceImp implements Device {
    *
    * @see iot.agile.protocol.ble.device.IDevice#Data()
    */
+  @Override
   public String Data() {
     logger.debug("Device. Data not implemented");
     return null;
@@ -210,6 +216,7 @@ public class DeviceImp implements Device {
    *
    * @see iot.agile.protocol.ble.device.IDevice#Protocol()
    */
+  @Override
   public String Protocol() {
     return protocol;
   }
@@ -217,6 +224,7 @@ public class DeviceImp implements Device {
   /*
 	 * @see iot.agile.devicemanager.device.Device#Connect()
    */
+  @Override
   public boolean Connect() {
     try {
       if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
@@ -230,7 +238,7 @@ public class DeviceImp implements Device {
       }
 
     } catch (DBusException e) {
-      e.printStackTrace();
+      logger.error("Error during BLE connection", e);
     }
 
     return false;
@@ -239,6 +247,7 @@ public class DeviceImp implements Device {
   /*
 	 * @see iot.agile.devicemanager.device.Device#Disconnect()
    */
+  @Override
   public boolean Disconnect() {
     if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
       if (deviceProtocol.Disconnect(deviceID)) {
@@ -268,6 +277,7 @@ public class DeviceImp implements Device {
    *
    *
    */
+  @Override
   public String Read(String sensorName) {
     if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
       if (sensorName.equals(TEMPERATURE)) {
@@ -276,7 +286,7 @@ public class DeviceImp implements Device {
           try {
             return deviceProtocol.Read(deviceID, getTemperatureProfile());
           } catch (DBusException e) {
-            e.printStackTrace();
+            logger.error("Error reading", e);
           }
 
         } else {
@@ -300,6 +310,7 @@ public class DeviceImp implements Device {
    *
    * @see iot.agile.protocol.ble.device.IDevice#Write()
    */
+  @Override
   public void Write() {
     logger.debug("Device. Write not implemented");
   }
@@ -316,6 +327,7 @@ public class DeviceImp implements Device {
    *
    * @see iot.agile.protocol.ble.device.IDevice#Subscribe()
    */
+  @Override
   public void Subscribe() {
     logger.debug("Device. Subscribe not implemented");
   }
@@ -325,6 +337,7 @@ public class DeviceImp implements Device {
    *
    * @see org.freedesktop.dbus.DBusInterface#isRemote()
    */
+  @Override
   public boolean isRemote() {
     return false;
   }
@@ -335,33 +348,18 @@ public class DeviceImp implements Device {
    *
    * @see iot.agile.protocol.ble.device.IDevice#DropBus()
    */
+  @Override
   public void DropBus() {
   }
 
   private Map<String, String> getTemperatureProfile() {
-    Map<String, String> profile = new HashMap<String, String>();
+    Map<String, String> profile = new HashMap();
     profile.put(SENSOR_NAME, TEMPERATURE);
     profile.put(TEMP_GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
     profile.put(TEMP_VALUE_GATT_CHARACTERSTICS, TEMP_VALUE_GATT_CHARACTERSTICS_UUID);
     profile.put(TEMP_CONFIGURATION_GATT_CHARACTERSTICS, TEMP_CONFIGURATION_GATT_CHARACTERSTICS_UUID);
 
     return profile;
-  }
-
-  @Override
-  public DBusConnection dbusConnect() throws DBusException {
-
-    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-
-    connection.requestBusName(deviceAgileID);
-    connection.exportObject(devicePath, this);
-
-    return connection;
-  }
-
-  @Override
-  public void dbusDisconnect() {
-    connection.disconnect();
   }
 
 }

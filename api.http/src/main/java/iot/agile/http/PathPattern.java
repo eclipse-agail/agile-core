@@ -15,13 +15,13 @@
  */
 package iot.agile.http;
 
-import iot.agile.AgileDbusInterface;
 import iot.agile.Device;
 import iot.agile.DeviceManager;
 import iot.agile.Protocol;
 import iot.agile.ProtocolManager;
 import java.util.HashMap;
 import java.util.Map;
+import org.freedesktop.dbus.DBusInterface;
 
 /**
  *
@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class PathPattern {
   
-  static public Map<String, Class<? extends AgileDbusInterface>> map = new HashMap();
+  static public Map<String, Class<? extends DBusInterface>> map = new HashMap();
   
   static public Class get(String path) {
     return get(path, "");

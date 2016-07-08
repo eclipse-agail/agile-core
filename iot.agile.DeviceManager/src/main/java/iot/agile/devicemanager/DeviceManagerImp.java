@@ -15,6 +15,7 @@
  */
 package iot.agile.devicemanager;
 
+import iot.agile.object.AbstractAgileObject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
-import iot.agile.devicemanager.device.DeviceImp;
 import iot.agile.devicemanager.device.TISensorTag;
 
 /**
@@ -34,7 +34,7 @@ import iot.agile.devicemanager.device.TISensorTag;
  * Agile Device manager implementation
  *
  */
-public class DeviceManagerImp implements DeviceManager {
+public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager {
   
   protected final Logger logger = LoggerFactory.getLogger(DeviceManagerImp.class);
   
@@ -50,11 +50,6 @@ public class DeviceManagerImp implements DeviceManager {
   private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device.";
 
   /**
-   * DBus connection to the device manager
-   */
-  protected final DBusConnection connection;
-
-  /**
    * registered devices
    */
   protected final Map<String, String> devices = new HashMap<String, String>();
@@ -64,20 +59,12 @@ public class DeviceManagerImp implements DeviceManager {
   }
 
   public DeviceManagerImp() throws DBusException {
-    
-    connection = dbusConnect();
-
-    // ensure DBus object is unregistered
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        try {
-          connection.releaseBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
-        } catch (DBusException ex) {
-          logger.error("Cannot release DBus name {}", AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, ex);
-        }
-      }
-    });
-    
+  
+    dbusConnect(
+      AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, 
+      AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, 
+      this
+    );
     
     logger.debug("Started Device Manager");
   }
@@ -180,7 +167,7 @@ public class DeviceManagerImp implements DeviceManager {
   // ====================Utility methods
   @Override
   public void DropBus() {
-    connection.disconnect();
+    dbusDisconnect();
   }
 
   private boolean isRegistered(String deviceAgileID) {
@@ -188,22 +175,6 @@ public class DeviceManagerImp implements DeviceManager {
       return false;
     }
     return devices.containsKey(deviceAgileID);
-  }
-
-  @Override
-  public DBusConnection dbusConnect() throws DBusException {
-    
-    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-    
-    connection.requestBusName(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME);
-    connection.exportObject(AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
-    
-    return connection;
-  }
-
-  @Override
-  public void dbusDisconnect() {
-    connection.disconnect();
   }
 
 }

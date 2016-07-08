@@ -29,7 +29,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
  *
  *
  */
-public interface DeviceManager extends AgileDbusInterface {
+public interface DeviceManager extends DBusInterface {
 
   public static String AGILE_INTERFACE = "iot.agile.DeviceManager";
 

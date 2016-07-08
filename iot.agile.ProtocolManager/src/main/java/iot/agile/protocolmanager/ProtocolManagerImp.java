@@ -15,6 +15,7 @@
  */
 package iot.agile.protocolmanager;
 
+import iot.agile.object.AbstractAgileObject;
 import iot.agile.Protocol;
 import iot.agile.ProtocolManager;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * AGILE Protocol Manager Implementation
  *
  */
-public class ProtocolManagerImp implements ProtocolManager {
+public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolManager {
 
   protected final Logger logger = LoggerFactory.getLogger(ProtocolManagerImp.class);
 
@@ -54,8 +55,6 @@ public class ProtocolManagerImp implements ProtocolManager {
    */
   final private List<String> devices = new ArrayList<String>();
 
-  private final DBusConnection connection;
-
   public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
 
   public static void main(String[] args) throws DBusException {
@@ -67,18 +66,11 @@ public class ProtocolManagerImp implements ProtocolManager {
 
   public ProtocolManagerImp() throws DBusException {
 
-    connection = dbusConnect();
-
-    // ensure DBus object is unregistered
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        try {
-          connection.releaseBusName(AGILE_PROTOCOL_MANAGER_BUS_NAME);
-        } catch (DBusException ex) {
-          logger.error("Cannot release DBus name {}", AGILE_PROTOCOL_MANAGER_BUS_NAME, ex);
-        }
-      }
-    });
+    dbusConnect(
+            AGILE_PROTOCOL_MANAGER_BUS_NAME,
+            AGILE_PROTOCOL_MANAGER_BUS_PATH,
+            this
+    );
 
     logger.debug("ProtocolManager is running");
   }
@@ -159,7 +151,7 @@ public class ProtocolManagerImp implements ProtocolManager {
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#DropBus()
    */
   public void DropBus() {
-    
+
   }
 
   public void addDevice(String deviceId) {
@@ -184,21 +176,6 @@ public class ProtocolManagerImp implements ProtocolManager {
     if (protocols.contains(protocolId)) {
       protocols.remove(protocolId);
     }
-  }
-
-  @Override
-  public DBusConnection dbusConnect() throws DBusException {
-    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-
-    connection.requestBusName(AGILE_PROTOCOL_MANAGER_BUS_NAME);
-    connection.exportObject(AGILE_PROTOCOL_MANAGER_BUS_PATH, this);    
-    
-    return connection;
-  }
-
-  @Override
-  public void dbusDisconnect() {
-    connection.disconnect();
   }
 
 }

@@ -15,13 +15,15 @@
  */
 package iot.agile;
 
+import org.freedesktop.dbus.DBusInterface;
+
 /**
  * @author dagi
  *
  * Agile Device Interface
  *
  */
-public interface Device extends AgileDbusInterface {
+public interface Device extends DBusInterface {
   
   public static String AGILE_INTERFACE = "iot.agile.device";
   

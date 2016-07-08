@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Protocol;
+import iot.agile.object.AbstractAgileObject;
 import tinyb.BluetoothDevice;
 import tinyb.BluetoothException;
 import tinyb.BluetoothGattCharacteristic;
@@ -43,11 +44,10 @@ import tinyb.BluetoothManager;
  * @author dagi
  *
  */
-public class BLEProtocolImp implements Protocol {
+public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 
   protected final Logger logger = LoggerFactory.getLogger(BLEProtocolImp.class);
 
-  private final DBusConnection connection;
 
   /**
    * Bus name for AGILE BLE Protocol
@@ -104,19 +104,6 @@ public class BLEProtocolImp implements Protocol {
 
   protected final State state = new State();
 
-  @Override
-  public DBusConnection dbusConnect() throws DBusException {
-    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-    connection.requestBusName(AGILE_BLUETOOTH_BUS_NAME);
-    connection.exportObject(AGILE_BLUETOOTH_BUS_PATH, this);
-    return connection;
-  }
-
-  @Override
-  public void dbusDisconnect() {
-    connection.disconnect();
-  }
-
   public class State {
 
     public boolean isDiscovering = false;
@@ -128,7 +115,7 @@ public class BLEProtocolImp implements Protocol {
 
   public BLEProtocolImp() throws DBusException {
     
-    connection = dbusConnect();
+    dbusConnect(AGILE_BLUETOOTH_BUS_NAME, AGILE_BLUETOOTH_BUS_PATH, this);
 
     try {
       bleManager = BluetoothManager.getBluetoothManager();
@@ -343,7 +330,7 @@ public class BLEProtocolImp implements Protocol {
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Error on write", e);
     }
 
     return "Done";
@@ -355,6 +342,7 @@ public class BLEProtocolImp implements Protocol {
    * @param profile
    * @see iot.agile.protocol.ble.Protocol#read()
    */
+  @Override
   public String Read(String deviceAddress, Map<String, String> profile) throws DBusException {
     BluetoothDevice device;
     try {
@@ -427,8 +415,9 @@ public class BLEProtocolImp implements Protocol {
   /**
    * Disconnect the bus, and drop the Dbus interface
    */
+  @Override
   public void DropBus() {
-    connection.disconnect();
+    dbusDisconnect();
   }
 
   void printDevice(BluetoothDevice device) {
@@ -450,7 +439,7 @@ public class BLEProtocolImp implements Protocol {
 
   @Override
   public void finalize() {
-    connection.disconnect();
+    dbusDisconnect();
   }
 
   /**

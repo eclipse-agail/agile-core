@@ -15,20 +15,18 @@
  */
 package iot.agile.http.service;
 
-import iot.agile.AgileDbusInterface;
 import iot.agile.Device;
 import iot.agile.DeviceManager;
 import iot.agile.Protocol;
 import iot.agile.ProtocolManager;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.glassfish.hk2.api.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import iot.agile.object.AgileObjectInterface;
 
 /**
  *
@@ -38,15 +36,15 @@ public class DbusClient {
 
   protected Logger logger = LoggerFactory.getLogger(DbusClient.class);
 
-  private ConcurrentMap<String, DBusInterface> instances;
+  private ConcurrentMap<String, DBusInterface> instances = new ConcurrentHashMap();
 
-  final protected DBusConnection connection;
+  DBusConnection connection;
 
   public DbusClient() throws DBusException {
-    connection = DBusConnection.getConnection(DBusConnection.SESSION);
+    connection = DBusConnection.getConnection(AgileObjectInterface.DEFAULT_DBUS_CONNECTION);
   }
 
-  protected DBusInterface getObject(String objectInterface, String objectPath, Class<? extends AgileDbusInterface> clazz) throws DBusException {
+  protected DBusInterface getObject(String objectInterface, String objectPath, Class<? extends DBusInterface> clazz) throws DBusException {
     
     String key = objectInterface + ":" + objectPath;
     if(instances.containsKey(key)) {

@@ -27,7 +27,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
  * @author dagi
  *
  */
-public interface Protocol extends AgileDbusInterface {
+public interface Protocol extends DBusInterface {
 
   public static String AGILE_INTERFACE = "iot.agile.protocol";
   
