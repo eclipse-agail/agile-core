@@ -8,3 +8,5 @@ deps
 .metadata/
 .recommenders
 /iot.agile.http/target/
+*/*.log
+*.log
