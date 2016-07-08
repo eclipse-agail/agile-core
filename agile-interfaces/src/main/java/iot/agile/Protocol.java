@@ -30,7 +30,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 public interface Protocol extends DBusInterface {
 
   public static String AGILE_INTERFACE = "iot.agile.protocol";
-  
+
   /**
    * TODO: Return device status
    */

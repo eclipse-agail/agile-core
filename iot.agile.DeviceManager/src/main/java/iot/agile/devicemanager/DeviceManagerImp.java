@@ -36,9 +36,9 @@ import iot.agile.devicemanager.device.TISensorTag;
  *
  */
 public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager {
-  
+
   protected final Logger logger = LoggerFactory.getLogger(DeviceManagerImp.class);
-  
+
   /**
    * Bus name for the device manager
    */
@@ -60,13 +60,13 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
   }
 
   public DeviceManagerImp() throws DBusException {
-  
+
     dbusConnect(
-      AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, 
-      AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, 
-      this
+            AGILE_DEVICEMANAGER_MANAGER_BUS_NAME,
+            AGILE_DEVICEMANAGER_MANAGER_BUS_PATH,
+            this
     );
-    
+
     logger.debug("Started Device Manager");
   }
 
@@ -88,15 +88,15 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    */
   @Override
   public String Create(String deviceID, String deviceName, String protocol) throws DBusException {
-	    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
-	    
-	    // check if it not registered or not connected
-	    Device device = new TISensorTag(deviceID, deviceName, protocol);
-	    if (!isRegistered(device.Id())) {
-	      devices.put(deviceID, device.Id());
-	    }
+    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
 
-	    return device.Id();
+    // check if it not registered or not connected
+    Device device = new TISensorTag(deviceID, deviceName, protocol);
+    if (!isRegistered(device.Id())) {
+      devices.put(deviceID, device.Id());
+    }
+
+    return device.Id();
   }
 
   /**
@@ -162,13 +162,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    */
   @Override
   public boolean isRemote() {
-     return false;
-  }
-
-  // ====================Utility methods
-  @Override
-  public void DropBus() {
-    connection.disconnect();
+    return false;
   }
 
   private boolean isRegistered(String deviceAgileID) {

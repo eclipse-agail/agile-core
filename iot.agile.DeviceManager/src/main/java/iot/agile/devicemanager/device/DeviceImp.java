@@ -33,7 +33,7 @@ import iot.agile.object.AbstractAgileObject;
  *         Agile Device implementation
  *
  */
-public class DeviceImp implements Device {
+public class DeviceImp extends AbstractAgileObject implements Device {
 
 	protected final Logger logger = LoggerFactory.getLogger(DeviceImp.class);
 
@@ -110,14 +110,6 @@ public class DeviceImp implements Device {
 	 * The device protocol interface
 	 */
 	protected Protocol  deviceProtocol;
-	/**
-	 * DBus connection
-	 */
-	protected  DBusConnection connection;
-
-	
-	
-	
 	
 	
 	 /**
@@ -137,10 +129,9 @@ public class DeviceImp implements Device {
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID + deviceName.trim();
 		this.protocol = protocol;
  		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + deviceName.trim();
- 		connection = DBusConnection.getConnection(DBusConnection.SESSION);
-		connection.requestBusName(deviceAgileID);
-		connection.exportObject(devicePath, this);
-		
+                
+                dbusConnect(deviceAgileID, devicePath, this);
+                
 		if(protocol.equals(BLUETOOTH_LOW_ENERGY)){
 			deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH,
 						Protocol.class);
