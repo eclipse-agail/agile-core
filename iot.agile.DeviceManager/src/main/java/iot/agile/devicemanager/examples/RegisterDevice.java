@@ -38,26 +38,64 @@ public class RegisterDevice {
 	 * DBus interface path for the device manager
 	 */
 	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
-	
-	private static final String TI_SENSORTAG_MAC_ADDRESS = "78:C5:E5:6E:E4:CF";
+
+	private static String deviceMACAddress = "78:C5:E5:6E:E4:CF";
+
+	private static String deviceName = "TISensorTag";
 
 	public static void main(String[] args) {
+		if (args.length == 1) {
+			if (isValidMACAddress(args[0])) {
+				deviceMACAddress = args[0];
+			} else {
+				logger.info("Invalid MAC Address, Using default value for TI-SensorTag:" + deviceMACAddress);
+			}
+		} else if (args.length == 2) {
+			if (isValidMACAddress(args[0])) {
+				deviceMACAddress = args[0];
+			} else {
+				logger.info("Invalid MAC Address, Using default value for TI-SensorTag:" + deviceMACAddress);
+			}
+			if (isValidDeviceName(args[1])) {
+				deviceName = args[1];
+			} else {
+				logger.info("Invalid device name, Using default value:" + deviceName);
+			}
+		} else {
+			logger.info("Invalid argument size, Using default values");
+		}
 		// DBus connection
 		try {
-			//Get the device manager DBus interface
+			// Get the device manager DBus interface
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 			DeviceManager deviceManager = (DeviceManager) connection.getRemoteObject(
 					AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
-			//Register device
-			String deviceAgileID = deviceManager.Create(TI_SENSORTAG_MAC_ADDRESS, "TISensorTag", "BLE");
-			logger.info(deviceManager.devices().get(TI_SENSORTAG_MAC_ADDRESS));
-			logger.info("Device ID: {}" ,deviceAgileID);
-  
-		}  catch (ServiceUnknown e) {
-			logger.error("Can not find the DBus object : {}" ,AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, e);
-		}catch (DBusException e) {
+			// Register device
+			String deviceAgileID = deviceManager.Create(deviceMACAddress, deviceName, "BLE");
+			logger.info(deviceManager.devices().get(deviceMACAddress));
+			logger.info("Device ID: {}", deviceAgileID);
+
+		} catch (ServiceUnknown e) {
+			logger.error("Can not find the DBus object : {}", AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, e);
+		} catch (DBusException e) {
 			logger.error("Error in registering device :", e);
-  		}
+		}
 	}
 
+	private static boolean isValidMACAddress(String address) {
+		if (address.trim().length() == 12) {
+			if (address.split(":").length == 6) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isValidDeviceName(String deviceName) {
+		if ((deviceName != null) && (deviceName.trim().length() != 0)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

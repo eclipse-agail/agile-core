@@ -16,15 +16,15 @@ import org.freedesktop.dbus.exceptions.DBusException;
 abstract public class AbstractAgileObject implements AgileObjectInterface {
 
   protected DBusConnection connection;
-  
+
   @Override
   public void dbusConnect(final String busName, final String busPath, DBusInterface iface) throws DBusException {
-    
+
     connection = DBusConnection.getConnection(AgileObjectInterface.DEFAULT_DBUS_CONNECTION);
-    
+
     connection.requestBusName(busName);
     connection.exportObject(busPath, iface);
-    
+
     // ensure DBus object is unregistered
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
@@ -35,14 +35,12 @@ abstract public class AbstractAgileObject implements AgileObjectInterface {
         }
       }
     });
-    
-    
+
   }
 
   @Override
   public void dbusDisconnect() {
     connection.disconnect();
   }
-  
-  
+
 }

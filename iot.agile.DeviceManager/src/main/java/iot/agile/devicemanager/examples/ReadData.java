@@ -25,11 +25,13 @@ import iot.agile.Device;
 /**
  * @author dagi
  * 
- * This program demonstrates how client programs read data from a BLE Device through DBus, this example specifically shows how to read temperature value
- *  from TI Sensor Tag 
+ *         This program demonstrates how client programs read data from a BLE
+ *         Device through DBus, this example specifically shows how to read
+ *         temperature value from TI Sensor Tag
  * 
- * NOTE: A device should be discovered, registered and connected before reading data
- *    
+ *         NOTE: A device should be discovered, registered and connected before
+ *         reading data
+ * 
  *
  */
 public class ReadData {
@@ -38,31 +40,52 @@ public class ReadData {
 	/**
 	 * Bus name for AGILE BLE Device interface
 	 */
-	private static final String TI_SENSORTAG_AGILE_ID = "iot.agile.device.TISensorTag";
+	private static String deviceAgileID = "iot.agile.device.TISensorTag";
 
 	/**
 	 * Bus path for AGILE BLE Device interface
 	 */
-	private static final String TI_SENSORTAG_AGILE_BUS_PATH = "/iot/agile/Device/TISensorTag";
+	private static String deviceAgileBusPath = "/iot/agile/Device/TISensorTag";
 	/**
 	 * Sensor name
 	 */
-	private static final String TEMPERATURE = "Temperature";
+	private static String service = "Temperature";
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		if (args.length == 2) {
+			if (isValidDeviceID(args[0])) {
+				deviceAgileID = args[0];
+				deviceAgileBusPath = "/iot/agile/Device/" + args[0].split(".")[3];
+			} else {
+				logger.info("Invalid device ID, Using default value for TI-Sensor Tag:"+deviceAgileID);
+			}
+			service = args[1];
+		} else {
+			logger.info("Invalid argument size, Using default values");
+		}
+
 		try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			Device sensorTag = (Device) connection.getRemoteObject(TI_SENSORTAG_AGILE_ID, TI_SENSORTAG_AGILE_BUS_PATH, Device.class);
- 			String currentTemp = sensorTag.Read(TEMPERATURE);
+			Device sensorTag = (Device) connection.getRemoteObject(deviceAgileID, deviceAgileBusPath, Device.class);
+			String currentTemp = sensorTag.Read(service);
 			logger.info("Temperature: {}", currentTemp);
 		} catch (DBusException e) {
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
+	private static boolean isValidDeviceID(String deviceID) {
+		String[] idParts = deviceID.split(".");
+		if (idParts.length == 4) {
+			if ((idParts[0].equals("iot")) && (idParts[2].equals("agile")) && (idParts[3].equals("device"))) {
+				return true;
+			}
+		}
+		return false;
+
+	}
 }

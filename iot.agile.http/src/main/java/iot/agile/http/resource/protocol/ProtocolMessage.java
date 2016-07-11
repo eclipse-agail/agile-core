@@ -15,8 +15,6 @@
  */
 package iot.agile.http.resource.protocol;
 
-import java.util.Map;
-
 /**
  *
  * @author Luca Capra <lcapra@create-net.org>

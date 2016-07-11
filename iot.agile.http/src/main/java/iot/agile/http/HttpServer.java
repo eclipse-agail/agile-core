@@ -40,7 +40,6 @@ public class HttpServer {
   }
   
   public void launch() throws InterruptedException, Exception {
-
     server = new Server(8080);
 
     
@@ -67,8 +66,6 @@ public class HttpServer {
     
     ServletHolder logbackServlet = new ServletHolder(new ViewStatusMessagesServlet());
     apiContext.addServlet(logbackServlet, "/logs");
-    
-    
     server.start();
   }
   
