@@ -15,16 +15,19 @@
  */
 package iot.agile.protocolmanager;
 
-import iot.agile.object.AbstractAgileObject;
-import iot.agile.Protocol;
-import iot.agile.ProtocolManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.freedesktop.DBus.Properties;
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import iot.agile.Protocol;
+import iot.agile.ProtocolManager;
+import iot.agile.object.AbstractAgileObject;
 
 /**
  * @author dagi
@@ -32,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * AGILE Protocol Manager Implementation
  *
  */
-public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolManager {
+public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolManager, Properties{
 
   protected final Logger logger = LoggerFactory.getLogger(ProtocolManagerImp.class);
 
@@ -46,15 +49,20 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
 
   /**
+   * BLE Protocol Agile ID
+   */
+  public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
+
+  /**
    * List of supported protocols
    */
   final private List<String> protocols = new ArrayList<String>();
+  
   /**
    * List of discovered devices from all the protocols
    */
   final private List<String> devices = new ArrayList<String>();
 
-  public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
 
   public static void main(String[] args) throws DBusException {
     ProtocolManager protocolManager = new ProtocolManagerImp();
@@ -64,7 +72,6 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   }
 
   public ProtocolManagerImp() throws DBusException {
-
     dbusConnect(
             AGILE_PROTOCOL_MANAGER_BUS_NAME,
             AGILE_PROTOCOL_MANAGER_BUS_PATH,
@@ -96,14 +103,12 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Discover()
    */
   public void Discover() {
-
-    logger.debug("Initialized discovery");
+    logger.debug("Initializing discovery");
 
     for (String protocol : protocols) {
-
       String objectPath = "/" + protocol.replace(".", "/");
       logger.debug("Discovery for protocol {} : {}", protocol, objectPath);
-
+     
       Protocol protocolInstance;
       try {
 
@@ -175,6 +180,24 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
     if (protocols.contains(protocolId)) {
       protocols.remove(protocolId);
     }
+  }
+
+  @Override
+  public <A> A Get(String arg0, String arg1) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Map<String, Variant> GetAll(String arg0) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public <A> void Set(String arg0, String arg1, A arg2) {
+    // TODO Auto-generated method stub
+    
   }
 
 }

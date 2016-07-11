@@ -32,35 +32,30 @@ import iot.agile.ProtocolManager;
  * 
  *
  */
-
 public class BLEDiscovery {
-	protected final static Logger logger = LoggerFactory.getLogger(BLEDiscovery.class);
+  protected final static Logger logger = LoggerFactory.getLogger(BLEDiscovery.class);
 
-	/**
-	 * DBus bus name for the protocol manager
-	 */
-	private static final String AGILE_PROTOCOL_MANAGER_BUS_NAME = "iot.agile.ProtocolManager";
-	/**
-	 * DBus bus path for the protocol manager
-	 */
-	private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
+  /**
+   * DBus bus name for the protocol manager
+   */
+  private static final String AGILE_PROTOCOL_MANAGER_BUS_NAME = "iot.agile.ProtocolManager";
+  /**
+   * DBus bus path for the protocol manager
+   */
+  private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
 
-	public static void main(String[] args) {
-		try {
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			// Get Agile protocol manger interfaces from DBbus
-			ProtocolManager protocolManager = connection.getRemoteObject(AGILE_PROTOCOL_MANAGER_BUS_NAME,
-					AGILE_PROTOCOL_MANAGER_BUS_PATH, ProtocolManager.class);
-			protocolManager.Discover();
-			logger.info("Discovered devices");
-			for (String device : protocolManager.Devices()) {
-				logger.info(device);
-			}
-
-		} catch (ServiceUnknown e) {
-			logger.error("Can not find the DBus object : {}", AGILE_PROTOCOL_MANAGER_BUS_PATH, e);
-		} catch (Exception e) {
-			logger.error("Error in discovering devices :", e);
-		}
-	}
+  public static void main(String[] args) {
+    try {
+      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+      // Get Agile protocol manger interfaces from DBbus
+      ProtocolManager protocolManager = connection.getRemoteObject(AGILE_PROTOCOL_MANAGER_BUS_NAME,
+          AGILE_PROTOCOL_MANAGER_BUS_PATH, ProtocolManager.class);
+      protocolManager.Discover();
+      logger.info("Discovering...");
+    } catch (ServiceUnknown e) {
+      logger.error("Can not find the DBus object : {}", AGILE_PROTOCOL_MANAGER_BUS_PATH, e);
+    } catch (Exception e) {
+      logger.error("Error in discovering devices :", e);
+    }
+  }
 }
