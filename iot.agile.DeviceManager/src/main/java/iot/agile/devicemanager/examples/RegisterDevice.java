@@ -39,12 +39,12 @@ public class RegisterDevice {
 	 */
 	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
 
-	private static String deviceMACAddress = "78:C5:E5:6E:E4:CF";
+	private static String deviceMACAddress = "C4:BE:84:70:69:09";
 
 	private static String deviceName = "TISensorTag";
 
 	public static void main(String[] args) {
-		if (args.length == 1) {
+ 		if (args.length == 1) {
 			if (isValidMACAddress(args[0])) {
 				deviceMACAddress = args[0];
 			} else {
@@ -83,12 +83,12 @@ public class RegisterDevice {
 	}
 
 	private static boolean isValidMACAddress(String address) {
-		if (address.trim().length() == 12) {
+		if (address.trim().toCharArray().length == 17) {
 			if (address.split(":").length == 6) {
 				return true;
 			}
 		}
-		return false;
+ 		return false;
 	}
 
 	private static boolean isValidDeviceName(String deviceName) {

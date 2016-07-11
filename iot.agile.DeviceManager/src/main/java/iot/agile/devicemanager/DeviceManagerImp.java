@@ -15,24 +15,22 @@
  */
 package iot.agile.devicemanager;
 
-import iot.agile.object.AbstractAgileObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
-import iot.agile.devicemanager.device.DeviceImp;
 import iot.agile.devicemanager.device.TISensorTag;
+import iot.agile.object.AbstractAgileObject;
 
 /**
  * @author dagi
  *
- * Agile Device manager implementation
+ *         Agile Device manager implementation
  *
  */
 public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager {
@@ -48,8 +46,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    */
   private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
 
-  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device.";
-
   /**
    * registered devices
    */
@@ -61,11 +57,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
   public DeviceManagerImp() throws DBusException {
 
-    dbusConnect(
-            AGILE_DEVICEMANAGER_MANAGER_BUS_NAME,
-            AGILE_DEVICEMANAGER_MANAGER_BUS_PATH,
-            this
-    );
+    dbusConnect(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 
     logger.debug("Started Device Manager");
   }
@@ -91,6 +83,8 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
     logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
 
     // check if it not registered or not connected
+    
+    //For demo purpose we create sensor tag device
     Device device = new TISensorTag(deviceID, deviceName, protocol);
     if (!isRegistered(device.Id())) {
       devices.put(deviceID, device.Id());
@@ -103,7 +97,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    *
    *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Read(java.lang.
-   * String)
+   *      String)
    */
   @Override
   public void Read(String id) {
@@ -114,7 +108,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    *
    *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Update(java.lang.
-   * String, java.lang.String)
+   *      String, java.lang.String)
    */
   @Override
   public boolean Update(String id, String definition) {
@@ -136,7 +130,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    *
    *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Delete(java.lang.
-   * String, java.lang.String)
+   *      String, java.lang.String)
    */
   @Override
   public void Delete(String id, String definition) {
@@ -147,7 +141,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    *
    *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Batch(java.lang.
-   * String, java.lang.String)
+   *      String, java.lang.String)
    */
   @Override
   public boolean Batch(String operation, String arguments) {
