@@ -11,9 +11,9 @@ ENV APATH /agile
 
 RUN mkdir -p $APATH
 
-COPY ./*agile* $APATH
-COPY ./scripts $APATH
-COPY ./pom.xml $APATH
+COPY ./*agile* $APATH/
+COPY ./scripts $APATH/
+COPY ./pom.xml $APATH/
 
 WORKDIR $APATH
 RUN ./scripts/install-deps.sh
