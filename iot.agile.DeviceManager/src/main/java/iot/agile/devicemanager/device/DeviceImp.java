@@ -15,10 +15,6 @@
  */
 package iot.agile.devicemanager.device;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,24 +65,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 * Device status TODO: Needs implementation Default : Disconnected
 	 */
 	protected static String deviceStatus = DISCONNECTED;
-	/**
-	 * GATT service and characteristics for TI Sensor Tag temperature service
-	 */
-	private static final String TEMPERATURE = "Temperature";
-
-	private static final String SENSOR_NAME = "SensorName";
-
-	private static final String TEMP_GATT_SERVICE = "TemperatureService";
-
-	private static final String TEMP_GATT_SERVICE_UUID = "f000aa00-0451-4000-b000-000000000000";
-
-	private static final String TEMP_VALUE_GATT_CHARACTERSTICS = "TemperatureValueCharacterstics";
-
-	private static final String TEMP_VALUE_GATT_CHARACTERSTICS_UUID = "f000aa01-0451-4000-b000-000000000000";
-
-	private static final String TEMP_CONFIGURATION_GATT_CHARACTERSTICS = "TemperatureConfigurationCharacterstics";
-
-	private static final String TEMP_CONFIGURATION_GATT_CHARACTERSTICS_UUID = "f000aa02-0451-4000-b000-000000000000";
+ 
 
 	/**
 	 * Agile specific device ID
@@ -268,30 +247,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    */
   @Override
   public String Read(String sensorName) {
-    if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
-      if (sensorName.equals(TEMPERATURE)) {
-        if (deviceStatus.equals(CONNECTED)) {
-
-          try {
-            return deviceProtocol.Read(deviceID, getTemperatureProfile());
-          } catch (DBusException e) {
-            logger.error("Error reading", e);
-          }
-
-        } else {
-          logger.debug("BLE Device not connected: {}", deviceName);
-          return "BLE Device not connected: " + deviceName;
-        }
-      } else {
-        logger.debug("Sensor not supported: {}", sensorName);
-        return "Sensor not supported: " + sensorName;
-      }
-    } else {
-      logger.debug("Protocol not supported:: {}", protocol);
-      return "Protocol not supported: " + protocol;
-    }
-
-		return null;
+  	return null;
 	}
 
 	
@@ -329,15 +285,6 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	public boolean isRemote() {
 		return false;
 	}
-
-  private Map<String, String> getTemperatureProfile() {
-    Map<String, String> profile = new HashMap();
-    profile.put(SENSOR_NAME, TEMPERATURE);
-    profile.put(TEMP_GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
-    profile.put(TEMP_VALUE_GATT_CHARACTERSTICS, TEMP_VALUE_GATT_CHARACTERSTICS_UUID);
-    profile.put(TEMP_CONFIGURATION_GATT_CHARACTERSTICS, TEMP_CONFIGURATION_GATT_CHARACTERSTICS_UUID);
-
-    return profile;
-  }
+ 
 
 }

@@ -226,9 +226,9 @@ public class BLEProtocolImp implements Protocol {
   @Override
   public void Discover() {
     logger.info("Started discovery of BLE devices");
-   
+
     BluetoothAdapter adapter = bleManager.getAdapters().get(0);
- 
+
     Runnable task = () -> {
 
       logger.debug("Checking for new devices");
@@ -239,7 +239,7 @@ public class BLEProtocolImp implements Protocol {
       for (BluetoothDevice device : list) {
         if (device.getRssi() != 0) {
           if (!deviceList.contains(device.getName())) {
-            deviceList.add(device.getName()+"..."+device.getAddress());
+            deviceList.add(device.getName() + "..." + device.getAddress());
             printDevice(device);
             newDevices++;
           }
@@ -310,9 +310,10 @@ public class BLEProtocolImp implements Protocol {
       } else if (profile.get(SENSOR_NAME).equals(TEMPERATURE)) {
         BluetoothGattService sensorService = getService(device, profile.get(TEMP_GATT_SERVICE));
         if (sensorService == null) {
-          logger.error("The device does not have temperature service: {}", deviceAddress);
+          logger.error("The device does not have {} service: {}", TEMPERATURE, deviceAddress);
           return "Temperature service not found";
         } else {
+
           sensorValue = getCharacteristic(sensorService, profile.get(TEMP_VALUE_GATT_CHARACTERSTICS));
           BluetoothGattCharacteristic sensorConfig = getCharacteristic(sensorService,
               profile.get(TEMP_CONFIGURATION_GATT_CHARACTERSTICS));
@@ -321,6 +322,7 @@ public class BLEProtocolImp implements Protocol {
             logger.error("Could not find the correct characterstics");
             return "Incorrect characterstics";
           }
+
           byte[] config = { 0x01 };
 
           /**
@@ -328,16 +330,16 @@ public class BLEProtocolImp implements Protocol {
            * Therefore, we make two consecutive write
            */
           sensorConfig.writeValue(config);
+
           Thread.sleep(1000);
           sensorConfig.writeValue(config);
+          return "Done";
         }
       }
-
     } catch (Exception e) {
       e.printStackTrace();
     }
-
-    return "Done";
+    return "Error on sensor config";
   }
 
   /**
@@ -383,8 +385,7 @@ public class BLEProtocolImp implements Protocol {
       logger.error("InterruptedException occured", e);
       throw new DBusException("Operation interrupted abnormally");
     }
-
-    return null;
+    return "not a value";
   }
 
   public void Receive(String args) throws DBusException {

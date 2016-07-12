@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
+import iot.agile.devicemanager.device.TISensorTag;
 
 /**
  * @author dagi
@@ -58,12 +59,17 @@ public class ReadData {
 		if (args.length == 2) {
 			if (isValidDeviceID(args[0])) {
 				deviceAgileID = args[0];
-				deviceAgileBusPath = "/iot/agile/Device/" + args[0].split(".")[3];
+				deviceAgileBusPath = "/iot/agile/Device/" + args[0].split("\\.")[3];
 			} else {
 				logger.info("Invalid device ID, Using default value for TI-Sensor Tag:"+deviceAgileID);
 			}
 			service = args[1];
-		} else {
+		}else if(args.length == 1){
+		  if(isValidDeviceID(args[0])){
+		    deviceAgileID = args[0];
+		    deviceAgileBusPath = "/iot/agile/Device/" + args[0].split("\\.")[3];
+		  }
+		}	else {
 			logger.info("Invalid argument size, Using default values");
 		}
 
@@ -78,14 +84,15 @@ public class ReadData {
 
 	}
 
-	private static boolean isValidDeviceID(String deviceID) {
-		String[] idParts = deviceID.split(".");
-		if (idParts.length == 4) {
-			if ((idParts[0].equals("iot")) && (idParts[2].equals("agile")) && (idParts[3].equals("device"))) {
-				return true;
-			}
-		}
-		return false;
+  private static boolean isValidDeviceID(String deviceID) {
+    String[] idParts = deviceID.split("\\.");
 
-	}
+    if (idParts.length == 4) {
+      if ((idParts[0].equals("iot")) && (idParts[1].equals("agile")) && (idParts[2].equals("device"))) {
+        return true;
+      }
+    }
+    return false;
+
+  }
 }
