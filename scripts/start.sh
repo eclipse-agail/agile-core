@@ -68,7 +68,7 @@ if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
   exit 1
 fi
 
-export MAVEN_OPTS="-Djava.library.path=$DEPS: -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+export MAVEN_OPTS="-Djava.library.path=$DEPS -DPORT=$PORT -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib:/usr/lib:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/arm
 
 mvn="mvn"
