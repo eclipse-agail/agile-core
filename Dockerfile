@@ -16,7 +16,7 @@ COPY ./scripts $APATH/
 COPY ./pom.xml $APATH/
 
 WORKDIR $APATH
-RUN ./scripts/install-deps.sh
+RUN $APATH/scripts/install-deps.sh $APATH
 
 ENV INITSYSTEM on
-CMD [ ./scripts/start.sh, $APATH ]
+CMD [ $APATH/scripts/start.sh, $APATH ]
