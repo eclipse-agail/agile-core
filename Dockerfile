@@ -1,11 +1,19 @@
 
-FROM sdhibit/rpi-raspbian
+FROM resin/raspberrypi2-debian
 
-RUN sudo apt-get install git
+# Add packages
+RUN \
+  apt-get -qq update  && apt-get -qq install -y \
+  git ca-certificates make cmake wget apt software-properties-common \
+  unzip cpp binutils maven
 
-RUN git clone https://github.com/Agile-IoT/Agile-BLE.git ./api
-RUN cd ./api
+RUN mkdir -p /agile
 
-RUN ./scripts/start.sh
+COPY ./agile* /
+COPY ./Agile* /
+COPY ./scripts /
 
-EXPOSE 8080
+RUN /scripts/install-deps.sh
+
+ENV INITSYSTEM on
+CMD [ /scripts/start.sh, / ]
