@@ -7,13 +7,16 @@ RUN \
   git ca-certificates make cmake wget apt software-properties-common \
   unzip cpp binutils maven
 
-RUN mkdir -p /agile
+ENV APATH /agile
 
-COPY ./agile* /
-COPY ./Agile* /
-COPY ./scripts /
+RUN mkdir -p $APATH
 
-RUN /scripts/install-deps.sh
+COPY ./*agile* $APATH
+COPY ./scripts $APATH
+COPY ./pom.xml $APATH
+
+WORKDIR $APATH
+RUN ./scripts/install-deps.sh
 
 ENV INITSYSTEM on
-CMD [ /scripts/start.sh, / ]
+CMD [ ./scripts/start.sh, $APATH ]
