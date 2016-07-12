@@ -1,11 +1,18 @@
 
-FROM resin/rpi-raspbian:wheezy-2015-01-15
+FROM resin/rpi-raspbian:jessie-20160706
 
-RUN sudo apt-get install git
+RUN mkdir -p /agile
 
-RUN git clone https://github.com/Agile-IoT/Agile-BLE.git ./api
-RUN cd ./api
+# Add packages
+RUN \
+  apt-get -qq update  && apt-get -qq install -y \
+  git ca-certificates make cmake wget apt software-properties-common \
+  unzip cpp binutils maven
 
-EXPOSE 8080
+COPY ./agile* /
+COPY ./Agile* /
+COPY ./scripts /
 
-CMD [./scripts/start.sh]
+RUN /scripts/install-deps.sh
+
+CMD [ /scripts/start.sh ]
