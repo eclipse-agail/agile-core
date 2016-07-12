@@ -40,8 +40,19 @@ public class HttpServer {
   }
   
   public void launch() throws InterruptedException, Exception {
+    
+    int port = this.port;
+    try{
+      String sport = System.getProperty("PORT");
+      if(sport != null)
+        port = new Integer(sport);
+    }
+    catch(Exception e) {
+      System.out.println("Cannot parse port");
+    }
+      
 
-    server = new Server(8080);
+    server = new Server(port);
 
     
     // register WS handler
