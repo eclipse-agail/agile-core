@@ -1,6 +1,5 @@
 #!/bin/sh
 
-apt install --no-install-recommends -y gettext git cmake Xvfb
 # needed for docs only
 # sudo apt install --no-install-recommends -y texlive-latex-base texlive-latex-extra tex4ht
 
