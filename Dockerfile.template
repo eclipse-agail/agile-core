@@ -1,13 +1,25 @@
 
-# FROM resin/raspberrypi2-debian
-FROM debian:jessie
+FROM resin/%%RESIN_MACHINE_NAME%%-raspbian:jessie
 
 # Add packages
-RUN \
-  apt-get -qq update  && apt-get -qq install --no-install-recommends -y \
-  git ca-certificates wget apt software-properties-common \
-  unzip cpp binutils maven gettext Xvfb \
-  gcc libc6-dev gcc gcc-c++ make cmake
+RUN apt-get clean && apt-get update && \
+    apt-get -qq install --no-install-recommends -y \
+    git ca-certificates \
+    wget \
+    apt \
+    software-properties-common \
+    unzip \
+    cpp \
+    binutils \
+    maven \
+    gettext \
+    Xvfb \
+    gcc \
+    libc6-dev \
+    gcc \
+    gcc-c++ \
+    make \
+    cmake
 
 RUN \
   echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list && \
