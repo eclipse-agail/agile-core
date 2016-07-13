@@ -1,5 +1,5 @@
 #!/bin/sh
-
+PORT=80
 MODULE=${1:-all}
 DEPS=`realpath ./deps`
 

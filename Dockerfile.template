@@ -4,7 +4,8 @@ FROM resin/%%RESIN_MACHINE_NAME%%-debian:jessie
 RUN apt-get clean && apt-get update && \
     apt-get -qq install --no-install-recommends -y \
     build-essential \
-    git ca-certificates \
+    git\
+    ca-certificates \
     wget \
     apt \
     software-properties-common \
@@ -16,7 +17,7 @@ RUN apt-get clean && apt-get update && \
     Xvfb \
     libc6-dev \
     make \
-    cmake
+    cmake \
 
 RUN \
   echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list && \
@@ -39,14 +40,12 @@ RUN mkdir -p $APATH
 
 WORKDIR $APATH
 
-COPY ./ ./
+COPY . ./agile
 
 RUN $APATH/scripts/install-dbus-java.sh $APATH/deps
 RUN $APATH/scripts/install-tinyb.sh $APATH/deps
 
-RUN \
-  cd $APATH && \
-  mvn clean install -U
+RUN cd $APATH && mvn clean install -U
 
 ENV INITSYSTEM on
-CMD [ PORT=80, $APATH/scripts/start.sh ]
+CMD [ "bash", "/agile/scripts/start.sh" ]
