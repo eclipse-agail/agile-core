@@ -19,6 +19,7 @@ package iot.agile.http.resource;
 import iot.agile.http.resource.devicemanager.BatchBody;
 import iot.agile.http.resource.devicemanager.CreateDeviceBody;
 import iot.agile.http.service.DbusClient;
+import iot.agile.object.DeviceDefinition;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -43,9 +44,9 @@ public class DeviceManager {
   @Inject DbusClient client;
   
   @POST
-  public String Create(CreateDeviceBody body) throws DBusException {
-    logger.debug("Create new device {} ({}) on {}", body.deviceID, body.deviceName, body.protocol);
-    return client.getDeviceManager().Create(body.deviceID, body.deviceName, body.protocol);
+  public String Create(DeviceDefinition body) throws DBusException {
+    logger.debug("Create new device {} ({}) on {}", body.id, body.name, body.protocol);
+    return client.getDeviceManager().Create(body);
   }
   
   @GET

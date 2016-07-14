@@ -10,3 +10,4 @@ deps
 /iot.agile.http/target/
 */*.log
 *.log
+/agile-main/target/
