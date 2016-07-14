@@ -30,7 +30,12 @@ RUN apt-get clean && apt-get update && \
     pkg-config \
     clang \
     gcc-4.9 \
-    g++-4.9
+    g++-4.9 \
+    libglib2.0-0 \
+    bluetooth \
+    bluez \
+    libbluetooth-dev \
+    libudev-dev
 
 # Install Java
 # with sources from https://launchpad.net/~webupd8team/+archive/ubuntu/java
