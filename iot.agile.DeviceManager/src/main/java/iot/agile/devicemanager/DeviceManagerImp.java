@@ -18,6 +18,7 @@ package iot.agile.devicemanager;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import iot.agile.object.DeviceDefinition;
 public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager{
 
   protected final Logger logger = LoggerFactory.getLogger(DeviceManagerImp.class);
+  
 
   /**
    * Bus name for the device manager
@@ -91,14 +93,20 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
       device = new TISensorTag(devicedefinition);
       if (!isRegistered(device.Id())) {
         devices.put(devicedefinition.id, device.Id());
+        device.Connect();
       }else{
+        device.Connect();
         return device.Id();
       }
-//      device.Connect();
+      
+      
+      
     } catch (DBusException e) {
-//      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+//  // TODO Auto-generated catch block
+  e.printStackTrace();
+}
+      
+ 
   
     
     return device.Id();

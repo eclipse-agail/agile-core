@@ -24,6 +24,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import iot.agile.Device;
 import iot.agile.DeviceManager;
 import iot.agile.object.DeviceComponet;
 import iot.agile.object.DeviceDefinition;
@@ -34,7 +35,8 @@ import iot.agile.object.DeviceDefinition;
  */
 public class RegisterDevice {
   protected final static Logger logger = LoggerFactory.getLogger(RegisterDevice.class);
-
+  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device";
+  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
   /**
    * DBus interface name for the device manager
    */
@@ -52,7 +54,7 @@ public class RegisterDevice {
 
   public static void main(String[] args) {
 
-    checkUserInput(args);
+//    checkUserInput(args);
     // DBus connection
     try {
       // Get the device manager DBus interface
@@ -63,8 +65,7 @@ public class RegisterDevice {
       // Register device
       String deviceAgileID = deviceManager
           .Create(new DeviceDefinition(deviceAddress, PROTOCOL_ID, "", "", getDeviceStreams()));
-      // logger.info(deviceManager.devices().get(deviceMACAddress));
-      logger.info("Device ID: {}", deviceAgileID);
+       logger.info("Device ID: {}", deviceAgileID);
 
     } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
       logger.debug("Unkown method");
@@ -74,6 +75,31 @@ public class RegisterDevice {
     } catch (DBusException e) {
       logger.error("Error in registering device :", e);
     }
+    
+    
+    //connect device
+    
+//    String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "BLE" + "/" + deviceAddress.replace(":", "");
+//
+//    try {
+//      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+//      Device sensorTag = (Device) connection.getRemoteObject(AGILE_DEVICE_BASE_ID, devicePath, Device.class);
+//      if (sensorTag.Connect()) {
+//        logger.info("Device Connected: {}", sensorTag.Name());
+//      } else {
+//        logger.info("Falied to connect : {}", sensorTag.Name());
+//      }
+//    } catch (DBusException e) {
+//      e.printStackTrace();
+//    }
+    
+    
+    
+    
+    
+    
+    
+    
   }
 
   // Utility methods

@@ -36,6 +36,8 @@ import iot.agile.devicemanager.device.TISensorTag;
  *
  */
 public class ReadData {
+  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device";
+  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
 	protected final static Logger logger = LoggerFactory.getLogger(ReadData.class);
 
 	/**
@@ -56,26 +58,27 @@ public class ReadData {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if (args.length == 2) {
-			if (isValidDeviceID(args[0])) {
-				deviceAgileID = args[0];
-				deviceAgileBusPath = "/iot/agile/Device/" + args[0].split("\\.")[3];
-			} else {
-				logger.info("Invalid device ID, Using default value for TI-Sensor Tag:"+deviceAgileID);
-			}
-			service = args[1];
-		}else if(args.length == 1){
-		  if(isValidDeviceID(args[0])){
-		    deviceAgileID = args[0];
-		    deviceAgileBusPath = "/iot/agile/Device/" + args[0].split("\\.")[3];
-		  }
-		}	else {
-			logger.info("Invalid argument size, Using default values");
-		}
+//		if (args.length == 2) {
+//			if (isValidDeviceID(args[0])) {
+//				deviceAgileID = args[0];
+//				deviceAgileBusPath = "/iot/agile/Device/" + args[0].split("\\.")[3];
+//			} else {
+//				logger.info("Invalid device ID, Using default value for TI-Sensor Tag:"+deviceAgileID);
+//			}
+//			service = args[1];
+//		}else if(args.length == 1){
+//		  if(isValidDeviceID(args[0])){
+//		    deviceAgileID = args[0];
+//		    deviceAgileBusPath = "/iot/agile/Device/" + args[0].split("\\.")[3];
+//		  }
+//		}	else {
+//			logger.info("Invalid argument size, Using default values");
+//		}
+	  String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "BLE" + "/" + "78:C5:E5:6E:E4:CF".replace(":", "");
 
 		try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			Device sensorTag = (Device) connection.getRemoteObject(deviceAgileID, deviceAgileBusPath, Device.class);
+			Device sensorTag = (Device) connection.getRemoteObject("iot.agile.device", devicePath, Device.class);
 			String currentTemp = sensorTag.Read(service);
 			logger.info("Temperature: {}", currentTemp);
 		} catch (DBusException e) {

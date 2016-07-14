@@ -34,7 +34,8 @@ import iot.agile.Device;
  *
  */
 public class ConnectDevice {
-
+  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device";
+  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
   protected final static Logger logger = LoggerFactory.getLogger(ConnectDevice.class);
 
   /**
@@ -59,10 +60,18 @@ public class ConnectDevice {
     } else {
       logger.info("Invalid argument size, Using default values");
     }
+    
+  String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "BLE" + "/" + "78:C5:E5:6E:E4:CF".replace(":", "");
+
 
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-      Device sensorTag = (Device) connection.getRemoteObject(deviceAgileID, deviceAgileBusPath, Device.class);
+      Device sensorTag = (Device) connection.getRemoteObject("iot.agile.device", "/iot/agile/Device/BLE/78C5E56EE4CF", Device.class);
+//      
+      System.out.println("dag");
+      System.out.println(sensorTag.Protocol());
+      System.out.println("dag");
+
       if (sensorTag.Connect()) {
         logger.info("Device Connected: {}", sensorTag.Name());
       } else {
