@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
-import iot.agile.devicemanager.device.TISensorTag;
 
 /**
  * @author dagi
@@ -36,49 +35,35 @@ import iot.agile.devicemanager.device.TISensorTag;
  *
  */
 public class ReadData {
-  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device";
-  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
-	protected final static Logger logger = LoggerFactory.getLogger(ReadData.class);
+  	protected final static Logger logger = LoggerFactory.getLogger(ReadData.class);
 
 	/**
 	 * Bus name for AGILE BLE Device interface
 	 */
-	private static String deviceAgileID = "iot.agile.device.BLE.C4BE84706909";
+	private static String agileDeviceObjName = "iot.agile.Device";
 
 	/**
 	 * Bus path for AGILE BLE Device interface
 	 */
-	private static String deviceAgileBusPath = "/iot/agile/device/BLE/C4BE84706909";
+	private static String agileDeviceObjectPath = "/iot/agile/device/ble/";
 	/**
 	 * Sensor name
 	 */
 	private static String service = "Temperature";
+	
+	private static String address ="78:C5:E5:6E:E4:CF";
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-//		if (args.length == 2) {
-//			if (isValidDeviceID(args[0])) {
-//				deviceAgileID = args[0];
-//				deviceAgileBusPath = "/iot/agile/Device/" + args[0].split("\\.")[3];
-//			} else {
-//				logger.info("Invalid device ID, Using default value for TI-Sensor Tag:"+deviceAgileID);
-//			}
-//			service = args[1];
-//		}else if(args.length == 1){
-//		  if(isValidDeviceID(args[0])){
-//		    deviceAgileID = args[0];
-//		    deviceAgileBusPath = "/iot/agile/Device/" + args[0].split("\\.")[3];
-//		  }
-//		}	else {
-//			logger.info("Invalid argument size, Using default values");
-//		}
-	  String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "BLE" + "/" + "78:C5:E5:6E:E4:CF".replace(":", "");
+	  checkInput(args);
 
+	  String devicePath = agileDeviceObjectPath + address.replace(":", "");
+	  logger.info("Reading {}", service);
 		try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			Device sensorTag = (Device) connection.getRemoteObject("iot.agile.device", devicePath, Device.class);
+			Device sensorTag = (Device) connection.getRemoteObject(agileDeviceObjName, devicePath, Device.class);
 			String currentTemp = sensorTag.Read(service);
 			logger.info("Temperature: {}", currentTemp);
 		} catch (DBusException e) {
@@ -87,15 +72,32 @@ public class ReadData {
 
 	}
 
-  private static boolean isValidDeviceID(String deviceID) {
-    String[] idParts = deviceID.split("\\.");
-
-    if (idParts.length == 4) {
-      if ((idParts[0].equals("iot")) && (idParts[1].equals("agile")) && (idParts[2].equals("device"))) {
-        return true;
-      }
-    }
-    return false;
-
-  }
+ 
+ private static void checkInput(String[] input){
+   if(input.length ==2){
+     service = input[0];
+     if(isValidMACAddress(input[1])){
+       address = input[1];
+     }else{
+       logger.error("invalid device address, using default sensor tag address: {}",address);
+     }
+   }else{
+     logger.error("Invalid input reading from default service {}", service);
+      
+   }
+ }
+ 
+ /**
+  * 
+  * @param address
+  * @return
+  */
+ private static boolean isValidMACAddress(String address) {
+   if (address.trim().toCharArray().length == 17) {
+     if (address.split(":").length == 6) {
+       return true;
+     }
+   }
+   return false;
+ }
 }
