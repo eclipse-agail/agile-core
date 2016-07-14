@@ -36,7 +36,7 @@ cd $DEPS
 mvn install:install-file -Dfile=$DEPS/tinyb.jar \
                          -DgroupId=tinyb \
                          -DartifactId=tinyb \
-                         -Dversion=1.0 \
+                         -Dversion=$TINYB_VERSION \
                          -Dpackaging=jar \
                          -DgeneratePom=true \
                          -DlocalRepositoryPath=$DEPS
