@@ -9,6 +9,14 @@ RUN apt-get clean && apt-get update && apt-get install -y \
 # prevent httpredir from doing nasty things
 RUN sed -i "s/httpredir.debian.org/`curl -s -D - http://httpredir.debian.org/demo/debian/ | awk '/^Link:/ { print $2 }' | sed -e 's@<http://\(.*\)/debian/>;@\1@g'`/" /etc/apt/sources.list
 
+# Add the key for foundation repository
+RUN wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | sudo apt-key add -
+
+# Add apt source of the foundation repository
+# We need this source because bluez needs to be patched in order to work with rpi3 ( Issue #1314: How to get BT working on Pi3B. by clivem in raspberrypi/linux on GitHub )
+# Add it on top so apt will pick up packages from there
+RUN sed -i '1s#^#deb http://archive.raspberrypi.org/debian jessie main\n#' /etc/apt/sources.list
+
 # Add packages
 RUN apt-get clean && apt-get update && \
     apt-get -qq install --no-install-recommends -y \
@@ -35,6 +43,7 @@ RUN apt-get clean && apt-get update && \
     libglib2.0-0 \
     bluetooth \
     bluez \
+    bluez-firmware \
     libbluetooth-dev \
     libudev-dev
 
