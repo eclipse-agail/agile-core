@@ -55,7 +55,7 @@ ENV APATH /usr/src/app
 RUN cd /usr/src/app && CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 $APATH/scripts/install-dbus-java.sh $APATH/deps
 
-RUN cd /usr/src/app && CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
+RUN cd /usr/src/app && PKG_CONFIG_PATH=/usr/local/lib/pkgconfig CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 $APATH/scripts/install-tinyb.sh $APATH/deps
 
 RUN cd $APATH && mvn clean install -U
