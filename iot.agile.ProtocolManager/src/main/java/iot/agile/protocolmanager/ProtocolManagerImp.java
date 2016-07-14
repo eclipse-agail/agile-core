@@ -87,7 +87,6 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Devices()
    */
   public List<DeviceOverview>   Devices() {
-    
      return devices;
   }
  
@@ -115,11 +114,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
         protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
         protocolInstance.Discover();
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-           e.printStackTrace();
-        }
+ 
+        
         for (DeviceOverview device : protocolInstance.Devices()) {
           if (!devices.contains(device)) {
             devices.add(device);
@@ -156,25 +152,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
     return false;
   }
 
-  /**
-   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#DropBus()
-   */
-  public void DropBus() {
 
-  }
-
-//  public void addDevice1(String deviceId) {
-//    if (!devices.contains(deviceId)) {
-////      devices.add(deviceId);
-//    }
-//  }
-
-  public void removeDevice(String deviceId) {
-    if (devices.contains(deviceId)) {
-      devices.remove(deviceId);
-    }
-  }
-
+ 
   protected void addProtocol(String protocolId) {
     if (!protocols.contains(protocolId)) {
       protocols.add(protocolId);

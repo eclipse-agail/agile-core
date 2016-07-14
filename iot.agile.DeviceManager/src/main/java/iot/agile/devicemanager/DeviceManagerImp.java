@@ -35,10 +35,9 @@ import iot.agile.object.DeviceDefinition;
  *         Agile Device manager implementation
  *
  */
-public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager{
+public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager {
 
   protected final Logger logger = LoggerFactory.getLogger(DeviceManagerImp.class);
-  
 
   /**
    * Bus name for the device manager
@@ -82,35 +81,34 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Create()
    */
   @Override
-  public String Create(DeviceDefinition devicedefinition) {
-    logger.debug("Creating new device id: {} name: {} protocol: {}", devicedefinition.id, devicedefinition.name, devicedefinition.protocol);
+  public String Create(DeviceDefinition deviceDefinition) {
+    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceDefinition.id, deviceDefinition.name,
+        deviceDefinition.protocol);
 
-    // check if it not registered or not connected
-    
-    //For demo purpose we create sensor tag device
+    // For demo purpose we create only sensor tag device
     Device device = null;
+    // Register device
     try {
-      device = new TISensorTag(devicedefinition);
-      if (!isRegistered(device.Id())) {
-        devices.put(devicedefinition.id, device.Id());
-        device.Connect();
-      }else{
-        device.Connect();
-        return device.Id();
+      if (!isRegistered(deviceDefinition)) {
+        device = new TISensorTag(deviceDefinition);
+        devices.put(deviceDefinition.id, device.Id());
+        logger.info("Device registered {}", device.Id());
+      } else {
+        logger.info("Already registered device  {}", "iot.agile.Device");
+
+        return "iot.agile.Device";
       }
-      
-      
-      
-    } catch (DBusException e) {
-//  // TODO Auto-generated catch block
-  e.printStackTrace();
-}
-      
- 
-  
-    
+    } catch (Exception e) {
+      logger.error("Can not register device: {}", e);
+    } finally {
+      try {
+        device.Connect();
+      } catch (Exception e) {
+        logger.error("Can not connect device: ");
+      }
+    }
     return device.Id();
-   }
+  }
 
   /**
    *
@@ -178,11 +176,16 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
     return false;
   }
 
-  private boolean isRegistered(String deviceAgileID) {
-    if (devices.isEmpty()) {
+  private boolean isRegistered(DeviceDefinition devDef) {
+    String objectName = "iot.agile.Device";
+    String objectPath = "/iot/agile/device/ble/" + devDef.id.replace(":", "");
+    try {
+      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+      Device device = (Device) connection.getRemoteObject(objectName, objectPath);
+      return true;
+    } catch (Exception e) {
       return false;
     }
-    return devices.containsKey(deviceAgileID);
-  }
 
+  }
 }

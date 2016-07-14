@@ -25,12 +25,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Protocol;
+import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceOverview;
 import tinyb.BluetoothDevice;
 import tinyb.BluetoothException;
@@ -45,12 +45,10 @@ import tinyb.BluetoothManager;
  * @author dagi
  *
  */
-public class BLEProtocolImp implements Protocol {
+public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
 
   protected final Logger logger = LoggerFactory.getLogger(BLEProtocolImp.class);
-
-  private final DBusConnection connection;
-
+ 
   /**
    * Bus name for AGILE BLE Protocol
    */
@@ -71,8 +69,7 @@ public class BLEProtocolImp implements Protocol {
    */
   private static final String DRIVER_NAME = "BLE";
 
-  public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
-  // Device status
+   // Device status
   public static final String CONNECTED = "CONNECTED";
   public static final String DISCONNECTED = "DISCONNECTED";
   public static final String AVAILABLE = "AVAILABLE";
@@ -104,8 +101,6 @@ public class BLEProtocolImp implements Protocol {
 
   private static final String TEMPERATURE = "Temperature";
 
-  private static final String WRITE_VALUE = "WriteValue";
-
   private BluetoothGattCharacteristic sensorValue;
 
   ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
@@ -121,9 +116,8 @@ public class BLEProtocolImp implements Protocol {
   }
 
   public BLEProtocolImp() throws DBusException {
-    this.connection = DBusConnection.getConnection(DBusConnection.SESSION);
-    connection.requestBusName(AGILE_BLUETOOTH_BUS_NAME);
-    connection.exportObject(AGILE_BLUETOOTH_BUS_PATH, this);
+    dbusConnect(AGILE_BLUETOOTH_BUS_NAME, AGILE_BLUETOOTH_BUS_PATH, this);
+    logger.debug("Started BLE Protocol");
 
     try {
       bleManager = BluetoothManager.getBluetoothManager();
@@ -132,20 +126,6 @@ public class BLEProtocolImp implements Protocol {
     } catch (Exception e) {
       logger.error("Error getting BluetoothManager instance", e);
     }
-
-    // ensure DBus object is unregistered
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        try {
-          connection.releaseBusName(AGILE_BLUETOOTH_BUS_NAME);
-        } catch (DBusException ex) {
-          logger.error("Cannot release DBus name {}", AGILE_BLUETOOTH_BUS_NAME, ex);
-        }
-      }
-    });
-
-    logger.debug("BLE Protocol is running");
-
   }
 
   /**
@@ -233,7 +213,6 @@ public class BLEProtocolImp implements Protocol {
   @Override
   public void Discover() {
     logger.info("Started discovery of BLE devices");
-
  
     Runnable task = () -> {
 
@@ -244,7 +223,7 @@ public class BLEProtocolImp implements Protocol {
       List<BluetoothDevice> list = bleManager.getDevices();
       for (BluetoothDevice device : list) {
         if (device.getRSSI() != 0) {
-          DeviceOverview deviceOverview = new DeviceOverview(device.getAddress(), BLE_PROTOCOL_ID, device.getName(),
+          DeviceOverview deviceOverview = new DeviceOverview(device.getAddress(), AGILE_BLUETOOTH_BUS_NAME, device.getName(),
               AVAILABLE);
           if (isNewDevice(deviceOverview)) {
             deviceList.add(deviceOverview);
@@ -422,16 +401,9 @@ public class BLEProtocolImp implements Protocol {
     return false;
   }
 
-  // ==========Testing and Utility=============================
-  // ================ Methods==================================
-  /**
-   * Disconnect the bus, and drop the Dbus interface
-   */
-  public void DropBus() {
-    connection.disconnect();
-  }
+  // =========================UTILITY METHODS==============
 
-  void printDevice(BluetoothDevice device) {
+   void printDevice(BluetoothDevice device) {
     logger.info("Name = {}", device.getName());
     logger.info("Address = {}", device.getAddress());
     logger.info("Connected= {}", device.getConnected());
@@ -463,7 +435,6 @@ public class BLEProtocolImp implements Protocol {
     bleManager.stopDiscovery();
   }
 
-  // =========================UTILITY METHODS==============
 
   private boolean isNewDevice(DeviceOverview device) {
     for (DeviceOverview dev : deviceList) {

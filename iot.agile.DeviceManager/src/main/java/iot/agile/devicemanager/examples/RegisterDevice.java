@@ -24,7 +24,6 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import iot.agile.Device;
 import iot.agile.DeviceManager;
 import iot.agile.object.DeviceComponet;
 import iot.agile.object.DeviceDefinition;
@@ -34,9 +33,8 @@ import iot.agile.object.DeviceDefinition;
  *
  */
 public class RegisterDevice {
+
   protected final static Logger logger = LoggerFactory.getLogger(RegisterDevice.class);
-  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device";
-  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
   /**
    * DBus interface name for the device manager
    */
@@ -46,16 +44,14 @@ public class RegisterDevice {
    */
   private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
 
-  private static String deviceAddress = "78:C5:E5:6E:E4:CF";
-
   public static final String PROTOCOL_ID = "iot.agile.protocol.BLE";
+
+  private static String deviceAddress = "78:C5:E5:6E:E4:CF";
 
   private static String deviceName = "TISensorTag";
 
   public static void main(String[] args) {
-
-//    checkUserInput(args);
-    // DBus connection
+    checkUserInput(args);
     try {
       // Get the device manager DBus interface
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
@@ -64,42 +60,16 @@ public class RegisterDevice {
 
       // Register device
       String deviceAgileID = deviceManager
-          .Create(new DeviceDefinition(deviceAddress, PROTOCOL_ID, "", "", getDeviceStreams()));
-       logger.info("Device ID: {}", deviceAgileID);
-
+          .Create(new DeviceDefinition(deviceAddress, PROTOCOL_ID, deviceName, "", getDeviceStreams()));
+      logger.info("Device ID: {}", deviceAgileID);
     } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
       logger.debug("Unkown method");
-
     } catch (ServiceUnknown e) {
       logger.error("Can not find the DBus object : {}", AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, e);
     } catch (DBusException e) {
       logger.error("Error in registering device :", e);
     }
-    
-    
-    //connect device
-    
-//    String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "BLE" + "/" + deviceAddress.replace(":", "");
-//
-//    try {
-//      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-//      Device sensorTag = (Device) connection.getRemoteObject(AGILE_DEVICE_BASE_ID, devicePath, Device.class);
-//      if (sensorTag.Connect()) {
-//        logger.info("Device Connected: {}", sensorTag.Name());
-//      } else {
-//        logger.info("Falied to connect : {}", sensorTag.Name());
-//      }
-//    } catch (DBusException e) {
-//      e.printStackTrace();
-//    }
-    
-    
-    
-    
-    
-    
-    
-    
+
   }
 
   // Utility methods
@@ -111,20 +81,8 @@ public class RegisterDevice {
       } else {
         logger.info("Invalid MAC Address, Using default value for TI-SensorTag:" + deviceAddress);
       }
-    } else if (args.length == 2) {
-      if (isValidMACAddress(args[0])) {
-        deviceAddress = args[0];
-      } else {
-        logger.info("Invalid MAC Address, Using default value for TI-SensorTag:" + deviceAddress);
-      }
-      if (isValidDeviceName(args[1])) {
-        deviceName = args[1];
-      } else {
-        logger.info("Invalid device name, Using default value:" + deviceName);
-      }
-    } else {
-      logger.info("Invalid argument size, Using default values");
     }
+    // TODO Check other parameters
   }
 
   /**
@@ -139,14 +97,6 @@ public class RegisterDevice {
       }
     }
     return false;
-  }
-
-  private static boolean isValidDeviceName(String deviceName) {
-    if ((deviceName != null) && (deviceName.trim().length() != 0)) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   private static List<DeviceComponet> getDeviceStreams() {

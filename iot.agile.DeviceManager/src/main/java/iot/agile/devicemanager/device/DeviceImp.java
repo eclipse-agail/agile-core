@@ -40,12 +40,12 @@ public class DeviceImp extends AbstractAgileObject implements Device {
   /**
    * Bus name for AGILE BLE Device interface
    */
-  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device";
+  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.Device";
 
   /**
    * Bus path for AGILE BLE Device interface
    */
-  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
+  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/device/";
   /**
    * BLE Protocol imp DBus interface id
    */
@@ -111,10 +111,12 @@ public class DeviceImp extends AbstractAgileObject implements Device {
     this.deviceID = devicedefinition.id;
     this.protocol = BLUETOOTH_LOW_ENERGY;
     this.profile = devicedefinition.streams;
+//    this.protocol =devicedefinition.protocol;
     this.deviceAgileID = AGILE_DEVICE_BASE_ID;
  
-    String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "BLE" + "/" + devicedefinition.id.replace(":", "");
+    String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "ble" + "/" + devicedefinition.id.replace(":", "");
     ;
+    
     dbusConnect(deviceAgileID, devicePath, this);
 
 //    if (protocol.equals(BLUETOOTH_LOW_ENERGY)) {
@@ -199,10 +201,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    * @see iot.agile.devicemanager.device.Device#Connect()
    */
   public boolean Connect() {
-    logger.info(protocol);
-    logger.info(deviceProtocol.Name());
-
-    try {
+     try {
       if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
         if (deviceProtocol.Connect(deviceID)) {
           deviceStatus = CONNECTED;
@@ -212,11 +211,10 @@ public class DeviceImp extends AbstractAgileObject implements Device {
       } else {
         logger.debug("Protocol not supported: {}", protocol);
       }
-
     } catch (DBusException e) {
+      logger.error("Problem encountered on connecting {}", deviceID);
       e.printStackTrace();
     }
-
     return false;
   }
 
@@ -233,7 +231,6 @@ public class DeviceImp extends AbstractAgileObject implements Device {
     } else {
       logger.debug("Protocol not supported: {}", protocol);
     }
-
     return false;
   }
 
