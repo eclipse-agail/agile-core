@@ -472,7 +472,7 @@ public class BLEProtocolImp implements Protocol {
 		}
 
 		for (BluetoothGattService gattservice : bluetoothServices) {
-			if (gattservice.getUuid().equals(UUID)) {
+			if (gattservice.getUUID().equals(UUID)) {
 				service = gattservice;
 			}
 		}
@@ -497,7 +497,7 @@ public class BLEProtocolImp implements Protocol {
 			return null;
 		}
 		for (BluetoothGattCharacteristic characteristic : characteristics) {
-			if (characteristic.getUuid().equals(UUID)) {
+			if (characteristic.getUUID().equals(UUID)) {
 				return characteristic;
 			}
 		}
