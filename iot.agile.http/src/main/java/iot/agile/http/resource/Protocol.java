@@ -17,6 +17,7 @@ package iot.agile.http.resource;
 
 
 import iot.agile.http.service.DbusClient;
+import iot.agile.object.DeviceOverview;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -51,7 +52,7 @@ public class Protocol {
   
   @GET
   @Path("/devices")
-  public List<String> Devices(@PathParam("id") String id) throws DBusException {
+  public List<DeviceOverview> Devices(@PathParam("id") String id) throws DBusException {
     return getProtocol(id).Devices();
   }
   
