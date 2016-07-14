@@ -52,34 +52,24 @@ public class BLEDiscovery {
    * DBus bus path for the protocol manager
    */
   private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
-  static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-
+ 
   public static void main(String[] args) {
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-      // Get Agile protocol manger interfaces from DBbus
+      // Get Agile protocol manger interface from DBbus session bus
       ProtocolManager protocolManager = connection.getRemoteObject(AGILE_PROTOCOL_MANAGER_BUS_NAME,
           AGILE_PROTOCOL_MANAGER_BUS_PATH, ProtocolManager.class);
+      logger.info("Discovering...1");
 
       protocolManager.Discover();
       logger.info("Discovering...");
-      Runnable task = () -> {
+     
         List<DeviceOverview> deviceList = protocolManager.Devices();
         for (DeviceOverview device : deviceList) {
           logger.info("Device ID: {}  Device Name: {}  Protocol Support: {} Device Status{}", device.id, device.name,
               device.protocol.replaceAll("iot.agile.protocol.", ""), device.status);
         }
-      };
-
-      ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
-      try {
-        future.get(10, TimeUnit.SECONDS);
-      } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-        logger.debug("Aborted execution scheduler: {}", ex.getMessage());
-      } finally {
-        logger.debug("Stopped BLE discovery");
-      }
-
+  
       //
 
     } catch (ServiceUnknown e) {

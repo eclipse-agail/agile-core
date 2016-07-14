@@ -27,7 +27,7 @@ cp java/tinyb.jar $DEPS
 cp java/jni/*.so $DEPS
 cp java/jni/*.so* $DEPS
 
-rm -rf $BUILD
+#rm -rf $BUILD
 
 cd $DEPS
 mvn install:install-file -Dfile=$DEPS/tinyb.jar \

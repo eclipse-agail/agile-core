@@ -80,20 +80,29 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Create()
    */
   @Override
-  public String Create(DeviceDefinition devicedefinition) throws DBusException {
+  public String Create(DeviceDefinition devicedefinition) {
     logger.debug("Creating new device id: {} name: {} protocol: {}", devicedefinition.id, devicedefinition.name, devicedefinition.protocol);
 
     // check if it not registered or not connected
     
     //For demo purpose we create sensor tag device
-    Device device = new TISensorTag(devicedefinition);
-    if (!isRegistered(device.Id())) {
-      devices.put(devicedefinition.id, device.Id());
+    Device device = null;
+    try {
+      device = new TISensorTag(devicedefinition);
+      if (!isRegistered(device.Id())) {
+        devices.put(devicedefinition.id, device.Id());
+      }else{
+        return device.Id();
+      }
+//      device.Connect();
+    } catch (DBusException e) {
+//      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-    device.Connect();
+  
     
     return device.Id();
-  }
+   }
 
   /**
    *

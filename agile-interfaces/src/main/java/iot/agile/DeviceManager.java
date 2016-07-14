@@ -55,7 +55,7 @@ public interface DeviceManager extends DBusInterface {
    * Creates devices
    */
   @org.freedesktop.DBus.Description("Returns all registered devices")
-  public String Create(DeviceDefinition devicedefinition) throws DBusException;
+  public String Create(DeviceDefinition devicedefinition);
 
   /**
    * Load a device definition by its ID

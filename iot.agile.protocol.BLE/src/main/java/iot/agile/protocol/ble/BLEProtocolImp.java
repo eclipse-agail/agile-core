@@ -32,12 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Protocol;
 import iot.agile.object.DeviceOverview;
-import tinyb.BluetoothAdapter;
 import tinyb.BluetoothDevice;
 import tinyb.BluetoothException;
 import tinyb.BluetoothGattCharacteristic;
 import tinyb.BluetoothGattService;
 import tinyb.BluetoothManager;
+ 
 
 /**
  * Agile Bluetooth Low Energy(BLE) Protocol implementation
@@ -234,17 +234,16 @@ public class BLEProtocolImp implements Protocol {
   public void Discover() {
     logger.info("Started discovery of BLE devices");
 
-    BluetoothAdapter adapter = bleManager.getAdapters().get(0);
-
+ 
     Runnable task = () -> {
 
-      logger.debug("Checking for new devices");
+      logger.info("Checking for new devices");
       bleManager.startDiscovery();
 
       int newDevices = 0;
       List<BluetoothDevice> list = bleManager.getDevices();
       for (BluetoothDevice device : list) {
-        if (device.getRssi() != 0) {
+        if (device.getRSSI() != 0) {
           DeviceOverview deviceOverview = new DeviceOverview(device.getAddress(), BLE_PROTOCOL_ID, device.getName(),
               AVAILABLE);
           if (isNewDevice(deviceOverview)) {
@@ -467,7 +466,7 @@ public class BLEProtocolImp implements Protocol {
   // =========================UTILITY METHODS==============
 
   private boolean isNewDevice(DeviceOverview device) {
-    for (DeviceOverview dev : Devices()) {
+    for (DeviceOverview dev : deviceList) {
       if (dev.getId().equals(device.getId())) {
         return false;
       }
@@ -495,7 +494,7 @@ public class BLEProtocolImp implements Protocol {
     }
 
     for (BluetoothGattService gattservice : bluetoothServices) {
-      if (gattservice.getUuid().equals(UUID)) {
+      if (gattservice.getUUID().equals(UUID)) {
         service = gattservice;
       }
     }
@@ -520,7 +519,7 @@ public class BLEProtocolImp implements Protocol {
       return null;
     }
     for (BluetoothGattCharacteristic characteristic : characteristics) {
-      if (characteristic.getUuid().equals(UUID)) {
+      if (characteristic.getUUID().equals(UUID)) {
         return characteristic;
       }
     }

@@ -104,18 +104,22 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Discover()
    */
   public void Discover() {
-    logger.debug("Initializing discovery");
+    logger.info("Initializing discovery");
 
     for (String protocol : protocols) {
       String objectPath = "/" + protocol.replace(".", "/");
-      logger.debug("Discovery for protocol {} : {}", protocol, objectPath);
+      logger.info("Discovery for protocol {} : {}", protocol, objectPath);
      
       Protocol protocolInstance;
       try {
 
         protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
         protocolInstance.Discover();
-
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e) {
+           e.printStackTrace();
+        }
         for (DeviceOverview device : protocolInstance.Devices()) {
           if (!devices.contains(device)) {
             devices.add(device);

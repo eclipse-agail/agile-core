@@ -15,6 +15,8 @@
  */
 package iot.agile.devicemanager.device;
 
+import java.util.List;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import iot.agile.Device;
 import iot.agile.Protocol;
 import iot.agile.object.AbstractAgileObject;
+import iot.agile.object.DeviceComponet;
 import iot.agile.object.DeviceDefinition;
 
 /**
@@ -37,7 +40,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
   /**
    * Bus name for AGILE BLE Device interface
    */
-  private static final String AGILE_DEVICE_BASE_ID = "iot.agile";
+  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device";
 
   /**
    * Bus path for AGILE BLE Device interface
@@ -61,7 +64,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
   /**
    * Protocol
    */
-  protected static final String BLUETOOTH_LOW_ENERGY = "BLE";
+  protected static final String BLUETOOTH_LOW_ENERGY = "iot.agile.protocol.BLE";
   /**
    * Device status TODO: Needs implementation Default : Disconnected
    */
@@ -85,6 +88,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    */
   protected String protocol;
 
+  
+  protected List<DeviceComponet> profile;
   /**
    * The device protocol interface
    */
@@ -105,9 +110,10 @@ public class DeviceImp extends AbstractAgileObject implements Device {
     this.deviceName = devicedefinition.name;
     this.deviceID = devicedefinition.id;
     this.protocol = devicedefinition.protocol;
-    this.deviceAgileID = AGILE_DEVICE_BASE_ID + BLUETOOTH_LOW_ENERGY+"." + devicedefinition.id.replace(":", "");
-
-    String devicePath = AGILE_DEVICE_BASE_BUS_PATH + BLUETOOTH_LOW_ENERGY + "/" + devicedefinition.id.replace(":", "");
+//    this.profile = devicedefinition.streams;
+    this.deviceAgileID = AGILE_DEVICE_BASE_ID;
+ 
+    String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "BLE" + "/" + devicedefinition.id.replace(":", "");
     ;
     dbusConnect(deviceAgileID, devicePath, this);
 
@@ -158,9 +164,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
   /**
    * Returns the profile of the device
    */
-  public String Profile() {
-    logger.debug("Device. Subscribe not implemented");
-    return null;
+  public List<DeviceComponet> Profile() {
+     return null;
   }
 
   /**
@@ -194,6 +199,9 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    * @see iot.agile.devicemanager.device.Device#Connect()
    */
   public boolean Connect() {
+    logger.info(protocol);
+    logger.info(deviceProtocol.Name());
+
     try {
       if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
         if (deviceProtocol.Connect(deviceID)) {

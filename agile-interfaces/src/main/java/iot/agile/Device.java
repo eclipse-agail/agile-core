@@ -15,7 +15,11 @@
  */
 package iot.agile;
 
+import java.util.List;
+
 import org.freedesktop.dbus.DBusInterface;
+
+import iot.agile.object.DeviceComponet;
 
 /**
  * @author dagi
@@ -61,7 +65,7 @@ public interface Device extends DBusInterface {
    *
    */
   @org.freedesktop.DBus.Description("returns the profile of the device")
-  public String Profile();
+  public List<DeviceComponet> Profile();
 
   /**
    *
