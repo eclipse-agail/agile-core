@@ -1,7 +1,7 @@
 #!/bin/sh
 
 CURRDIR=`pwd`
-DEPS=${1:-$CURRDIR/deps}
+DEPS=/usr/src/app/deps
 BUILD=$DEPS/build
 
 if [ ! -e "$BUILD" ] ; then
