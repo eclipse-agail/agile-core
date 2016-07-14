@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.freedesktop.dbus.DBusInterface;
 
+import iot.agile.object.DeviceOverview;
+
 /**
  * @author dagi AGILE Protocol Manager Interface
  */
@@ -31,14 +33,14 @@ public interface ProtocolManager extends DBusInterface {
    * @return List of devices returned by each protocol discovery method
    */
   @org.freedesktop.DBus.Description("Returns List of devices returned by each protocol discovery method")
-  public List<String> Devices();
+  public List<DeviceOverview>   Devices();
 
   /**
    *
    * @return List of supported/Managed protocols
    */
   @org.freedesktop.DBus.Description("Returns List of supported/Managed protocols")
-  public List<String> Protocols();
+  public List<String>  Protocols();
 
   /**
    * Starts device discovery on all managed protocols

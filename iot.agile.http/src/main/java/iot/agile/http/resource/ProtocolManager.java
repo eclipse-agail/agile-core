@@ -51,7 +51,8 @@ public class ProtocolManager {
   @GET
   @Path("/devices")
   public List<String> Devices() throws DBusException {
-    return getProtocolManager().Devices();
+   return null;
+    //    return getProtocolManager().Devices();
   }
 
   @POST

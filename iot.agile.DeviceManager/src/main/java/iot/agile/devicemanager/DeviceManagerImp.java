@@ -26,6 +26,7 @@ import iot.agile.Device;
 import iot.agile.DeviceManager;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.object.AbstractAgileObject;
+import iot.agile.object.DeviceDefinition;
 
 /**
  * @author dagi
@@ -33,7 +34,7 @@ import iot.agile.object.AbstractAgileObject;
  *         Agile Device manager implementation
  *
  */
-public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager {
+public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager{
 
   protected final Logger logger = LoggerFactory.getLogger(DeviceManagerImp.class);
 
@@ -79,17 +80,18 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Create()
    */
   @Override
-  public String Create(String deviceID, String deviceName, String protocol) throws DBusException {
-    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
+  public String Create(DeviceDefinition devicedefinition) throws DBusException {
+    logger.debug("Creating new device id: {} name: {} protocol: {}", devicedefinition.id, devicedefinition.name, devicedefinition.protocol);
 
     // check if it not registered or not connected
     
     //For demo purpose we create sensor tag device
-    Device device = new TISensorTag(deviceID, deviceName, protocol);
+    Device device = new TISensorTag(devicedefinition);
     if (!isRegistered(device.Id())) {
-      devices.put(deviceID, device.Id());
+      devices.put(devicedefinition.id, device.Id());
     }
-
+    device.Connect();
+    
     return device.Id();
   }
 

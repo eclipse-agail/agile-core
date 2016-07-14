@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import iot.agile.Device;
+import iot.agile.object.DeviceDefinition;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class TISensorTag extends DeviceImp implements Device {
@@ -27,8 +29,8 @@ public class TISensorTag extends DeviceImp implements Device {
 
   private static final String TEMP_CONFIGURATION_GATT_CHARACTERSTICS_UUID = "f000aa02-0451-4000-b000-000000000000";
 
-  public TISensorTag(String deviceID, String deviceName, String protocol) throws DBusException {
-    super(deviceID, deviceName, protocol);
+  public TISensorTag(DeviceDefinition devicedefinition) throws DBusException {
+    super(devicedefinition);
   }
 
   @Override

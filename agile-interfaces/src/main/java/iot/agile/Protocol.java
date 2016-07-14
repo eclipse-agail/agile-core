@@ -21,6 +21,8 @@ import java.util.Map;
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import iot.agile.object.DeviceOverview;
+
 /**
  * Agile BLE Protocol interface
  *
@@ -69,7 +71,7 @@ public interface Protocol extends DBusInterface {
    * @see BLEDevice for sample device implementation
    */
   @org.freedesktop.DBus.Description("Returns list discovered protocol devices")
-  public List<String> Devices();
+  public List<DeviceOverview> Devices();
 
   /**
    * Setup connection and initialize BLE connection for the given device

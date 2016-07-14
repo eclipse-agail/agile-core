@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import iot.agile.Protocol;
 import iot.agile.ProtocolManager;
 import iot.agile.object.AbstractAgileObject;
-
+import iot.agile.object.DeviceOverview;
 /**
  * @author dagi
  *
@@ -61,7 +61,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   /**
    * List of discovered devices from all the protocols
    */
-  final private List<String> devices = new ArrayList<String>();
+  final private List<DeviceOverview> devices = new ArrayList<DeviceOverview>();
 
 
   public static void main(String[] args) throws DBusException {
@@ -86,10 +86,11 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    *
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Devices()
    */
-  public List<String> Devices() {
-    return devices;
+  public List<DeviceOverview>   Devices() {
+    
+     return devices;
   }
-
+ 
   /**
    *
    *
@@ -115,7 +116,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
         protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
         protocolInstance.Discover();
 
-        for (String device : protocolInstance.Devices()) {
+        for (DeviceOverview device : protocolInstance.Devices()) {
           if (!devices.contains(device)) {
             devices.add(device);
           }
@@ -158,11 +159,11 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
   }
 
-  public void addDevice(String deviceId) {
-    if (!devices.contains(deviceId)) {
-      devices.add(deviceId);
-    }
-  }
+//  public void addDevice1(String deviceId) {
+//    if (!devices.contains(deviceId)) {
+////      devices.add(deviceId);
+//    }
+//  }
 
   public void removeDevice(String deviceId) {
     if (devices.contains(deviceId)) {

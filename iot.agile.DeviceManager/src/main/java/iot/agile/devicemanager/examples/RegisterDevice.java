@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.DeviceManager;
+import iot.agile.object.DeviceDefinition;
 
 /**
  * @author dagi
@@ -40,6 +41,7 @@ public class RegisterDevice {
 	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
 
 	private static String deviceMACAddress = "C4:BE:84:70:69:09";
+  public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
 
 	private static String deviceName = "TISensorTag";
 
@@ -71,9 +73,9 @@ public class RegisterDevice {
 			DeviceManager deviceManager = (DeviceManager) connection.getRemoteObject(
 					AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
 			// Register device
-			String deviceAgileID = deviceManager.Create(deviceMACAddress, deviceName, "BLE");
-			logger.info(deviceManager.devices().get(deviceMACAddress));
-			logger.info("Device ID: {}", deviceAgileID);
+			String deviceAgileID = deviceManager.Create(new DeviceDefinition(deviceMACAddress, BLE_PROTOCOL_ID, "",""));
+//			logger.info(deviceManager.devices().get(deviceMACAddress));
+//			logger.info("Device ID: {}", deviceAgileID);
 
 		} catch (ServiceUnknown e) {
 			logger.error("Can not find the DBus object : {}", AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, e);

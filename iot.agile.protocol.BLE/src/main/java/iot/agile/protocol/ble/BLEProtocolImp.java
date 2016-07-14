@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Protocol;
+import iot.agile.object.DeviceOverview;
 import tinyb.BluetoothAdapter;
 import tinyb.BluetoothDevice;
 import tinyb.BluetoothException;
@@ -70,6 +71,12 @@ public class BLEProtocolImp implements Protocol {
    */
   private static final String DRIVER_NAME = "BLE";
 
+  public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
+  // Device status
+  public static final String CONNECTED = "CONNECTED";
+  public static final String DISCONNECTED = "DISCONNECTED";
+  public static final String AVAILABLE = "AVAILABLE";
+  public static final String UNAVAILABLE = "AVAILABLE";
   /**
    * The bluetooth manager
    */
@@ -79,7 +86,7 @@ public class BLEProtocolImp implements Protocol {
    * Lists of device names TODO: Should return lists of devices in terms of Dbus
    * object
    */
-  protected List<String> deviceList = new ArrayList<String>();
+  protected List<DeviceOverview> deviceList = new ArrayList<DeviceOverview>();
 
   protected String lastRead;
 
@@ -145,7 +152,7 @@ public class BLEProtocolImp implements Protocol {
    * Returns lists of devices
    */
   @Override
-  public List<String> Devices() {
+  public List<DeviceOverview> Devices() {
     return deviceList;
   }
 
@@ -238,8 +245,10 @@ public class BLEProtocolImp implements Protocol {
       List<BluetoothDevice> list = bleManager.getDevices();
       for (BluetoothDevice device : list) {
         if (device.getRssi() != 0) {
-          if (!deviceList.contains(device.getName())) {
-            deviceList.add(device.getName() + "..." + device.getAddress());
+          DeviceOverview deviceOverview = new DeviceOverview(device.getAddress(), BLE_PROTOCOL_ID, device.getName(),
+              AVAILABLE);
+          if (isNewDevice(deviceOverview)) {
+            deviceList.add(deviceOverview);
             printDevice(device);
             newDevices++;
           }
@@ -456,6 +465,16 @@ public class BLEProtocolImp implements Protocol {
   }
 
   // =========================UTILITY METHODS==============
+
+  private boolean isNewDevice(DeviceOverview device) {
+    for (DeviceOverview dev : Devices()) {
+      if (dev.getId().equals(device.getId())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * Returns a Bluetooth GATT service from the given device based on the UUID of
    * the service
