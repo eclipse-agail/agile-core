@@ -3,6 +3,7 @@
 CURRDIR=`pwd`
 DEPS=${1:-$CURRDIR/deps}
 BUILD=$DEPS/build
+TINYB_VERSION=0.5.0
 
 if [ ! -e "$BUILD" ] ; then
   mkdir -p $BUILD
@@ -11,6 +12,8 @@ fi
 if [ ! -e "$BUILD/tinyb" ] ; then
   cd $BUILD
   git clone https://github.com/intel-iot-devkit/tinyb.git
+  cd tinyb
+  git checkout $TINYB_VERSION
 fi
 
 cd $BUILD/tinyb
