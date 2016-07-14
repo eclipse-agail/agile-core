@@ -19,7 +19,7 @@ mkdir -p build
 cd build
 
 # echo "add_compile_options(-std=c++11)" >> ../CMakeLists.txt
-cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
+cmake .. -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
 -DCMAKE_INSTALL_PREFIX=$DEPS -DBUILDJAVA=ON >> /dev/null
 
 make tinyb >> /dev/null
