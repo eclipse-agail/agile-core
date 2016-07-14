@@ -73,4 +73,4 @@ $APATH/scripts/install-tinyb.sh $APATH/deps
 
 RUN cd $APATH && mvn clean install -U
 
-CMD [ "bash", "/agile/scripts/start.sh" ]
+CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
