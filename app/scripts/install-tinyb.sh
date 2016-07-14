@@ -1,7 +1,7 @@
 #!/bin/sh
 
 CURRDIR=`pwd`
-DEPS=${1:-$CURRDIR/deps}
+DEPS=/usr/src/app/deps
 BUILD=$DEPS/build
 
 if [ ! -e "$BUILD" ] ; then
@@ -19,7 +19,9 @@ mkdir -p build
 cd build
 
 # echo "add_compile_options(-std=c++11)" >> ../CMakeLists.txt
-cmake .. -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_INSTALL_PREFIX=$DEPS -DBUILDJAVA=ON >> /dev/null
+cmake .. -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
+-DCMAKE_INSTALL_PREFIX=$DEPS -DBUILDJAVA=ON >> /dev/null
+
 make tinyb >> /dev/null
 make install >> /dev/null
 

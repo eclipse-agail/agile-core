@@ -10,3 +10,4 @@ deps
 /iot.agile.http/target/
 */*.log
 *.log
+.DS_Store
