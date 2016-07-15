@@ -33,7 +33,7 @@ import iot.agile.object.DeviceDefinition;
  */
 public interface DeviceManager extends DBusInterface {
   
-  static String AGILE_INTERFACE = "iot.agile.ProtocolManager";
+  static String AGILE_INTERFACE = "iot.agile.DeviceManager";
   
   /**
    * Return all registered devices
