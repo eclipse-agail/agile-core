@@ -4,6 +4,19 @@ CURRDIR=`pwd`
 DEPS=${1:-$CURRDIR/deps}
 BUILD=$DEPS/build
 
+TINYB_VER=0.5.0
+
+#clean up first
+if [ -e "$DEPS/tinyb" ] ; then
+  rm -r $DEPS/tinyb
+  rm $DEPS/tinyb*
+  rm $DEPS/libjavatinyb.so*
+  # drop from local repo eventually
+  if [ -e ~/.m2/repository/tinyb ] ; then
+    rm -r  ~/.m2/repository/tinyb
+  fi
+fi
+
 if [ ! -e "$BUILD" ] ; then
   mkdir -p $BUILD
 fi
@@ -11,6 +24,9 @@ fi
 if [ ! -e "$BUILD/tinyb" ] ; then
   cd $BUILD
   git clone https://github.com/intel-iot-devkit/tinyb.git
+  cd tinyb
+  git checkout "v$TINYB_VER"
+  cd ..
 fi
 
 cd $BUILD/tinyb
@@ -33,7 +49,7 @@ cd $DEPS
 mvn install:install-file -Dfile=$DEPS/tinyb.jar \
                          -DgroupId=tinyb \
                          -DartifactId=tinyb \
-                         -Dversion=1.0 \
+                         -Dversion=$TINYB_VER \
                          -Dpackaging=jar \
                          -DgeneratePom=true \
                          -DlocalRepositoryPath=$DEPS

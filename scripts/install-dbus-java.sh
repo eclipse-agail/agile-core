@@ -40,6 +40,12 @@ rm -rf $BUILD
 
 cd $DEPS
 
+if [ -e ~/.m2/repository/org/freedesktop/dbus-java ] ; then
+  rm -r ~/.m2/repository/org/freedesktop/dbus-java
+  rm -r ~/.m2/repository/org/freedesktop/libdbus-java
+  rm -r ~/.m2/repository/cx/ath
+fi
+
 mvn install:install-file -Dfile=$DEPS/dbus-java-bin-2.7.jar \
                          -DgroupId=org.freedesktop.dbus \
                          -DartifactId=dbus-java \
@@ -47,7 +53,6 @@ mvn install:install-file -Dfile=$DEPS/dbus-java-bin-2.7.jar \
                          -Dpackaging=jar \
                          -DgeneratePom=true \
                          -DlocalRepositoryPath=$DEPS
-
 
 mvn install:install-file -Dfile=$DEPS/libdbus-java-2.7.jar \
                          -DgroupId=org.freedesktop.dbus \
