@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.http.service.DbusClient;
+import iot.agile.object.DeviceComponet;
+import java.util.List;
 
 /**
  *
@@ -50,7 +52,7 @@ public class Device {
 
   @GET
   @Path("/profile")
-  public String Profile(@PathParam("id") String id) throws DBusException {
+  public List<DeviceComponet> Profile(@PathParam("id") String id) throws DBusException {
     return getDevice(id).Profile();
   }
 
