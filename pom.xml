@@ -35,11 +35,11 @@
 
   <dependencies>
 
-    <dependency>
+<!--    <dependency>
       <groupId>org.freedesktop.dbus</groupId>
       <artifactId>dbus-java</artifactId>
       <version>2.7</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.freedesktop.dbus</groupId>
       <artifactId>libdbus-java</artifactId>
