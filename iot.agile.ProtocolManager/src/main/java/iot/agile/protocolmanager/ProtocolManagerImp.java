@@ -61,7 +61,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   /**
    * List of discovered devices from all the protocols
    */
-  final private List<DeviceOverview> devices = new ArrayList<DeviceOverview>();
+  final   private List<DeviceOverview> devices = new ArrayList<DeviceOverview>();
+
 
 
   public static void main(String[] args) throws DBusException {
@@ -104,7 +105,6 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    */
   public void Discover() {
     logger.info("Initializing discovery");
-
     for (String protocol : protocols) {
       String objectPath = "/" + protocol.replace(".", "/");
       logger.info("Discovery for protocol {} : {}", protocol, objectPath);

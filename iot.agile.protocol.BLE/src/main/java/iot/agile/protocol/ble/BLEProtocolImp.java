@@ -365,8 +365,9 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
 
         float objectTempCelsius = convertCelsius(objectTempRaw);
         float ambientTempCelsius = convertCelsius(ambientTempRaw);
-        lastRead = String.format(" Temp: Object = %fC, Ambient = %fC", objectTempCelsius, ambientTempCelsius);
-        return lastRead;
+//        lastRead = String.format(" Temp: Object = %fC, Ambient = %fC", objectTempCelsius, ambientTempCelsius);
+       lastRead = Float.toString(ambientTempCelsius);
+        return Float.toString(ambientTempCelsius);
       }
     } catch (InterruptedException e) {
       logger.error("InterruptedException occured", e);

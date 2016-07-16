@@ -61,14 +61,18 @@ public class ReadData {
 
 	  String devicePath = agileDeviceObjectPath + address.replace(":", "");
 	  logger.info("Reading {}", service);
-		try {
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			Device sensorTag = (Device) connection.getRemoteObject(agileDeviceObjName, devicePath, Device.class);
-			String currentTemp = sensorTag.Read(service);
-			logger.info("Temperature: {}", currentTemp);
-		} catch (DBusException e) {
-			e.printStackTrace();
-		}
+	
+	  while(true){
+	    try {
+	      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+	      Device sensorTag = (Device) connection.getRemoteObject(agileDeviceObjName, devicePath, Device.class);
+	      String currentTemp = sensorTag.Read(service);
+	      logger.info("Temperature: {}", currentTemp);
+	    } catch (DBusException e) {
+	      e.printStackTrace();
+	    }  
+	  }
+	  
 
 	}
 
