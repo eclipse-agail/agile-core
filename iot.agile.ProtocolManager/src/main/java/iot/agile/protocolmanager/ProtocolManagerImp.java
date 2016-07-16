@@ -133,8 +133,6 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
           }
         }
 
-        protocolInstance.StopDiscovery();
-
       } catch (DBusException ex) {
         logger.error("DBus exception on protocol {}", protocol, ex);
       }
