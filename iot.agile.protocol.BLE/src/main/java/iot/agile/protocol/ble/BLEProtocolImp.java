@@ -222,6 +222,7 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
  
     bleManager.startDiscovery();
 
+    /* TODO: would be better reactive: lister to bluez/TinyB signals */
     Runnable task = () -> {
 
       logger.info("Checking for new devices");
@@ -445,6 +446,7 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
    */
   @Override
   public void StopDiscovery() {
+    /* TODO: stop Runnable scheduled in Discovery */
     bleManager.stopDiscovery();
   }
 
