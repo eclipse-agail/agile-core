@@ -77,7 +77,7 @@ mvn="mvn"
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
   cd iot.agile.protocol.BLE
-  $mvn exec:java &
+  APKILL=protocol.BLE $mvn exec:java &
   echo "Started AGILE BLE protocol"
   cd ../
 fi
@@ -85,7 +85,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "protocolmanager"
   cd iot.agile.ProtocolManager
-  $mvn exec:java &
+  APKILL=protocolmanager $mvn exec:java &
   echo "Started AGILE Protocol Manager"
   cd ..
 fi
@@ -93,7 +93,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "devicemanager"
   cd iot.agile.DeviceManager
-  $mvn exec:java &
+  APKILL=devicemanager $mvn exec:java &
   echo "Started AGILE Device Manager"
   cd ..
 fi
@@ -101,7 +101,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
   ./scripts/stop.sh "http"
   cd iot.agile.http
-  $mvn exec:java &
+  APKILL=http $mvn exec:java &
   echo "Started AGILE HTTP API"
   cd ..
 fi

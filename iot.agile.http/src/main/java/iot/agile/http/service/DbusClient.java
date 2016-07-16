@@ -48,6 +48,7 @@ public class DbusClient {
     
     String key = objectInterface + ":" + objectPath;
     if(instances.containsKey(key)) {
+      logger.debug("Load cached object {}:{}", objectInterface, objectPath);
       return instances.get(key);
     }
     

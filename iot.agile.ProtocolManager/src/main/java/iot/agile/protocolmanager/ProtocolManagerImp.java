@@ -97,7 +97,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    *
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Devices()
    */
-  public List<DeviceOverview>   Devices() {
+  public List<DeviceOverview> Devices() {
      return devices;
   }
 
