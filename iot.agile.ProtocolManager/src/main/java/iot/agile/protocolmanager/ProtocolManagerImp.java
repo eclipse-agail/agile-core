@@ -111,6 +111,13 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   }
 
   /**
+   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#StartDiscovery()
+   */
+  public void StartDiscovery() {
+    Discover();
+  }
+
+  /**
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Discover()
    */
   public void Discover() {

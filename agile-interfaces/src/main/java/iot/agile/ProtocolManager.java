@@ -51,6 +51,10 @@ public interface ProtocolManager extends DBusInterface {
   public void Discover();
 
   /**
+   * Starts device discovery on all managed protocols (new name)
+   */
+  @org.freedesktop.DBus.Description("Starts device discovery on all managed protocols")
+  public void StartDiscovery();
 
   /**
    * Stops device discovery on all managed protocols
