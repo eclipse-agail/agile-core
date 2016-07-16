@@ -214,6 +214,14 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
   }
 
   /**
+   * Discover BLE devices, towards a more descriptive name
+   */
+  @Override
+  public void StartDiscovery() {
+    Discover();
+  }
+
+  /**
    * Discover BLE devices
    */
   @Override

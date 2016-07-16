@@ -98,9 +98,19 @@ public interface Protocol extends DBusInterface {
    *
    * TODO - return list of devices
    */
-  @org.freedesktop.DBus.Description("Lists all discovered BLE devices")
+  @org.freedesktop.DBus.Description("Start device discovery")
+  public void StartDiscovery() throws DBusException;
+
+  /**
+   * Start device discovery
+   */
+  @org.freedesktop.DBus.Description("Start device discovery (deprecated)")
   public void Discover() throws DBusException;
 
+  /**
+   * Stop device discovery
+   */
+  @org.freedesktop.DBus.Description("Stop device discovery")
   public void StopDiscovery();
 
   /**
