@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.freedesktop.DBus.Properties;
+import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    * List of supported protocols
    */
   final private List<String> protocols = new ArrayList<String>();
-  
+
   /**
    * List of discovered devices from all the protocols
    */
@@ -78,6 +79,16 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
             this
     );
 
+
+   connection.addSigHandler(ProtocolManager.FoundNewDeviceSignal.class, new DBusSigHandler<ProtocolManager.FoundNewDeviceSignal>(){
+
+    @Override
+    public void handle(FoundNewDeviceSignal signal) {
+       devices.add(signal.device);
+       logger.info("Found new device signal recived");
+      }
+
+   });
     logger.debug("ProtocolManager is running");
   }
 
@@ -89,7 +100,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   public List<DeviceOverview> Devices() {
      return devices;
   }
- 
+
   /**
    *
    *
@@ -108,14 +119,14 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
     for (String protocol : protocols) {
       String objectPath = "/" + protocol.replace(".", "/");
       logger.info("Discovery for protocol {} : {}", protocol, objectPath);
-     
+
       Protocol protocolInstance;
       try {
 
         protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
         protocolInstance.Discover();
- 
-        
+
+
         for (DeviceOverview device : protocolInstance.Devices()) {
           if (!devices.contains(device)) {
             devices.add(device);
@@ -153,7 +164,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   }
 
 
- 
+
   protected void addProtocol(String protocolId) {
     if (!protocols.contains(protocolId)) {
       protocols.add(protocolId);
@@ -181,7 +192,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   @Override
   public <A> void Set(String arg0, String arg1, A arg2) {
     // TODO Auto-generated method stub
-    
+
   }
 
 }

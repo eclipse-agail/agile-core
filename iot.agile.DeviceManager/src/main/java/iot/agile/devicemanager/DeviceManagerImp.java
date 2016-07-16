@@ -86,27 +86,22 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
         deviceDefinition.protocol);
 
     // For demo purpose we create only sensor tag device
-    Device device = null;
+    Device device = isRegistered(deviceDefinition);
     // Register device
     try {
-      if (!isRegistered(deviceDefinition)) {
+      if (device==null) {
         device = new TISensorTag(deviceDefinition);
         devices.put(deviceDefinition.id, device.Id());
         logger.info("Device registered {}", device.Id());
+        device.Connect();
       } else {
+        device.Connect();
         logger.info("Already registered device  {}", "iot.agile.Device");
-
         return "iot.agile.Device";
       }
     } catch (Exception e) {
       logger.error("Can not register device: {}", e);
-    } finally {
-      try {
-        device.Connect();
-      } catch (Exception e) {
-        logger.error("Can not connect device: ");
-      }
-    }
+    }  
     return device.Id();
   }
 
@@ -176,15 +171,15 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
     return false;
   }
 
-  private boolean isRegistered(DeviceDefinition devDef) {
+  private Device isRegistered(DeviceDefinition devDef) {
     String objectName = "iot.agile.Device";
     String objectPath = "/iot/agile/device/ble/" + devDef.id.replace(":", "");
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
       Device device = (Device) connection.getRemoteObject(objectName, objectPath);
-      return true;
+      return device;
     } catch (Exception e) {
-      return false;
+      return null;
     }
 
   }

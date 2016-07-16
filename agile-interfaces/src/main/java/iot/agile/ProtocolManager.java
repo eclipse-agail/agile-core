@@ -18,6 +18,8 @@ package iot.agile;
 import java.util.List;
 
 import org.freedesktop.dbus.DBusInterface;
+import org.freedesktop.dbus.DBusSignal;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceOverview;
 
@@ -25,22 +27,22 @@ import iot.agile.object.DeviceOverview;
  * @author dagi AGILE Protocol Manager Interface
  */
 public interface ProtocolManager extends DBusInterface {
-  
+
   public static String AGILE_INTERFACE = "iot.agile.ProtocolManager";
-  
+
   /**
    *
    * @return List of devices returned by each protocol discovery method
    */
   @org.freedesktop.DBus.Description("Returns List of devices returned by each protocol discovery method")
-  public List<DeviceOverview>   Devices();
+  public List<DeviceOverview> Devices();
 
   /**
    *
    * @return List of supported/Managed protocols
    */
   @org.freedesktop.DBus.Description("Returns List of supported/Managed protocols")
-  public List<String>  Protocols();
+  public List<String> Protocols();
 
   /**
    * Starts device discovery on all managed protocols
@@ -51,7 +53,8 @@ public interface ProtocolManager extends DBusInterface {
   /**
    * Adds a new protocol to the managed protocols list
    *
-   * @param protocol the protocol to be added
+   * @param protocol
+   *          the protocol to be added
    */
   @org.freedesktop.DBus.Description("Adds a new protocol to the managed protocols list")
   public void Add(String protocol);
@@ -59,9 +62,27 @@ public interface ProtocolManager extends DBusInterface {
   /**
    * Removes a protocol from the managed protocol list
    *
-   * @param protocol the protocol to be removed
+   * @param protocol
+   *          the protocol to be removed
    */
   @org.freedesktop.DBus.Description("Removes a protocol from the managed protocol list")
   public void Remove(String protocol);
+
+  /**
+   * Found new device signal
+   * @author dagi
+   *
+   */
+  public class FoundNewDeviceSignal extends DBusSignal {
+    public final String path;
+    public final DeviceOverview device;
+
+    public FoundNewDeviceSignal(String path, DeviceOverview device) throws DBusException {
+      super(path, device);
+      this.path = path;
+      this.device = device;
+    }
+
+  }
 
 }

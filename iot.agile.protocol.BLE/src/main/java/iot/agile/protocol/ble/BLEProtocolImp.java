@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Protocol;
+import iot.agile.ProtocolManager;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceOverview;
 import tinyb.BluetoothDevice;
@@ -58,6 +59,11 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
    * Bus path for AGILE BLE Protocol
    */
   private static final String AGILE_BLUETOOTH_BUS_PATH = "/iot/agile/protocol/BLE";
+
+  /**
+   * DBus bus path for the protocol manager
+   */
+  private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
 
   /**
    * Protocol name
@@ -122,9 +128,9 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
     try {
       bleManager = BluetoothManager.getBluetoothManager();
     } catch (BluetoothException bex) {
-      logger.error("No bluetooth adapter found on the system", bex);
+      logger.error(" Failed to start BLE Protocol, no bluetooth adapter found on the system", bex);
     } catch (Exception e) {
-      logger.error("Error getting BluetoothManager instance", e);
+      logger.error("Error in getting BluetoothManager instance", e);
     }
   }
 
@@ -214,11 +220,12 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
   public void Discover() {
     logger.info("Started discovery of BLE devices");
  
+    bleManager.startDiscovery();
+
     Runnable task = () -> {
 
       logger.info("Checking for new devices");
-      bleManager.startDiscovery();
-
+ 
       int newDevices = 0;
       List<BluetoothDevice> list = bleManager.getDevices();
       for (BluetoothDevice device : list) {
@@ -227,7 +234,13 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
               AVAILABLE);
           if (isNewDevice(deviceOverview)) {
             deviceList.add(deviceOverview);
-            printDevice(device);
+            try {
+              ProtocolManager.FoundNewDeviceSignal foundNewDevSig = new ProtocolManager.FoundNewDeviceSignal(AGILE_PROTOCOL_MANAGER_BUS_PATH,deviceOverview);
+              connection.sendSignal(foundNewDevSig);
+            } catch (DBusException e) {
+               e.printStackTrace();
+            }
+             printDevice(device);
             newDevices++;
           }
         }
