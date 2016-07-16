@@ -182,6 +182,9 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
     BluetoothDevice bleDevice;
     try {
       bleDevice = getDevice(deviceAddress);
+      if (bleDevice.getConnected()) {
+        return true;
+      }
       if (bleDevice.connect()) {
         return true;
       }

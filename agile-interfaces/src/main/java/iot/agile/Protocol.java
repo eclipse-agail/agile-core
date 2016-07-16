@@ -78,6 +78,8 @@ public interface Protocol extends DBusInterface {
    *
    * TODO: Instead of deviceAddress this method should receive device profile,
    * and retrieve the id and other properties from it
+   *
+   * @return true if successfully connected, or if it was already connected
    */
   @org.freedesktop.DBus.Description("Setup connection and initialize protocol connection for the given device")
   public boolean Connect(String deviceAddress) throws DBusException;
