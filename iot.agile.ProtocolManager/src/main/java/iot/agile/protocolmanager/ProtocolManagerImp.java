@@ -144,6 +144,24 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   }
 
   /**
+   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#StopDiscovery()
+   */
+  public void StopDiscovery() {
+    for (String protocol : protocols) {
+      String objectPath = "/" + protocol.replace(".", "/");
+      logger.info("StopDiscovery for protocol {} : {}", protocol, objectPath);
+
+      Protocol protocolInstance;
+      try {
+        protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
+        protocolInstance.StopDiscovery();
+      } catch (DBusException ex) {
+        logger.error("DBus exception on protocol {}", protocol, ex);
+      }
+    }
+  }
+
+  /**
    * @see
    * iot.agile.protocol.ble.protocolmanager.ProtocolManager#Add(java.lang.String)
    */
