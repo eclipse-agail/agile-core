@@ -236,7 +236,7 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
     /* TODO: would be better reactive: lister to bluez/TinyB signals */
     Runnable task = () -> {
 
-      logger.info("Checking for new devices");
+      logger.debug("Checking for new devices");
  
       int newDevices = 0;
       List<BluetoothDevice> list = bleManager.getDevices();
