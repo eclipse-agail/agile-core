@@ -41,6 +41,14 @@ public interface DeviceManager extends DBusInterface {
    * @return
    */
   @org.freedesktop.DBus.Description("Returns all registered devices")
+  public Map<String, String> Devices();
+
+  /**
+   * Return all registered devices (deprecated)
+   *
+   * @return
+   */
+  @org.freedesktop.DBus.Description("Returns all registered devices (deprecated)")
   public Map<String, String> devices();
 
   /**
@@ -72,7 +80,7 @@ public interface DeviceManager extends DBusInterface {
    * @param definition
    * @return
    */
-  @org.freedesktop.DBus.Description("UPdate a device definition by its ID")
+  @org.freedesktop.DBus.Description("Update a device definition by its ID")
   public boolean Update(String id, String definition);
 
   /**

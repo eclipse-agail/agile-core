@@ -131,6 +131,16 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
   /**
    *
    *
+   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Devices()
+   */
+  @Override
+  public Map<String, String> Devices() {
+    return devices();
+  }
+
+  /**
+   *
+   *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#devices()
    */
   @Override
