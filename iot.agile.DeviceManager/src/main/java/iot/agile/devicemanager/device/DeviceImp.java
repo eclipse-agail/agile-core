@@ -138,7 +138,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    * @see iot.agile.protocol.ble.device.Device#Id()
    */
   public String Id() {
-    return deviceAgileID;
+    return deviceID;
   }
 
   /**
