@@ -17,6 +17,8 @@ package iot.agile.devicemanager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -51,7 +53,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
   /**
    * registered devices
    */
-  protected final Map<String, String> devices = new HashMap<String, String>();
+  protected final List<Map<String, String>> devices = new ArrayList<Map<String, String>>();
 
   public static void main(String[] args) throws DBusException {
     DeviceManager deviceManager = new DeviceManagerImp();
@@ -81,28 +83,34 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Create()
    */
   @Override
-  public String Create(DeviceDefinition deviceDefinition) {
+  public Map<String, String> Create(DeviceDefinition deviceDefinition) {
     logger.debug("Creating new device id: {} name: {} protocol: {}", deviceDefinition.id, deviceDefinition.name,
         deviceDefinition.protocol);
 
     // For demo purpose we create only sensor tag device
     Device device = isRegistered(deviceDefinition);
+
+    Map<String, String> ret = new HashMap<String,String>();
+    ret.put("id","ble_" + deviceDefinition.id.replace(":", ""));
+    ret.put("path","/iot/agile/device/ble/" + deviceDefinition.id.replace(":", ""));
+    ret.put("conn","iot.agile.Device");
     // Register device
     try {
       if (device==null) {
         device = new TISensorTag(deviceDefinition);
-        devices.put(deviceDefinition.id, device.Id());
+        devices.add(ret);
         logger.info("Device registered {}", device.Id());
         device.Connect();
       } else {
         device.Connect();
         logger.info("Already registered device  {}", "iot.agile.Device");
-        return "iot.agile.Device";
+        //return "iot.agile.Device";
       }
     } catch (Exception e) {
       logger.error("Can not register device: {}", e);
     }  
-    return device.Id();
+    //return "ble/" + deviceDefinition.id.replace(":", "");
+    return ret;
   }
 
   /**
@@ -134,7 +142,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Devices()
    */
   @Override
-  public Map<String, String> Devices() {
+  public List<Map<String, String>> Devices() {
     return devices();
   }
 
@@ -144,7 +152,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#devices()
    */
   @Override
-  public Map<String, String> devices() {
+  public List<Map<String, String>> devices() {
     return devices;
   }
 

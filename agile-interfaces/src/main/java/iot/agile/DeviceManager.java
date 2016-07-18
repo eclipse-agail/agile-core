@@ -16,6 +16,7 @@
 package iot.agile;
 
 import java.util.Map;
+import java.util.List;
 
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -41,7 +42,7 @@ public interface DeviceManager extends DBusInterface {
    * @return
    */
   @org.freedesktop.DBus.Description("Returns all registered devices")
-  public Map<String, String> Devices();
+  public List<Map<String, String>> Devices();
 
   /**
    * Return all registered devices (deprecated)
@@ -49,7 +50,7 @@ public interface DeviceManager extends DBusInterface {
    * @return
    */
   @org.freedesktop.DBus.Description("Returns all registered devices (deprecated)")
-  public Map<String, String> devices();
+  public List<Map<String, String>> devices();
 
   /**
    * search for devices based on specific criteria
@@ -63,7 +64,7 @@ public interface DeviceManager extends DBusInterface {
    * Creates devices
    */
   @org.freedesktop.DBus.Description("Returns all registered devices")
-  public String Create(DeviceDefinition devicedefinition);
+  public Map<String,String> Create(DeviceDefinition devicedefinition);
 
   /**
    * Load a device definition by its ID

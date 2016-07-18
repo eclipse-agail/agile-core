@@ -57,39 +57,10 @@ public class DeviceManager {
   
   @POST
 //  public String Create(@NotNull DeviceDefinition body) throws DBusException {
-  public String Create(String raw) throws DBusException, IOException {
+  public Map<String,String> Create(DeviceDefinition devdef) throws DBusException, IOException {
     
-    JsonNode json = mapper.readValue(raw, JsonNode.class);
-    
-    List<DeviceComponet> streams = new ArrayList<>();
-    for (Iterator<JsonNode> iterator = json.get("streams").iterator(); iterator.hasNext();) {
-      JsonNode next = iterator.next();
-      
-      if(!next.has("id")) {
-        throw new BadRequestException("missing stream id");
-      }
-      String unit = next.has("unit") ? next.get("unit").asText() : "";
-      DeviceComponet c = new DeviceComponet(next.get("id").asText(), unit);
-      streams.add(c);
-    }
-    
-    if(!json.has("id"))
-      throw new BadRequestException("missing id");
-    if(!json.has("protocol"))
-      throw new BadRequestException("missing protocol");
-    
-    String path = json.has("path") ? json.get("path").asText() : "";
-    String name = json.has("name") ? json.get("name").asText() : "";
-    
-    DeviceDefinition body = new DeviceDefinition(
-        json.get("id").asText(), 
-        json.get("protocol").asText(), 
-        name, 
-        path, 
-        streams);
-    
-    logger.debug("Create new device {} ({}) on {}", body.id, body.name, body.protocol);
-    return client.getDeviceManager().Create(body);
+    //logger.debug("Create new device {} ({}) on {}", body.id, body.name, body.protocol);
+    return client.getDeviceManager().Create(devdef);
   }
   
   @GET
