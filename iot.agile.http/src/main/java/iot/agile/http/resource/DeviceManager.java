@@ -17,21 +17,15 @@ package iot.agile.http.resource;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iot.agile.http.Util;
 import iot.agile.http.resource.devicemanager.BatchBody;
-import iot.agile.http.resource.devicemanager.CreateDeviceBody;
 import iot.agile.http.service.DbusClient;
-import iot.agile.object.DeviceComponet;
 import iot.agile.object.DeviceDefinition;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -64,9 +58,8 @@ public class DeviceManager {
   }
   
   @GET
-  public String List() throws DBusException, JsonProcessingException {
-    Map<String, String> dbuslist = client.getDeviceManager().devices();
-    return mapper.writeValueAsString(dbuslist);
+  public List<Map<String, String>> List() throws DBusException, JsonProcessingException {
+    return client.getDeviceManager().devices();
   }
   
   @POST
