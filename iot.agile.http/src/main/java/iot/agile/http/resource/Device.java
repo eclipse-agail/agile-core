@@ -90,6 +90,7 @@ public class Device {
 
   @GET
   @Path("/{sensorName}")
+  @Produces(MediaType.TEXT_PLAIN)
   public String Read(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     return getDevice(id).Read(sensorName);
   }

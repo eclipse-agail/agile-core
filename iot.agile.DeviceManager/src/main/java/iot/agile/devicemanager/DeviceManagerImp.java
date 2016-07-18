@@ -86,7 +86,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
   public Map<String, String> Create(DeviceDefinition deviceDefinition) {
     logger.debug("Creating new device id: {} name: {} protocol: {}", deviceDefinition.id, deviceDefinition.name,
         deviceDefinition.protocol);
-
+    boolean registered =false;
     // For demo purpose we create only sensor tag device
     Device device = isRegistered(deviceDefinition);
 
@@ -99,18 +99,24 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
       if (device==null) {
         device = new TISensorTag(deviceDefinition);
         devices.add(ret);
-        logger.info("Device registered {}", device.Id());
-        device.Connect();
-      } else {
-        device.Connect();
-        logger.info("Already registered device  {}", "iot.agile.Device");
-        //return "iot.agile.Device";
-      }
+        logger.info("Device registered: {}", device.Id());
+       } else {
+         logger.info("Device already registered:  {}", device.Id());
+       }
+      registered =true;
     } catch (Exception e) {
-      logger.error("Can not register device: {}", e);
+      logger.error("Can not register device: {}", e.getMessage());
     }  
-    //return "ble/" + deviceDefinition.id.replace(":", "");
-    return ret;
+     
+    //connect device
+     if (registered) {
+      try {
+        device.Connect();
+      } catch (Exception e) {
+        logger.error("Error encountered while attempting to connect: {}", e.getMessage());
+       }
+    }
+      return ret;
   }
 
   /**
