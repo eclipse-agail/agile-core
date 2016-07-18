@@ -29,14 +29,22 @@
 
 
   <root level="debug">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="application_file" /> 
   </root>
 
-<!--  <logger name="iot.agile.http" level="DEBUG">
-    <appender-ref ref="STDOUT" />     
-  </logger>-->
+  <logger name="iot.agile.http" level="DEBUG">
+    <appender-ref ref="STDOUT" />
+  </logger>
   
-  <logger name="application" level="INFO">
+  <logger name="iot.agile.http.resource" level="DEBUG">
+    <appender-ref ref="STDOUT" />
+  </logger>
+  
+  <logger name="iot.agile.http.service" level="DEBUG">
+    <appender-ref ref="STDOUT" />
+  </logger>
+  
+  <logger name="application" level="DEBUG">
     <appender-ref ref="application_file" />     
   </logger>
 

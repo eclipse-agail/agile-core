@@ -58,7 +58,9 @@ public class DeviceManager {
   
   @GET
   public List<Map<String, String>> List() throws DBusException, JsonProcessingException {
-    return client.getDeviceManager().devices();
+    List<Map<String, String>> list = client.getDeviceManager().devices();
+    logger.debug("{} managed devices", list.size());
+    return list;
   }
   
   @POST
