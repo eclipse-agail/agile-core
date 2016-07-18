@@ -46,7 +46,7 @@ public class RegisterDevice {
 
   public static final String PROTOCOL_ID = "iot.agile.protocol.BLE";
 
-  private static String deviceAddress = "78:C5:E5:6E:E4:CF";
+  private static String deviceAddress = "C4:BE:84:70:69:09";
 
   private static String deviceName = "TISensorTag";
 

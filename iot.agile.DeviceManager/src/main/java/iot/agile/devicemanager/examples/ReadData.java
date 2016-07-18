@@ -51,7 +51,7 @@ public class ReadData {
 	 */
 	private static String service = "Temperature";
 	
-	private static String address ="78:C5:E5:6E:E4:CF";
+	private static String address ="C4:BE:84:70:69:09";
 
 	/**
 	 * @param args
