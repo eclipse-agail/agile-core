@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
    sensortags = []
    for device in devices:
-     if (device[2] == 'SensorTag'):
+     if (device[2] == 'SensorTag' or device[2] == 'CC2650 SensorTag'):
        sensortag = device_manager.Create((device[0], device[1], device[2], '',[('Temperature','celsius')]))
        print (sensortag)
        sensortags.append(sensortag)
