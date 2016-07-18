@@ -24,15 +24,17 @@ if __name__ == "__main__":
    protocol_manager = dbus.Interface(dbuspm, dbus_interface=PM_BUS_NAME)
 
    protocol_manager.StartDiscovery()
+   time.sleep(5)
+   devices = protocol_manager.Devices()
+   protocol_manager.StopDiscovery()
+   print (devices)
 
-   print (protocol_manager.Devices())
+#   dbusdm = session_bus.get_object(DM_BUS_NAME, DM_OBJ_PATH)
+#   device_manager = dbus.Interface(dbusdm, dbus_interface=DM_BUS_NAME)
 
-   dbusdm = session_bus.get_object(DM_BUS_NAME, DM_OBJ_PATH)
-   device_manager = dbus.Interface(dbusdm, dbus_interface=DM_BUS_NAME)
+#   print (device_manager.devices())
 
-   print (device_manager.devices())
+#   print (device_manager.Create(('78:C5:E5:6E:E4:CF', 'iot.agile.protocol.BLE', 'SensorTag', '',[('Temperature','celsius')])))
 
-   print (device_manager.Create(('78:C5:E5:6E:E4:CF', 'iot.agile.protocol.BLE', 'SensorTag', '',[('Temperature','celsius')])))
-
-   print (device_manager.devices())
+#   print (device_manager.devices())
 
