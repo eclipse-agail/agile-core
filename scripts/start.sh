@@ -110,5 +110,3 @@ fi
 echo "Modules launched use this variables in the shell:"
 echo $TOEXPORT
 echo ""
-
-sleep 10
