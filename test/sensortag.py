@@ -35,16 +35,20 @@ if __name__ == "__main__":
    dbusdm = session_bus.get_object(DM_BUS_NAME, DM_OBJ_PATH)
    device_manager = dbus.Interface(dbusdm, dbus_interface=DM_BUS_NAME)
 
+   sensortags = []
    for device in devices:
-     if (device[2] == 'SensorTag'):
-       print (device_manager.Create((device[0], device[1], device[2], '',[('Temperature','celsius')])))
+     if (device[2] == 'SensorTag' or device[2] == 'CC2650 SensorTag'):
+       sensortag = device_manager.Create((device[0], device[1], device[2], '',[('Temperature','celsius')]))
+       print (sensortag)
+       sensortags.append(sensortag)
 
    print (device_manager.devices())
 
+   for sensortag in sensortags:
+     print (sensortag["conn"])
+     print (sensortag["path"])
+     dbusd = session_bus.get_object(sensortag["conn"], sensortag["path"])
+     device = dbus.Interface(dbusd, dbus_interface=sensortag["conn"])
+     print(device.Read('Temperature'))
 
-#   print (device_manager.devices())
-
-#   print (device_manager.Create(('78:C5:E5:6E:E4:CF', 'iot.agile.protocol.BLE', 'SensorTag', '',[('Temperature','celsius')])))
-
-#   print (device_manager.devices())
 

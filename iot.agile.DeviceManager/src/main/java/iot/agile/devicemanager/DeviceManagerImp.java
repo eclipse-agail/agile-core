@@ -92,7 +92,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
     Map<String, String> ret = new HashMap<String,String>();
     ret.put("id","ble_" + deviceDefinition.id.replace(":", ""));
-    ret.put("path","/iot/agile/device/ble/" + deviceDefinition.id.replace(":", ""));
+    ret.put("path","/iot/agile/Device/ble_" + deviceDefinition.id.replace(":", ""));
     ret.put("conn","iot.agile.Device");
     // Register device
     try {

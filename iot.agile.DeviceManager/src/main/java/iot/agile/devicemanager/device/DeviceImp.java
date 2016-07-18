@@ -45,7 +45,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
   /**
    * Bus path for AGILE BLE Device interface
    */
-  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/device/";
+  protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
   /**
    * BLE Protocol imp DBus interface id
    */
@@ -114,7 +114,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 //    this.protocol =devicedefinition.protocol;
     this.deviceAgileID = AGILE_DEVICE_BASE_ID;
  
-    String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "ble" + "/" + devicedefinition.id.replace(":", "");
+    String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "ble" + "_" + devicedefinition.id.replace(":", "");
     ;
     
     dbusConnect(deviceAgileID, devicePath, this);

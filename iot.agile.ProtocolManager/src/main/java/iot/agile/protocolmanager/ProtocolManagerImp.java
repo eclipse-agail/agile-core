@@ -134,11 +134,11 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
         protocolInstance.Discover();
 
 
-        for (DeviceOverview device : protocolInstance.Devices()) {
-          if (!devices.contains(device)) {
-            devices.add(device);
-          }
-        }
+        //for (DeviceOverview device : protocolInstance.Devices()) {
+        //  if (!devices.contains(device)) {
+        //    devices.add(device);
+        //  }
+        //}
 
       } catch (DBusException ex) {
         logger.error("DBus exception on protocol {}", protocol, ex);
