@@ -25,44 +25,83 @@ import iot.agile.Device;
 /**
  * @author dagi
  * 
- * This program demonstrates how client programs read data from a BLE Device through DBus, this example specifically shows how to read temperature value
- *  from TI Sensor Tag 
+ *         This program demonstrates how client programs read data from a BLE
+ *         Device through DBus, this example specifically shows how to read
+ *         temperature value from TI Sensor Tag
  * 
- * NOTE: A device should be discovered, registered and connected before reading data
- *    
+ *         NOTE: A device should be discovered, registered and connected before
+ *         reading data
+ * 
  *
  */
 public class ReadData {
-	protected final static Logger logger = LoggerFactory.getLogger(ReadData.class);
+  	protected final static Logger logger = LoggerFactory.getLogger(ReadData.class);
 
 	/**
 	 * Bus name for AGILE BLE Device interface
 	 */
-	private static final String TI_SENSORTAG_AGILE_ID = "iot.agile.device.TISensorTag";
+	private static String agileDeviceObjName = "iot.agile.Device";
 
 	/**
 	 * Bus path for AGILE BLE Device interface
 	 */
-	private static final String TI_SENSORTAG_AGILE_BUS_PATH = "/iot/agile/Device/TISensorTag";
+	private static String agileDeviceObjectPath = "/iot/agile/device/ble/";
 	/**
 	 * Sensor name
 	 */
-	private static final String TEMPERATURE = "Temperature";
+	private static String service = "Temperature";
+	
+	private static String address ="C4:BE:84:70:69:09";
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		try {
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			Device sensorTag = (Device) connection.getRemoteObject(TI_SENSORTAG_AGILE_ID, TI_SENSORTAG_AGILE_BUS_PATH, Device.class);
- 			String currentTemp = sensorTag.Read(TEMPERATURE);
-			logger.info("Temperature: {}", currentTemp);
-		} catch (DBusException e) {
-			e.printStackTrace();
-		}
-		
-		
+	  checkInput(args);
+
+	  String devicePath = agileDeviceObjectPath + address.replace(":", "");
+	  logger.info("Reading {}", service);
+	
+	  while(true){
+	    try {
+	      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+	      Device sensorTag = (Device) connection.getRemoteObject(agileDeviceObjName, devicePath, Device.class);
+	      String currentTemp = sensorTag.Read(service);
+	      logger.info("Temperature: {}", currentTemp);
+	    } catch (DBusException e) {
+	      e.printStackTrace();
+	    }  
+	  }
+	  
+
 	}
 
+ 
+ private static void checkInput(String[] input){
+   if(input.length ==2){
+     service = input[0];
+     if(isValidMACAddress(input[1])){
+       address = input[1];
+     }else{
+       logger.error("invalid device address, using default sensor tag address: {}",address);
+     }
+   }else{
+     logger.error("Invalid input reading from default service {}", service);
+      
+   }
+ }
+ 
+ /**
+  * 
+  * @param address
+  * @return
+  */
+ private static boolean isValidMACAddress(String address) {
+   if (address.trim().toCharArray().length == 17) {
+     if (address.split(":").length == 6) {
+       return true;
+     }
+   }
+   return false;
+ }
 }

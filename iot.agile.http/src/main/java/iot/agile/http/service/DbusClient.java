@@ -48,6 +48,7 @@ public class DbusClient {
     
     String key = objectInterface + ":" + objectPath;
     if(instances.containsKey(key)) {
+      logger.debug("Load cached object {}:{}", objectInterface, objectPath);
       return instances.get(key);
     }
     
@@ -62,14 +63,14 @@ public class DbusClient {
   }
   
   public Device getDevice(String id) throws DBusException {
-    String iface = Device.AGILE_INTERFACE + "." + id;
-    String path = "/" + Device.AGILE_INTERFACE.replace(".", "/");
+    String iface = Device.AGILE_INTERFACE;
+    String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + id;
     return (Device) getObject(iface, path, Device.class);
   }
   
   public Protocol getProtocol(String id) throws DBusException {
-    String iface = Protocol.AGILE_INTERFACE + "." + id;
-    String path = "/" + Protocol.AGILE_INTERFACE.replace(".", "/");
+    String iface = Protocol.AGILE_INTERFACE;
+    String path = "/" + Protocol.AGILE_INTERFACE.replace(".", "/") + "/" + id;
     return (Protocol) getObject(iface, path, Protocol.class);
   }
   

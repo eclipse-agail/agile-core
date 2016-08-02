@@ -21,6 +21,8 @@ import java.util.Map;
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import iot.agile.object.DeviceOverview;
+
 /**
  * Agile BLE Protocol interface
  *
@@ -69,13 +71,15 @@ public interface Protocol extends DBusInterface {
    * @see BLEDevice for sample device implementation
    */
   @org.freedesktop.DBus.Description("Returns list discovered protocol devices")
-  public List<String> Devices();
+  public List<DeviceOverview> Devices();
 
   /**
    * Setup connection and initialize BLE connection for the given device
    *
    * TODO: Instead of deviceAddress this method should receive device profile,
    * and retrieve the id and other properties from it
+   *
+   * @return true if successfully connected, or if it was already connected
    */
   @org.freedesktop.DBus.Description("Setup connection and initialize protocol connection for the given device")
   public boolean Connect(String deviceAddress) throws DBusException;
@@ -96,9 +100,19 @@ public interface Protocol extends DBusInterface {
    *
    * TODO - return list of devices
    */
-  @org.freedesktop.DBus.Description("Lists all discovered BLE devices")
+  @org.freedesktop.DBus.Description("Start device discovery")
+  public void StartDiscovery() throws DBusException;
+
+  /**
+   * Start device discovery
+   */
+  @org.freedesktop.DBus.Description("Start device discovery (deprecated)")
   public void Discover() throws DBusException;
 
+  /**
+   * Stop device discovery
+   */
+  @org.freedesktop.DBus.Description("Stop device discovery")
   public void StopDiscovery();
 
   /**

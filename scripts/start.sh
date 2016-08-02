@@ -67,8 +67,9 @@ if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
   echo "!! Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
   exit 1
 fi
+export DBUS_SESSION_BUS_ADDRESS
 
-export MAVEN_OPTS="-Djava.library.path=$DEPS -DPORT=$PORT -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+export MAVEN_OPTS_BASE="-Djava.library.path=$DEPS:$DEPS/lib -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib:/usr/lib:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/arm
 
 mvn="mvn"
@@ -76,7 +77,7 @@ mvn="mvn"
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
   cd iot.agile.protocol.BLE
-  $mvn exec:java &
+  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE" $mvn exec:java &
   echo "Started AGILE BLE protocol"
   cd ../
 fi
@@ -84,7 +85,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "protocolmanager"
   cd iot.agile.ProtocolManager
-  $mvn exec:java &
+  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocolmanager" $mvn exec:java &
   echo "Started AGILE Protocol Manager"
   cd ..
 fi
@@ -92,7 +93,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "devicemanager"
   cd iot.agile.DeviceManager
-  $mvn exec:java &
+  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.devicemanager" $mvn exec:java &
   echo "Started AGILE Device Manager"
   cd ..
 fi
@@ -100,7 +101,7 @@ fi
 if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
   ./scripts/stop.sh "http"
   cd iot.agile.http
-  $mvn exec:java &
+  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.http" $mvn exec:java &
   echo "Started AGILE HTTP API"
   cd ..
 fi
@@ -109,5 +110,3 @@ fi
 echo "Modules launched use this variables in the shell:"
 echo $TOEXPORT
 echo ""
-
-sleep 10

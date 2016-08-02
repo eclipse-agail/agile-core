@@ -15,9 +15,10 @@
  */
 package iot.agile.devicemanager;
 
-import iot.agile.object.AbstractAgileObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -26,13 +27,14 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
-import iot.agile.devicemanager.device.DeviceImp;
 import iot.agile.devicemanager.device.TISensorTag;
+import iot.agile.object.AbstractAgileObject;
+import iot.agile.object.DeviceDefinition;
 
 /**
  * @author dagi
  *
- * Agile Device manager implementation
+ *         Agile Device manager implementation
  *
  */
 public class DeviceManagerImp extends AbstractAgileObject implements DeviceManager {
@@ -48,12 +50,10 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    */
   private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
 
-  private static final String AGILE_DEVICE_BASE_ID = "iot.agile.device.";
-
   /**
    * registered devices
    */
-  protected final Map<String, String> devices = new HashMap<String, String>();
+  protected final List<Map<String, String>> devices = new ArrayList<Map<String, String>>();
 
   public static void main(String[] args) throws DBusException {
     DeviceManager deviceManager = new DeviceManagerImp();
@@ -61,11 +61,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
   public DeviceManagerImp() throws DBusException {
 
-    dbusConnect(
-            AGILE_DEVICEMANAGER_MANAGER_BUS_NAME,
-            AGILE_DEVICEMANAGER_MANAGER_BUS_PATH,
-            this
-    );
+    dbusConnect(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 
     logger.debug("Started Device Manager");
   }
@@ -87,23 +83,47 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Create()
    */
   @Override
-  public String Create(String deviceID, String deviceName, String protocol) throws DBusException {
-    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceID, deviceName, protocol);
+  public Map<String, String> Create(DeviceDefinition deviceDefinition) {
+    logger.debug("Creating new device id: {} name: {} protocol: {}", deviceDefinition.id, deviceDefinition.name,
+        deviceDefinition.protocol);
+    boolean registered =false;
+    // For demo purpose we create only sensor tag device
+    Device device = isRegistered(deviceDefinition);
 
-    // check if it not registered or not connected
-    Device device = new TISensorTag(deviceID, deviceName, protocol);
-    if (!isRegistered(device.Id())) {
-      devices.put(deviceID, device.Id());
+    Map<String, String> ret = new HashMap<String,String>();
+    ret.put("id","ble_" + deviceDefinition.id.replace(":", ""));
+    ret.put("path","/iot/agile/Device/ble_" + deviceDefinition.id.replace(":", ""));
+    ret.put("conn","iot.agile.Device");
+    // Register device
+    try {
+      if (device==null) {
+        device = new TISensorTag(deviceDefinition);
+        devices.add(ret);
+        logger.info("Device registered: {}", device.Id());
+       } else {
+         logger.info("Device already registered:  {}", device.Id());
+       }
+      registered =true;
+    } catch (Exception e) {
+      logger.error("Can not register device: {}", e.getMessage());
+    }  
+     
+    //connect device
+     if (registered) {
+      try {
+        device.Connect();
+      } catch (Exception e) {
+        logger.error("Error encountered while attempting to connect: {}", e.getMessage());
+       }
     }
-
-    return device.Id();
+      return ret;
   }
 
   /**
    *
    *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Read(java.lang.
-   * String)
+   *      String)
    */
   @Override
   public void Read(String id) {
@@ -114,7 +134,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    *
    *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Update(java.lang.
-   * String, java.lang.String)
+   *      String, java.lang.String)
    */
   @Override
   public boolean Update(String id, String definition) {
@@ -125,10 +145,20 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
   /**
    *
    *
+   * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Devices()
+   */
+  @Override
+  public List<Map<String, String>> Devices() {
+    return devices();
+  }
+
+  /**
+   *
+   *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#devices()
    */
   @Override
-  public Map<String, String> devices() {
+  public List<Map<String, String>> devices() {
     return devices;
   }
 
@@ -136,7 +166,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    *
    *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Delete(java.lang.
-   * String, java.lang.String)
+   *      String, java.lang.String)
    */
   @Override
   public void Delete(String id, String definition) {
@@ -147,7 +177,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
    *
    *
    * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Batch(java.lang.
-   * String, java.lang.String)
+   *      String, java.lang.String)
    */
   @Override
   public boolean Batch(String operation, String arguments) {
@@ -165,11 +195,16 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
     return false;
   }
 
-  private boolean isRegistered(String deviceAgileID) {
-    if (devices.isEmpty()) {
-      return false;
+  private Device isRegistered(DeviceDefinition devDef) {
+    String objectName = "iot.agile.Device";
+    String objectPath = "/iot/agile/device/ble/" + devDef.id.replace(":", "");
+    try {
+      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+      Device device = (Device) connection.getRemoteObject(objectName, objectPath);
+      return device;
+    } catch (Exception e) {
+      return null;
     }
-    return devices.containsKey(deviceAgileID);
-  }
 
+  }
 }

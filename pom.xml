@@ -14,6 +14,7 @@
     <module>iot.agile.protocol.BLE</module>
     <module>agile-interfaces</module>
     <module>iot.agile.http</module>
+    <module>agile-main</module>
   </modules>
 
   <properties>
@@ -34,11 +35,11 @@
 
   <dependencies>
 
-    <dependency>
+<!--    <dependency>
       <groupId>org.freedesktop.dbus</groupId>
       <artifactId>dbus-java</artifactId>
       <version>2.7</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.freedesktop.dbus</groupId>
       <artifactId>libdbus-java</artifactId>

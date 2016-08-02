@@ -5,8 +5,8 @@ FROM debian:jessie
 # Add packages
 RUN \
   apt-get -qq update  && apt-get -qq install --no-install-recommends -y \
-  git ca-certificates wget apt software-properties-common \
-  unzip cpp binutils maven gettext Xvfb \
+  git ca-certificates make cmake wget apt software-properties-common \
+  glib-2.0 unzip cpp binutils maven gettext Xvfb \
   gcc libc6-dev gcc gcc-c++ make cmake
 
 RUN \

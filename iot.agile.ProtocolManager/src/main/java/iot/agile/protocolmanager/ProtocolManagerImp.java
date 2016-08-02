@@ -15,24 +15,28 @@
  */
 package iot.agile.protocolmanager;
 
-import iot.agile.object.AbstractAgileObject;
-import iot.agile.Protocol;
-import iot.agile.ProtocolManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.freedesktop.DBus.Properties;
+import org.freedesktop.dbus.DBusSigHandler;
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import iot.agile.Protocol;
+import iot.agile.ProtocolManager;
+import iot.agile.object.AbstractAgileObject;
+import iot.agile.object.DeviceOverview;
 /**
  * @author dagi
  *
  * AGILE Protocol Manager Implementation
  *
  */
-public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolManager {
+public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolManager, Properties{
 
   protected final Logger logger = LoggerFactory.getLogger(ProtocolManagerImp.class);
 
@@ -46,15 +50,20 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
 
   /**
+   * BLE Protocol Agile ID
+   */
+  public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
+
+  /**
    * List of supported protocols
    */
   final private List<String> protocols = new ArrayList<String>();
+
   /**
    * List of discovered devices from all the protocols
    */
-  final private List<String> devices = new ArrayList<String>();
+  final private List<DeviceOverview> devices = new ArrayList<DeviceOverview>();
 
-  public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
 
   public static void main(String[] args) throws DBusException {
     ProtocolManager protocolManager = new ProtocolManagerImp();
@@ -64,13 +73,22 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   }
 
   public ProtocolManagerImp() throws DBusException {
-
     dbusConnect(
             AGILE_PROTOCOL_MANAGER_BUS_NAME,
             AGILE_PROTOCOL_MANAGER_BUS_PATH,
             this
     );
 
+
+   connection.addSigHandler(ProtocolManager.FoundNewDeviceSignal.class, new DBusSigHandler<ProtocolManager.FoundNewDeviceSignal>(){
+
+    @Override
+    public void handle(FoundNewDeviceSignal signal) {
+       devices.add(signal.device);
+       logger.info("Found new device signal recived");
+      }
+
+   });
     logger.debug("ProtocolManager is running");
   }
 
@@ -79,8 +97,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
    *
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Devices()
    */
-  public List<String> Devices() {
-    return devices;
+  public List<DeviceOverview> Devices() {
+     return devices;
   }
 
   /**
@@ -93,16 +111,21 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
   }
 
   /**
+   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#StartDiscovery()
+   */
+  public void StartDiscovery() {
+    Discover();
+  }
+
+  /**
    * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Discover()
    */
   public void Discover() {
-
-    logger.debug("Initialized discovery");
+    logger.info("Initializing discovery");
 
     for (String protocol : protocols) {
-
       String objectPath = "/" + protocol.replace(".", "/");
-      logger.debug("Discovery for protocol {} : {}", protocol, objectPath);
+      logger.info("Discovery for protocol {} : {}", protocol, objectPath);
 
       Protocol protocolInstance;
       try {
@@ -110,13 +133,12 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
         protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
         protocolInstance.Discover();
 
-        for (String device : protocolInstance.Devices()) {
-          if (!devices.contains(device)) {
-            devices.add(device);
-          }
-        }
 
-        protocolInstance.StopDiscovery();
+        //for (DeviceOverview device : protocolInstance.Devices()) {
+        //  if (!devices.contains(device)) {
+        //    devices.add(device);
+        //  }
+        //}
 
       } catch (DBusException ex) {
         logger.error("DBus exception on protocol {}", protocol, ex);
@@ -124,6 +146,24 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
     }
 
+  }
+
+  /**
+   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#StopDiscovery()
+   */
+  public void StopDiscovery() {
+    for (String protocol : protocols) {
+      String objectPath = "/" + protocol.replace(".", "/");
+      logger.info("StopDiscovery for protocol {} : {}", protocol, objectPath);
+
+      Protocol protocolInstance;
+      try {
+        protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
+        protocolInstance.StopDiscovery();
+      } catch (DBusException ex) {
+        logger.error("DBus exception on protocol {}", protocol, ex);
+      }
+    }
   }
 
   /**
@@ -146,24 +186,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
     return false;
   }
 
-  /**
-   * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#DropBus()
-   */
-  public void DropBus() {
 
-  }
-
-  public void addDevice(String deviceId) {
-    if (!devices.contains(deviceId)) {
-      devices.add(deviceId);
-    }
-  }
-
-  public void removeDevice(String deviceId) {
-    if (devices.contains(deviceId)) {
-      devices.remove(deviceId);
-    }
-  }
 
   protected void addProtocol(String protocolId) {
     if (!protocols.contains(protocolId)) {
@@ -175,6 +198,24 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
     if (protocols.contains(protocolId)) {
       protocols.remove(protocolId);
     }
+  }
+
+  @Override
+  public <A> A Get(String arg0, String arg1) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Map<String, Variant> GetAll(String arg0) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public <A> void Set(String arg0, String arg1, A arg2) {
+    // TODO Auto-generated method stub
+
   }
 
 }

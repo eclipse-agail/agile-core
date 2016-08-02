@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package iot.agile.http.resource.protocol;
+package iot.agile.http;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  *
  * @author Luca Capra <lcapra@create-net.org>
  */
-public class ProtocolMessage {
-  
-  public String format;
-  public String data;
-  
-//  public Map<String, String> profile;
-//  public String deviceAddress;
+public class Util {
+  public static final ObjectMapper mapper = new ObjectMapper();
 }

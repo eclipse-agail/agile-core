@@ -15,6 +15,9 @@
  */
 package iot.agile.devicemanager.examples;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.freedesktop.DBus.Error.ServiceUnknown;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -22,42 +25,85 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.DeviceManager;
+import iot.agile.object.DeviceComponet;
+import iot.agile.object.DeviceDefinition;
 
 /**
  * @author dagi
  *
  */
 public class RegisterDevice {
-	protected final static Logger logger = LoggerFactory.getLogger(RegisterDevice.class);
 
-	/**
-	 * DBus interface name for the device manager
-	 */
-	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_NAME = "iot.agile.DeviceManager";
-	/**
-	 * DBus interface path for the device manager
-	 */
-	private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
-	
-	private static final String TI_SENSORTAG_MAC_ADDRESS = "78:C5:E5:6E:E4:CF";
+  protected final static Logger logger = LoggerFactory.getLogger(RegisterDevice.class);
+  /**
+   * DBus interface name for the device manager
+   */
+  private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_NAME = "iot.agile.DeviceManager";
+  /**
+   * DBus interface path for the device manager
+   */
+  private static final String AGILE_DEVICEMANAGER_MANAGER_BUS_PATH = "/iot/agile/DeviceManager";
 
-	public static void main(String[] args) {
-		// DBus connection
-		try {
-			//Get the device manager DBus interface
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			DeviceManager deviceManager = (DeviceManager) connection.getRemoteObject(
-					AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
-			//Register device
-			String deviceAgileID = deviceManager.Create(TI_SENSORTAG_MAC_ADDRESS, "TISensorTag", "BLE");
-			logger.info(deviceManager.devices().get(TI_SENSORTAG_MAC_ADDRESS));
-			logger.info("Device ID: {}" ,deviceAgileID);
-  
-		}  catch (ServiceUnknown e) {
-			logger.error("Can not find the DBus object : {}" ,AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, e);
-		}catch (DBusException e) {
-			logger.error("Error in registering device :", e);
-  		}
-	}
+  public static final String PROTOCOL_ID = "iot.agile.protocol.BLE";
 
+  private static String deviceAddress = "C4:BE:84:70:69:09";
+
+  private static String deviceName = "TISensorTag";
+
+  public static void main(String[] args) {
+    checkUserInput(args);
+    try {
+      // Get the device manager DBus interface
+      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+      DeviceManager deviceManager = (DeviceManager) connection.getRemoteObject(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME,
+          AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
+
+      // Register device
+      String deviceAgileID = (deviceManager
+          .Create(new DeviceDefinition(deviceAddress, PROTOCOL_ID, deviceName, "", getDeviceStreams()))).get("id");
+      logger.info("Device ID: {}", deviceAgileID);
+    } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
+      logger.debug("Unkown method");
+    } catch (ServiceUnknown e) {
+      logger.error("Can not find the DBus object : {}", AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, e);
+    } catch (DBusException e) {
+      logger.error("Error in registering device :", e);
+    }
+
+  }
+
+  // Utility methods
+
+  private static void checkUserInput(String[] args) {
+    if (args.length == 1) {
+      if (isValidMACAddress(args[0])) {
+        deviceAddress = args[0];
+      } else {
+        logger.info("Invalid MAC Address, Using default value for TI-SensorTag:" + deviceAddress);
+      }
+    }
+    // TODO Check other parameters
+  }
+
+  /**
+   * 
+   * @param address
+   * @return
+   */
+  private static boolean isValidMACAddress(String address) {
+    if (address.trim().toCharArray().length == 17) {
+      if (address.split(":").length == 6) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static List<DeviceComponet> getDeviceStreams() {
+    List<DeviceComponet> streamList = new ArrayList<DeviceComponet>();
+    streamList.add(new DeviceComponet("Temperature", "Celsius"));
+    streamList.add(new DeviceComponet("Accelerometer", "MeterPerSecond"));
+    streamList.add(new DeviceComponet("Humidity", "Percent"));
+    return streamList;
+  }
 }
