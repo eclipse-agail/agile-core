@@ -6,17 +6,19 @@ BUILD=$DEPS/build/dbus-java
 
 mkdir -p $BUILD
 
-DBUSJAVA=2.7
+DBUSJAVA=2.9 #note: this is not an official release, that stopped at 2.7
 LMLIB=0.8
 
-wget http://www.matthew.ath.cx/projects/java/libmatthew-java-$LMLIB.tar.gz
-wget https://dbus.freedesktop.org/releases/dbus-java/dbus-java-2.7.tar.gz
 
+wget http://www.matthew.ath.cx/projects/java/libmatthew-java-$LMLIB.tar.gz
 tar -xzf libmatthew-java-$LMLIB.tar.gz
 rm libmatthew-java-$LMLIB.tar.gz
 
-tar -xzf dbus-java-$DBUSJAVA.tar.gz
-rm dbus-java-$DBUSJAVA.tar.gz
+#wget https://dbus.freedesktop.org/releases/dbus-java/dbus-java-$DBUSJAVA.tar.gz
+#tar -xzf dbus-java-$DBUSJAVA.tar.gz
+#rm dbus-java-$DBUSJAVA.tar.gz
+git clone https://github.com/jeanparpaillon/dbus-java.git dbus-java-$DBUSJAVA
+( cd dbus-java-$DBUSJAVA && git checkout $DBUSJAVA )
 
 mv dbus-java-$DBUSJAVA $BUILD
 mv libmatthew-java-$LMLIB $BUILD
@@ -46,18 +48,18 @@ if [ -e ~/.m2/repository/org/freedesktop/dbus-java ] ; then
   rm -r ~/.m2/repository/cx/ath
 fi
 
-mvn install:install-file -Dfile=$DEPS/dbus-java-bin-2.7.jar \
+mvn install:install-file -Dfile=$DEPS/dbus-java-bin-$DBUSJAVA.jar \
                          -DgroupId=org.freedesktop.dbus \
                          -DartifactId=dbus-java \
-                         -Dversion=2.7 \
+                         -Dversion=$DBUSJAVA \
                          -Dpackaging=jar \
                          -DgeneratePom=true \
                          -DlocalRepositoryPath=$DEPS
 
-mvn install:install-file -Dfile=$DEPS/libdbus-java-2.7.jar \
+mvn install:install-file -Dfile=$DEPS/libdbus-java-$DBUSJAVA.jar \
                          -DgroupId=org.freedesktop.dbus \
                          -DartifactId=libdbus-java \
-                         -Dversion=2.7 \
+                         -Dversion=$DBUSJAVA \
                          -Dpackaging=jar \
                          -DgeneratePom=true \
                          -DlocalRepositoryPath=$DEPS
