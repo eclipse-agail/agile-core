@@ -3,7 +3,7 @@
 dbus-daemon \
   --fork \
   --print-pid --print-address \
-  --address=unix:path=/home/cskiraly/agile_bus_socket \
+  --address=unix:path=$HOME/agile_bus_socket \
   --config-file=dbus/agile.conf
 
 docker run \
