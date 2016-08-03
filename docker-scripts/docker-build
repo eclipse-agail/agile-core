@@ -1,0 +1,5 @@
+#!/bin/sh
+
+VERSION="latest"
+
+docker build -t agile:$VERSION .
