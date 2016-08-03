@@ -1,43 +1,110 @@
+#FROM resin/rpi-raspbian:jessie
+#FROM resin/raspberrypi2-debian:jessie
+FROM resin/amd64-debian:jessie
 
-# FROM resin/raspberrypi2-debian
-FROM debian:jessie
+# Install wget and curl
+RUN apt-get clean && apt-get update && apt-get install -y \
+  wget \
+  curl
+
+# prevent httpredir from doing nasty things
+RUN sed -i "s/httpredir.debian.org/`curl -s -D - http://httpredir.debian.org/demo/debian/ | awk '/^Link:/ { print $2 }' | sed -e 's@<http://\(.*\)/debian/>;@\1@g'`/" /etc/apt/sources.list
+
+# Add the key for foundation repository
+# RUN wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | sudo apt-key add -
+
+# Add apt source of the foundation repository
+# We need this source because bluez needs to be patched in order to work with rpi3 ( Issue #1314: How to get BT working on Pi3B. by clivem in raspberrypi/linux on GitHub )
+# Add it on top so apt will pick up packages from there
+# RUN sed -i '1s#^#deb http://archive.raspberrypi.org/debian jessie main\n#' /etc/apt/sources.list
+
+# Install Java
+# with sources from https://launchpad.net/~webupd8team/+archive/ubuntu/java
+# using the fix described at http://www.all4pages.com/2014/03/23/wie-installieren-wir-oracle-java-8-auf-wheezy-ueber-die-debian-sourcelist/
+RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list && \
+    echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 && \
+    echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+    apt-get update && \
+    apt-get install -y oracle-java8-installer --no-install-recommends && \
+    apt-get clean && \
+    apt-get purge && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Java on Raspbian
+#RUN apt-get install oracle-java8-jdk
+
+# Define commonly used JAVA_HOME variable
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+#ENV JAVA_HOME $(readlink -f /usr/bin/javac | sed "s:/bin/javac::")
+#ENV JAVA_HOME /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt
 
 # Add packages
-RUN \
-  apt-get -qq update  && apt-get -qq install --no-install-recommends -y \
-  git ca-certificates make cmake wget apt software-properties-common \
-  glib-2.0 unzip cpp binutils maven gettext Xvfb \
-  gcc libc6-dev gcc gcc-c++ make cmake
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    build-essential \
+    git\
+    ca-certificates \
+    apt \
+    software-properties-common \
+    unzip \
+    cpp \
+    binutils \
+    maven \
+    gettext \
+    Xvfb \
+    libc6-dev \
+    make \
+    cmake \
+    cmake-data \
+    pkg-config \
+    clang \
+    gcc-4.9 \
+    g++-4.9 \
+    glib2.0 \
+    libglib2.0-0 \
+    qdbus
 
-RUN \
-  echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list && \
-  echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list && \
-  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 && \
-  apt-get update && \
-  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  apt-get install oracle-java8-installer -y && \
-  rm -rf /var/lib/apt/lists/* && \
-  rm -rf /var/cache/oracle-jdk8-installer
 
-ENV APATH /agile
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    bluetooth \
+    bluez \
+#    bluez-firmware \
+    libbluetooth-dev \
+    libudev-dev
 
-ENV CC clang
-ENV CXX clang++
-ENV CMAKE_C_COMPILER clang
-ENV CMAKE_CXX_COMPILER clang++
 
-RUN mkdir -p $APATH
 
-WORKDIR $APATH
+# These env vars enable sync_mode on all devices.
+#ENV SYNC_MODE=on
+#ENV INITSYSTEM=on
 
-COPY ./ ./
+# resin-sync will always sync to /usr/src/app, so code needs to be here.
+WORKDIR /usr/src/app
 
-RUN $APATH/scripts/install-dbus-java.sh $APATH/deps
-RUN $APATH/scripts/install-tinyb.sh $APATH/deps
+# copy app/ directory into WORKDIR
+#COPY app/ ./
+COPY agile-interfaces agile-interfaces
+COPY agile-main agile-main
+COPY iot.agile.DeviceManager iot.agile.DeviceManager
+COPY iot.agile.ProtocolManager iot.agile.ProtocolManager
+COPY iot.agile.http iot.agile.http
+COPY iot.agile.protocol.BLE iot.agile.protocol.BLE
+COPY scripts scripts
+COPY test test
+COPY pom.xml pom.xml
 
-RUN \
-  cd $APATH && \
-  mvn clean install -U
+ENV APATH /usr/src/app
 
-ENV INITSYSTEM on
-CMD [ PORT=80, $APATH/scripts/start.sh ]
+RUN cd /usr/src/app && CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
+$APATH/scripts/install-dbus-java.sh $APATH/deps
+
+RUN cd /usr/src/app && PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
+$APATH/scripts/install-tinyb.sh $APATH/deps
+
+RUN cd $APATH && mvn clean install -U
+
+# we need dbus-launch
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    dbus-x11
+
+CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
