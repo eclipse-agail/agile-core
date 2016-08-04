@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Kill the processes inside the container, thus
+# the start script exits and the container stops.
+# It also kills the external dbus-daemon.
+
+pkill -f agile_bus_socket
