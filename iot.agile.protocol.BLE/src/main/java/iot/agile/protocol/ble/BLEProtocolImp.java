@@ -109,8 +109,10 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
 
   private BluetoothGattCharacteristic sensorValue;
 
-  ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+  private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
+  private ScheduledFuture future ;
+  
   protected final State state = new State();
 
   public class State {
@@ -263,14 +265,14 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
       }
     };
 
-    ScheduledFuture future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
-    try {
-      future.get(10, TimeUnit.SECONDS);
-    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-      logger.debug("Aborted execution scheduler: {}", ex.getMessage());
-    } finally {
-      logger.debug("Stopped BLE discovery");
-    }
+      future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
+//    try {
+//      future.get(10, TimeUnit.SECONDS);
+//    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+//      logger.debug("Aborted execution scheduler: {}", ex.getMessage());
+//    } finally {
+//      logger.debug("Stopped BLE discovery");
+//    }
 
   }
 
@@ -457,8 +459,10 @@ public class BLEProtocolImp  extends AbstractAgileObject implements Protocol {
    */
   @Override
   public void StopDiscovery() {
-    /* TODO: stop Runnable scheduled in Discovery */
     bleManager.stopDiscovery();
+    if(future != null){
+    	future.cancel(true);
+    }
   }
 
 

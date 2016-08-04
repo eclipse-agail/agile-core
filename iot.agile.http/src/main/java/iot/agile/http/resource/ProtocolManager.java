@@ -15,7 +15,6 @@
  */
 package iot.agile.http.resource;
 
-
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceOverview;
 import java.util.List;
@@ -40,53 +39,53 @@ import org.slf4j.LoggerFactory;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProtocolManager {
-  
-  protected Logger logger = LoggerFactory.getLogger(ProtocolManager.class);
-  
-  @Inject DbusClient client;
-  
-  protected iot.agile.ProtocolManager getProtocolManager() throws DBusException {
-    return client.getProtocolManager();
-  }
-    
-  @GET
-  @Path("/devices")
-  public List<DeviceOverview> Devices() throws DBusException {
-    return getProtocolManager().Devices();
-  }
 
-  @POST
-  @Path("/{id}")
-  public String Add(@PathParam("id") String protocol) throws DBusException {
-    getProtocolManager().Add(protocol);
-    return "";
-  }
+	protected Logger logger = LoggerFactory.getLogger(ProtocolManager.class);
 
-  @DELETE
-  @Path("/{id}")
-  public String Remove(@PathParam("id") String protocol) throws DBusException {
-    getProtocolManager().Remove(protocol);
-    return "";
-  }  
-  
-  @GET
-  public List<String> Protocols() throws DBusException {
-    return getProtocolManager().Protocols();
-  }
+	@Inject
+	DbusClient client;
 
-  @POST
-  @Path("/discovery")
-  public String StartDiscovery() throws DBusException {
-    getProtocolManager().Discover();
-    return "";
-  }
-  
-  @DELETE
-  @Path("/discovery")
-  public String StopDiscovery() throws DBusException {
-    throw new InternalError("Not Implemented");
-//    return "";
-  }
+	protected iot.agile.ProtocolManager getProtocolManager() throws DBusException {
+		return client.getProtocolManager();
+	}
 
-  
+	@GET
+	@Path("/devices")
+	public List<DeviceOverview> Devices() throws DBusException {
+		return getProtocolManager().Devices();
+	}
+
+	@POST
+	@Path("/{id}")
+	public String Add(@PathParam("id") String protocol) throws DBusException {
+		getProtocolManager().Add(protocol);
+		return "";
+	}
+
+	@DELETE
+	@Path("/{id}")
+	public String Remove(@PathParam("id") String protocol) throws DBusException {
+		getProtocolManager().Remove(protocol);
+		return "";
+	}
+
+	@GET
+	public List<String> Protocols() throws DBusException {
+		return getProtocolManager().Protocols();
+	}
+
+	@POST
+	@Path("/discovery")
+	public String StartDiscovery() throws DBusException {
+		getProtocolManager().Discover();
+		return "";
+	}
+
+	@DELETE
+	@Path("/discovery")
+	public String StopDiscovery() throws DBusException {
+		getProtocolManager().StopDiscovery();
+		return "";
+	}
+
 }
