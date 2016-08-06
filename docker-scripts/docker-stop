@@ -5,3 +5,4 @@
 # It also kills the external dbus-daemon.
 
 pkill -f agile_bus_socket
+pkill -f "Xvfb :0 -screen 0 1x1x8"
