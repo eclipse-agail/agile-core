@@ -28,8 +28,26 @@ cd Agile-BLE
 - pull ARM image file and start AGILE
 ```
 docker pull cskiraly/agile-arm:latest # Not strictly needed, as the container is also pulled by docker-start, if not done before.
+```
+
+Starting/Stopping AGILE
+---
+
+- starting AGILE
+
+```
 docker-scripts/docker-start cskiraly/agile-arm:latest
 . docker-scripts/docker-env # Expose AGILE D-Bus in shell. 
+```
+
+- stopping AGILE
+```
+sudo docker-scripts/docker-stop
+```
+
+- alternative start AGILE with per-service containers
+```
+docker-scripts/docker-start-perservice cskiraly/agile-arm:latest
 ```
 
 Testing the installation
