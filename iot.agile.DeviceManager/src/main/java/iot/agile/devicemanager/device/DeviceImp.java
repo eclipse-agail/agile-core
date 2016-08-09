@@ -288,4 +288,23 @@ public class DeviceImp extends AbstractAgileObject implements Device {
     return false;
   }
 
+  /**
+   * Checks if the requested sensor is supported by the device
+   * @param sensorName
+   * 			Sensor name
+   * @return
+   * 		true if the sensor is supported
+   * 		false otherwise
+   */
+  protected boolean isSensorSupported(String sensorName){
+	  return true;
+  }
+  
+  
+  
+  
+  
+  
+  
+  
 }
