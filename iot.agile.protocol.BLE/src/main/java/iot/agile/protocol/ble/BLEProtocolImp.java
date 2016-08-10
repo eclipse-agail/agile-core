@@ -93,8 +93,9 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 
 	private static final String GATT_CHARACTERSTICS_CONFIG = "CONFIGURATION_CHAR";
 
-	private static final String CONFIGURATION_VALUE = "CONFIGURATION_VALUE";
-
+	private static final String SENSOR_TURN_ON = "SENSOR_TURN_ON";
+	
+	private static final String SENSOR_TURN_OFF = "SENSOR_TURN_OFF";
 	/**
 	 * Lists of device names TODO: Should return lists of devices in terms of
 	 * Dbus object
@@ -109,7 +110,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	protected String lastRead;
 	
 	private BluetoothGattCharacteristic sensorValue;
-
+	private BluetoothGattCharacteristic sensorConfig ;
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
 	private ScheduledFuture future;
@@ -331,14 +332,14 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 					return sensorName + " service not found";
 				} else {
 					sensorValue = getCharacteristic(sensorService, profile.get(GATT_CHARACTERSTICS_VALUE));
-					BluetoothGattCharacteristic sensorConfig = getCharacteristic(sensorService,
+					  sensorConfig = getCharacteristic(sensorService,
 							profile.get(GATT_CHARACTERSTICS_CONFIG));
 
 					if (sensorValue == null || sensorConfig == null) {
 						logger.error("Could not find the correct characterstics");
 						return "Incorrect characterstics";
 					}
-					byte[] configValue = profile.get(CONFIGURATION_VALUE).getBytes();
+					byte[] configValue = profile.get(SENSOR_TURN_ON).getBytes();
 					sensorConfig.writeValue(configValue);
 					return "Done";
 				}
@@ -372,6 +373,12 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 				 * Read the service value from value characteristics
 				 */
 				byte[] readValue = sensorValue.readValue();
+				
+				//Extract Turn off sensor command value from the profile
+				byte[] turnoffCMD = profile.get(SENSOR_TURN_OFF).getBytes();
+				int intermediateValue = turnoffCMD[0]-1;
+				byte[] value = {(byte) intermediateValue};
+  				sensorConfig.writeValue(value);
 				return new String(readValue, StandardCharsets.ISO_8859_1);
 			}
 		} catch (InterruptedException e) {

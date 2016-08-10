@@ -19,7 +19,15 @@ public class TISensorTag extends DeviceImp implements Device {
 
 	private static final String GATT_CHARACTERSTICS_CONFIG = "CONFIGURATION_CHAR";
 
-	private static final String CONFIGURATION_VALUE = "CONFIGURATION_VALUE";
+	private static final String SENSOR_TURN_ON = "SENSOR_TURN_ON";
+	
+	private static final byte[] SENSOR_TURN_ON_VALUE ={0X01};
+	
+	private static final String SENSOR_TURN_OFF = "SENSOR_TURN_OFF";
+	
+	private static final byte[] SENSOR_TURN_OFF_VALUE ={0X01};
+	
+	
 	/**
 	 * TI Sensor Tag temperature service
 	 */
@@ -44,7 +52,7 @@ public class TISensorTag extends DeviceImp implements Device {
 	 * TI Sensor Tag Humidity service
 	 */
 	private static final String HUMIDITY = "Humidity";
-	// F000AA20-0451-4000-B000-000000000000
+
 	private static final String HUMIDITY_GATT_SERVICE_UUID = "f000aa20-0451-4000-b000-000000000000";
 
 	private static final String HUMIDITY_GATT_CHARACTERSTICS_UUID = "f000aa21-0451-4000-b000-000000000000";
@@ -137,17 +145,18 @@ public class TISensorTag extends DeviceImp implements Device {
 			profile.put(GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
 			profile.put(GATT_CHARACTERSTICS_VALUE, TEMP_GATT_CHARACTERSTICS_UUID);
 			profile.put(GATT_CHARACTERSTICS_CONFIG, TEMP_GATT_CHARACTERSTICS_CONFIG_UUID);
-			profile.put(CONFIGURATION_VALUE, new String(configValue));
+			profile.put(SENSOR_TURN_ON, new String(SENSOR_TURN_ON_VALUE));
+			profile.put(SENSOR_TURN_OFF, new String(SENSOR_TURN_OFF_VALUE));
 		} else if (sensorName.equals(ACCELEROMETER)) {
 			profile.put(GATT_SERVICE, ACC_GATT_SERVICE_UUID);
 			profile.put(GATT_CHARACTERSTICS_VALUE, ACC_GATT_CHARACTERSTICS_UUID);
 			profile.put(GATT_CHARACTERSTICS_CONFIG, ACC_GATT_CHARACTERSTICS_CONFIG_UUID);
 		} else if (sensorName.equals(HUMIDITY)) {
-			byte[] configValue = { 0x01 };
-			profile.put(GATT_SERVICE, HUMIDITY_GATT_SERVICE_UUID);
+ 			profile.put(GATT_SERVICE, HUMIDITY_GATT_SERVICE_UUID);
 			profile.put(GATT_CHARACTERSTICS_VALUE, HUMIDITY_GATT_CHARACTERSTICS_UUID);
 			profile.put(GATT_CHARACTERSTICS_CONFIG, HUMIDITY_GATT_CHARACTERSTICS_CONFIG_UUID);
-			profile.put(CONFIGURATION_VALUE, new String(configValue));
+			profile.put(SENSOR_TURN_ON, new String(SENSOR_TURN_ON_VALUE));
+			profile.put(SENSOR_TURN_OFF, new String(SENSOR_TURN_OFF_VALUE));
 		} else if (sensorName.equals(BAROMETER)) {
 			profile.put(GATT_SERVICE, MAGNETOMETER_GATT_SERVICE_UUID);
 			profile.put(GATT_CHARACTERSTICS_VALUE, MAGNETOMETER_GATT_CHARACTERSTICS_UUID);
