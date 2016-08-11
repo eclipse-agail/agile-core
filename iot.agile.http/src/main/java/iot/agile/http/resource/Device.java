@@ -60,7 +60,7 @@ public class Device {
 
   @GET
   @Path("/lastUpdate")
-  public int LastUpdate(@PathParam("id") String id) throws DBusException {
+  public long LastUpdate(@PathParam("id") String id) throws DBusException {
     return getDevice(id).LastUpdate();
   }
 

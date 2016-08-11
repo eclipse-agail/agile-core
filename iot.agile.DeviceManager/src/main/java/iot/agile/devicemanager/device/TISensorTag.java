@@ -113,6 +113,7 @@ public class TISensorTag extends DeviceImp implements Device {
 						RecordObject readValue = deviceProtocol.Read(deviceID, getProfile(sensorName.trim()));
 						readValue.setValue(formatReading(sensorName, readValue.getValue()));
 						data = readValue;
+						lastUpdate = readValue.lastUpdate;
 						return readValue;
 					} catch (Exception e) {
 						e.printStackTrace();

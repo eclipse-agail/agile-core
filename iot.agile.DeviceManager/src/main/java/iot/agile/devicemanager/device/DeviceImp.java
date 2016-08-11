@@ -101,7 +101,10 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    */
   protected RecordObject data;
   
-
+/**
+ * UNIX time stamp to indicate the last updated received by the device 
+ */
+  protected long lastUpdate;
   /**
    * 
    * @param deviceID
@@ -180,9 +183,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
   /**
    * Returns the last update of value
    */
-  public int LastUpdate() {
-    logger.debug("Device. LastUpdate not implemented");
-    return 0;
+  public long LastUpdate() {
+     return lastUpdate;
   }
 
   /**
@@ -305,12 +307,5 @@ public class DeviceImp extends AbstractAgileObject implements Device {
   protected boolean isSensorSupported(String sensorName){
 	  return true;
   }
-  
-  
-  
-  
-  
-  
-  
   
 }

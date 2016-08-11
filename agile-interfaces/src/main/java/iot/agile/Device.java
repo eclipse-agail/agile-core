@@ -74,7 +74,7 @@ public interface Device extends DBusInterface {
    * device
    */
   @org.freedesktop.DBus.Description("returns the last data update received by the device")
-  public int LastUpdate();
+  public long LastUpdate();
 
   /**
    *
