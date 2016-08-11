@@ -71,7 +71,7 @@ public class Protocol {
   @POST
   @Path("/discovery")
   public void Discover(@PathParam("id") String id) throws DBusException {
-    getProtocol(id).Discover();
+    getProtocol(id).StartDiscovery();
   }
 
   @DELETE

@@ -221,14 +221,6 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 */
 	@Override
 	public void StartDiscovery() {
-		Discover();
-	}
-
-	/**
-	 * Discover BLE devices
-	 */
-	@Override
-	public void Discover() {
 		logger.info("Started discovery of BLE devices");
 
 		bleManager.startDiscovery();
@@ -274,8 +266,8 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		// logger.debug("Stopped BLE discovery");
 		// }
 
-	}
-
+}
+ 
 	/**
 	 * @see iot.agile.protocol.ble.Protocol#protocolProfile()
 	 */
@@ -385,8 +377,6 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 	}
 
- 
-
 	public void Receive(String args) throws DBusException {
 		logger.debug("Protocol.Receive not implemented");
 	}
@@ -398,9 +388,15 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 */
 	@Override
 	public void Subscribe(String deviceAddress, Map<String, String> profile) {
-		logger.debug("Protocol.Receive not implemented");
+		logger.debug("Protocol.Subscribe not implemented");
 	}
 
+	
+	@Override
+	public void Unsubscribe(String deviceAddress, Map<String, String> profile) {
+		logger.debug("Protocol.Unsubscribe not implemented");
+		}
+	
 	/**
 	 * @see iot.agile.protocol.ble.Protocol#DataStore()
 	 */
@@ -510,4 +506,6 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 		return null;
 	}
+
+
 }

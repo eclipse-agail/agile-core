@@ -77,7 +77,7 @@ public class ProtocolManager {
 	@POST
 	@Path("/discovery")
 	public String StartDiscovery() throws DBusException {
-		getProtocolManager().Discover();
+		getProtocolManager().StartDiscovery();
 		return "";
 	}
 
