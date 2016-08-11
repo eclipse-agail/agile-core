@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
+import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceOverview;
@@ -133,6 +134,6 @@ public interface Protocol extends DBusInterface {
    *
    * @param subscribeParams
    */
-  public void Subscribe(String... subscribeParams);
+  public void Subscribe(String deviceAddress, Map<String, String> profile);
 
 }

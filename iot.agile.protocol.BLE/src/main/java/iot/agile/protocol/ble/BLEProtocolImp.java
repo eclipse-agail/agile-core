@@ -15,11 +15,8 @@
  */
 package iot.agile.protocol.ble;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -373,12 +370,13 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 				 * Read the service value from value characteristics
 				 */
 				byte[] readValue = sensorValue.readValue();
-				
 				//Extract Turn off sensor command value from the profile
-				byte[] turnoffCMD = profile.get(SENSOR_TURN_OFF).getBytes();
-				int intermediateValue = turnoffCMD[0]-1;
-				byte[] value = {(byte) intermediateValue};
-  				sensorConfig.writeValue(value);
+				if(profile.containsKey(SENSOR_TURN_OFF)){
+					byte[] turnoffCMD = profile.get(SENSOR_TURN_OFF).getBytes();
+					int intermediateValue = turnoffCMD[0]-1;
+					byte[] value = {(byte) intermediateValue};
+	  				sensorConfig.writeValue(value);	
+				}
 				return new String(readValue, StandardCharsets.ISO_8859_1);
 			}
 		} catch (InterruptedException e) {
@@ -399,7 +397,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * @see iot.agile.protocol.ble.Protocol#subscribe(java.lang.String[])
 	 */
 	@Override
-	public void Subscribe(String... subscribeParams) {
+	public void Subscribe(String deviceAddress, Map<String, String> profile) {
 		logger.debug("Protocol.Receive not implemented");
 	}
 
@@ -511,15 +509,5 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Converts temperature into degree Celsius
-	 *
-	 * @param raw
-	 * @return
-	 */
-	private float convertCelsius(int raw) {
-		return raw / 128f;
 	}
 }

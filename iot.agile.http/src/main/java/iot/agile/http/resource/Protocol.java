@@ -102,8 +102,12 @@ public class Protocol {
 
   @POST
   @PathParam("/subscribe")
-  public void Subscribe(@PathParam("id") String id, String... subscribeParams) throws DBusException {
-    getProtocol(id).Subscribe(subscribeParams);
+  public void Subscribe(
+          @PathParam("id") String id,
+          @PathParam("deviceAddress") String deviceAddress, 
+          Map<String, String> profile
+    ) throws DBusException {
+    getProtocol(id).Subscribe(deviceAddress, profile);
   }
 
 }
