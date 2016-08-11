@@ -32,6 +32,7 @@ import iot.agile.Protocol;
 import iot.agile.ProtocolManager;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceOverview;
+import iot.agile.object.RecordObject;
 import tinyb.BluetoothDevice;
 import tinyb.BluetoothException;
 import tinyb.BluetoothGattCharacteristic;
@@ -77,12 +78,14 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	public static final String CONNECTED = "CONNECTED";
 
 	public static final String DISCONNECTED = "DISCONNECTED";
-	
+
 	public static final String AVAILABLE = "AVAILABLE";
-	
+
 	public static final String UNAVAILABLE = "AVAILABLE";
 
 	private static final String SENSOR_NAME = "SENSOR_NAME";
+
+	private static final String UNIT = "UNIT";
 
 	private static final String GATT_SERVICE = "GATT_SERVICE";
 
@@ -91,7 +94,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	private static final String GATT_CHARACTERSTICS_CONFIG = "CONFIGURATION_CHAR";
 
 	private static final String SENSOR_TURN_ON = "SENSOR_TURN_ON";
-	
+
 	private static final String SENSOR_TURN_OFF = "SENSOR_TURN_OFF";
 	/**
 	 * Lists of device names TODO: Should return lists of devices in terms of
@@ -103,11 +106,11 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * The bluetooth manager
 	 */
 	protected BluetoothManager bleManager;
-	
-	protected String lastRead;
-	
+
+	protected RecordObject lastRecord;
+
 	private BluetoothGattCharacteristic sensorValue;
-	private BluetoothGattCharacteristic sensorConfig ;
+	private BluetoothGattCharacteristic sensorConfig;
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
 	private ScheduledFuture future;
@@ -266,8 +269,8 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		// logger.debug("Stopped BLE discovery");
 		// }
 
-}
- 
+	}
+
 	/**
 	 * @see iot.agile.protocol.ble.Protocol#protocolProfile()
 	 */
@@ -321,8 +324,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 					return sensorName + " service not found";
 				} else {
 					sensorValue = getCharacteristic(sensorService, profile.get(GATT_CHARACTERSTICS_VALUE));
-					  sensorConfig = getCharacteristic(sensorService,
-							profile.get(GATT_CHARACTERSTICS_CONFIG));
+					sensorConfig = getCharacteristic(sensorService, profile.get(GATT_CHARACTERSTICS_CONFIG));
 
 					if (sensorValue == null || sensorConfig == null) {
 						logger.error("Could not find the correct characterstics");
@@ -346,30 +348,33 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * @param profile
 	 * @see iot.agile.protocol.ble.Protocol#read()
 	 */
-	public String Read(String deviceAddress, Map<String, String> profile) throws DBusException {
+	public RecordObject Read(String deviceAddress, Map<String, String> profile) throws DBusException {
 		BluetoothDevice device;
 		try {
 			device = getDevice(deviceAddress);
 			if (device == null) {
 				logger.error("Device not found: {}", deviceAddress);
-				return "Device not found";
+				return null;
 			}
 			if (!device.getConnected()) {
 				logger.error("Device not connected: {}", deviceAddress);
-				return "Device not connected";
+				return null;
 			} else {
 				/**
 				 * Read the service value from value characteristics
 				 */
 				byte[] readValue = sensorValue.readValue();
-				//Extract Turn off sensor command value from the profile
-				if(profile.containsKey(SENSOR_TURN_OFF)){
+				// Extract Turn off sensor command value from the profile
+				if (profile.containsKey(SENSOR_TURN_OFF)) {
 					byte[] turnoffCMD = profile.get(SENSOR_TURN_OFF).getBytes();
-					int intermediateValue = turnoffCMD[0]-1;
-					byte[] value = {(byte) intermediateValue};
-	  				sensorConfig.writeValue(value);	
+					int intermediateValue = turnoffCMD[0] - 1;
+					byte[] value = { (byte) intermediateValue };
+					sensorConfig.writeValue(value);
 				}
-				return new String(readValue, StandardCharsets.ISO_8859_1);
+				lastRecord = new RecordObject(deviceAddress, profile.get(SENSOR_NAME),
+						new String(readValue, StandardCharsets.ISO_8859_1), profile.get(UNIT), "String",
+						System.currentTimeMillis());
+				return lastRecord;
 			}
 		} catch (InterruptedException e) {
 			logger.error("InterruptedException occured", e);
@@ -391,18 +396,17 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		logger.debug("Protocol.Subscribe not implemented");
 	}
 
-	
 	@Override
 	public void Unsubscribe(String deviceAddress, Map<String, String> profile) {
 		logger.debug("Protocol.Unsubscribe not implemented");
-		}
-	
+	}
+
 	/**
 	 * @see iot.agile.protocol.ble.Protocol#DataStore()
 	 */
 	@Override
-	public String Data() {
-		return lastRead;
+	public RecordObject Data() {
+		return lastRecord;
 	}
 
 	public boolean isRemote() {
@@ -506,6 +510,5 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 		return null;
 	}
-
 
 }

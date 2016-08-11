@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
-import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceOverview;
+import iot.agile.object.RecordObject;
 
 /**
  * Agile BLE Protocol interface
@@ -59,7 +59,7 @@ public interface Protocol extends DBusInterface {
 	 * @return the last record received by the read or subscribe operation
 	 */
 	@org.freedesktop.DBus.Description("Store the last record recived by read or subscribe")
-	public String Data();
+	public RecordObject Data();
 
 	/**
 	 * List of all devices discovered by the BLE protocol
@@ -121,7 +121,7 @@ public interface Protocol extends DBusInterface {
 	 * Read data over the Protocol, may be cached in the Data property depending
 	 * on implementation to save resources
 	 */
-	public String Read(String deviceAddress, Map<String, String> profile) throws DBusException;
+	public RecordObject Read(String deviceAddress, Map<String, String> profile) throws DBusException;
 
 	/**
 	 * Subscribe to data update over the protocol

@@ -26,6 +26,7 @@ import iot.agile.Protocol;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceComponet;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.RecordObject;
 
 /**
  * @author dagi
@@ -94,6 +95,12 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    * The device protocol interface
    */
   protected Protocol deviceProtocol;
+  
+  /**
+   * Data
+   */
+  protected RecordObject data;
+  
 
   /**
    * 
@@ -183,9 +190,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    *
    * @see iot.agile.protocol.ble.device.IDevice#Data()
    */
-  public String Data() {
-    logger.debug("Device. Data not implemented");
-    return null;
+  public RecordObject Data() {
+     return data;
   }
 
   /**
@@ -250,7 +256,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    *
    */
   @Override
-  public String Read(String sensorName) {
+  public RecordObject Read(String sensorName) {
     return null;
   }
 

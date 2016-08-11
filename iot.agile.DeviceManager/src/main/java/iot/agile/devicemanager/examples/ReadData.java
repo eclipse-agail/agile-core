@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
+import iot.agile.object.RecordObject;
 
 /**
  * @author dagi
@@ -66,8 +67,8 @@ public class ReadData {
 	    try {
 	      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 	      Device sensorTag = (Device) connection.getRemoteObject(agileDeviceObjName, devicePath, Device.class);
-	      String currentTemp = sensorTag.Read(service);
-	      logger.info("Temperature: {}", currentTemp);
+	      RecordObject currentTemp = sensorTag.Read(service);
+	      logger.info("Temperature: {}", currentTemp.getValue());
 	    } catch (DBusException e) {
 	      e.printStackTrace();
 	    }  

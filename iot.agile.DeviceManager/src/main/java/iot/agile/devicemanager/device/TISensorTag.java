@@ -6,12 +6,15 @@ import java.util.Map;
 
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.RecordObject;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class TISensorTag extends DeviceImp implements Device {
 
 	private static final String SENSOR_NAME = "SENSOR_NAME";
+	
+	private static final String UNIT = "UNIT";
 
 	private static final String GATT_SERVICE = "GATT_SERVICE";
 
@@ -94,7 +97,7 @@ public class TISensorTag extends DeviceImp implements Device {
 	}
 
 	@Override
-	public String Read(String sensorName) {
+	public RecordObject Read(String sensorName) {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (deviceStatus.equals(CONNECTED)) {
 				if (isSensorSupported(sensorName.trim())) {
@@ -107,25 +110,26 @@ public class TISensorTag extends DeviceImp implements Device {
 						 * call Read method after 1 second
 						 */
 						Thread.sleep(1010);
-						String readValue = deviceProtocol.Read(deviceID, getProfile(sensorName.trim()));
-						logger.info(readValue);
-						return formatReading(sensorName, readValue);
+						RecordObject readValue = deviceProtocol.Read(deviceID, getProfile(sensorName.trim()));
+						readValue.setValue(formatReading(sensorName, readValue.getValue()));
+						data = readValue;
+						return readValue;
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				} else {
 					logger.debug("Sensor not supported: {}", sensorName);
-					return "Sensor not supported: " + sensorName;
+					return null;
 				}
 			} else {
 				logger.debug("BLE Device not connected: {}", deviceName);
-				return "BLE Device not connected: " + deviceName;
+				return null;
 			}
 		} else {
 			logger.debug("Protocol not supported:: {}", protocol);
-			return "Protocol not supported: " + protocol;
+			return null;
 		}
-		return "Error in reading value";
+		return null;
 	}
 
 	@Override
@@ -141,7 +145,7 @@ public class TISensorTag extends DeviceImp implements Device {
 		Map<String, String> profile = new HashMap<String, String>();
 		profile.put(SENSOR_NAME, sensorName);
 		if (sensorName.equals(TEMPERATURE)) {
-			byte[] configValue = { 0x01 };
+			profile.put(UNIT, "Celsius");
 			profile.put(GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
 			profile.put(GATT_CHARACTERSTICS_VALUE, TEMP_GATT_CHARACTERSTICS_UUID);
 			profile.put(GATT_CHARACTERSTICS_CONFIG, TEMP_GATT_CHARACTERSTICS_CONFIG_UUID);
@@ -152,6 +156,7 @@ public class TISensorTag extends DeviceImp implements Device {
 			profile.put(GATT_CHARACTERSTICS_VALUE, ACC_GATT_CHARACTERSTICS_UUID);
 			profile.put(GATT_CHARACTERSTICS_CONFIG, ACC_GATT_CHARACTERSTICS_CONFIG_UUID);
 		} else if (sensorName.equals(HUMIDITY)) {
+			profile.put(UNIT, "Relative humidity (%RH)");
  			profile.put(GATT_SERVICE, HUMIDITY_GATT_SERVICE_UUID);
 			profile.put(GATT_CHARACTERSTICS_VALUE, HUMIDITY_GATT_CHARACTERSTICS_UUID);
 			profile.put(GATT_CHARACTERSTICS_CONFIG, HUMIDITY_GATT_CHARACTERSTICS_CONFIG_UUID);
