@@ -16,10 +16,9 @@
 package iot.agile.http.resource;
 
 
-import iot.agile.http.service.DbusClient;
-import iot.agile.object.DeviceOverview;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -29,9 +28,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import iot.agile.http.service.DbusClient;
+import iot.agile.object.DeviceOverview;
+import iot.agile.object.RecordObject;
 
 /**
  *
@@ -71,7 +75,7 @@ public class Protocol {
   @POST
   @Path("/discovery")
   public void Discover(@PathParam("id") String id) throws DBusException {
-    getProtocol(id).Discover();
+    getProtocol(id).StartDiscovery();
   }
 
   @DELETE
@@ -92,7 +96,7 @@ public class Protocol {
 
   @GET
   @Path("/{deviceAddress}")
-  public String Read(
+  public RecordObject Read(
           @PathParam("id") String id,
           @PathParam("deviceAddress") String deviceAddress, 
           Map<String, String> profile
@@ -102,8 +106,12 @@ public class Protocol {
 
   @POST
   @PathParam("/subscribe")
-  public void Subscribe(@PathParam("id") String id, String... subscribeParams) throws DBusException {
-    getProtocol(id).Subscribe(subscribeParams);
+  public void Subscribe(
+          @PathParam("id") String id,
+          @PathParam("deviceAddress") String deviceAddress, 
+          Map<String, String> profile
+    ) throws DBusException {
+    getProtocol(id).Subscribe(deviceAddress, profile);
   }
 
 }

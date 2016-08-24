@@ -22,6 +22,7 @@ import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceOverview;
+import iot.agile.object.RecordObject;
 
 /**
  * Agile BLE Protocol interface
@@ -31,108 +32,110 @@ import iot.agile.object.DeviceOverview;
  */
 public interface Protocol extends DBusInterface {
 
-  public static String AGILE_INTERFACE = "iot.agile.protocol";
+	public static String AGILE_INTERFACE = "iot.agile.protocol";
 
-  /**
-   * TODO: Return device status
-   */
-  @org.freedesktop.DBus.Description("enquiry the device status")
-  public String Status();
+	/**
+	 * TODO: Return device status
+	 */
+	@org.freedesktop.DBus.Description("enquiry the device status")
+	public String Status();
 
-  /**
-   *
-   * @return Driver unique code name example:
-   */
-  @org.freedesktop.DBus.Description("Returns the driver name")
-  public String Driver();
+	/**
+	 *
+	 * @return Driver unique code name example:
+	 */
+	@org.freedesktop.DBus.Description("Returns the driver name")
+	public String Driver();
 
-  /**
-   *
-   * @return Driver name example bluetooth low energy
-   */
-  @org.freedesktop.DBus.Description("Returns the protocol name")
-  public String Name();
+	/**
+	 *
+	 * @return Driver name example bluetooth low energy
+	 */
+	@org.freedesktop.DBus.Description("Returns the protocol name")
+	public String Name();
 
-  /**
-   *
-   * @return the last record received by the read or subscribe operation
-   */
-  @org.freedesktop.DBus.Description("Store the last record recived by read or subscribe")
-  public String Data();
+	/**
+	 *
+	 * @return the last record received by the read or subscribe operation
+	 */
+	@org.freedesktop.DBus.Description("Store the last record recived by read or subscribe")
+	public RecordObject Data();
 
-  /**
-   * List of all devices discovered by the BLE protocol
-   *
-   * This list is updated by discover method
-   *
-   * TODO: Return list of devices TODO: The implementing class for this
-   * interface should hold the list and return
-   *
-   * @see BLEDevice for sample device implementation
-   */
-  @org.freedesktop.DBus.Description("Returns list discovered protocol devices")
-  public List<DeviceOverview> Devices();
+	/**
+	 * List of all devices discovered by the BLE protocol
+	 *
+	 * This list is updated by discover method
+	 *
+	 * TODO: Return list of devices TODO: The implementing class for this
+	 * interface should hold the list and return
+	 *
+	 * @see BLEDevice for sample device implementation
+	 */
+	@org.freedesktop.DBus.Description("Returns list discovered protocol devices")
+	public List<DeviceOverview> Devices();
 
-  /**
-   * Setup connection and initialize BLE connection for the given device
-   *
-   * TODO: Instead of deviceAddress this method should receive device profile,
-   * and retrieve the id and other properties from it
-   *
-   * @return true if successfully connected, or if it was already connected
-   */
-  @org.freedesktop.DBus.Description("Setup connection and initialize protocol connection for the given device")
-  public boolean Connect(String deviceAddress) throws DBusException;
+	/**
+	 * Setup connection and initialize BLE connection for the given device
+	 *
+	 * TODO: Instead of deviceAddress this method should receive device profile,
+	 * and retrieve the id and other properties from it
+	 *
+	 * @return true if successfully connected, or if it was already connected
+	 */
+	@org.freedesktop.DBus.Description("Setup connection and initialize protocol connection for the given device")
+	public boolean Connect(String deviceAddress) throws DBusException;
 
-  /**
-   *
-   * Disconnect the BLE device
-   *
-   * TODO: Use device profile to disconnect the device
-   *
-   * @param deviceAddress
-   */
-  @org.freedesktop.DBus.Description("Safely disconnect the device from the protocol adapter")
-  public boolean Disconnect(String deviceAddress);
+	/**
+	 *
+	 * Disconnect the BLE device
+	 *
+	 * TODO: Use device profile to disconnect the device
+	 *
+	 * @param deviceAddress
+	 */
+	@org.freedesktop.DBus.Description("Safely disconnect the device from the protocol adapter")
+	public boolean Disconnect(String deviceAddress);
 
-  /**
-   * List all discovered BLE devices
-   *
-   * TODO - return list of devices
-   */
-  @org.freedesktop.DBus.Description("Start device discovery")
-  public void StartDiscovery() throws DBusException;
+	/**
+	 * List all discovered BLE devices
+	 *
+	 * TODO - return list of devices
+	 */
+	@org.freedesktop.DBus.Description("Start device discovery")
+	public void StartDiscovery() throws DBusException;
 
-  /**
-   * Start device discovery
-   */
-  @org.freedesktop.DBus.Description("Start device discovery (deprecated)")
-  public void Discover() throws DBusException;
+	/**
+	 * Stop device discovery
+	 */
+	@org.freedesktop.DBus.Description("Stop device discovery")
+	public void StopDiscovery();
 
-  /**
-   * Stop device discovery
-   */
-  @org.freedesktop.DBus.Description("Stop device discovery")
-  public void StopDiscovery();
+	/**
+	 * Send data over the protocol to the device
+	 *
+	 * TODO: Detail of this method should be discussed
+	 */
+	public String Write(String deviceAddress, Map<String, String> profile) throws DBusException;
 
-  /**
-   * Send data over the protocol to the device
-   *
-   * TODO: Detail of this method should be discussed
-   */
-  public String Write(String deviceAddress, Map<String, String> profile) throws DBusException;
+	/**
+	 * Read data over the Protocol, may be cached in the Data property depending
+	 * on implementation to save resources
+	 */
+	public RecordObject Read(String deviceAddress, Map<String, String> profile) throws DBusException;
 
-  /**
-   * Read data over the Protocol, may be cached in the Data property depending
-   * on implementation to save resources
-   */
-  public String Read(String deviceAddress, Map<String, String> profile) throws DBusException;
+	/**
+	 * Subscribe to data update over the protocol
+	 *
+	 * @param subscribeParams
+	 */
+	public void Subscribe(String deviceAddress, Map<String, String> profile);
 
-  /**
-   * Subscribe to data update over the protocol
-   *
-   * @param subscribeParams
-   */
-  public void Subscribe(String... subscribeParams);
+	/**
+	 * unsubscribe to data update over the protocol
+	 *
+	 * @param subscribeParams
+	 */
+	public void Unsubscribe(String deviceAddress, Map<String, String> profile);
 
+	
 }

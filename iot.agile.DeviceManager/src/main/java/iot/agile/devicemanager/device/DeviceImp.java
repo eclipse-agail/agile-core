@@ -26,6 +26,7 @@ import iot.agile.Protocol;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceComponet;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.RecordObject;
 
 /**
  * @author dagi
@@ -94,7 +95,16 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    * The device protocol interface
    */
   protected Protocol deviceProtocol;
-
+  
+  /**
+   * Data
+   */
+  protected RecordObject data;
+  
+/**
+ * UNIX time stamp to indicate the last updated received by the device 
+ */
+  protected long lastUpdate;
   /**
    * 
    * @param deviceID
@@ -173,9 +183,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
   /**
    * Returns the last update of value
    */
-  public int LastUpdate() {
-    logger.debug("Device. LastUpdate not implemented");
-    return 0;
+  public long LastUpdate() {
+     return lastUpdate;
   }
 
   /**
@@ -183,9 +192,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    *
    * @see iot.agile.protocol.ble.device.IDevice#Data()
    */
-  public String Data() {
-    logger.debug("Device. Data not implemented");
-    return null;
+  public RecordObject Data() {
+     return data;
   }
 
   /**
@@ -250,7 +258,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
    *
    */
   @Override
-  public String Read(String sensorName) {
+  public RecordObject Read(String sensorName) {
     return null;
   }
 
@@ -288,4 +296,16 @@ public class DeviceImp extends AbstractAgileObject implements Device {
     return false;
   }
 
+  /**
+   * Checks if the requested sensor is supported by the device
+   * @param sensorName
+   * 			Sensor name
+   * @return
+   * 		true if the sensor is supported
+   * 		false otherwise
+   */
+  protected boolean isSensorSupported(String sensorName){
+	  return true;
+  }
+  
 }

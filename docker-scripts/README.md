@@ -25,18 +25,36 @@ git clone https://github.com/Agile-IoT/Agile-BLE.git
 cd Agile-BLE
 ```
 
-- pull ARM image file
+- pull ARM image file and start AGILE
 ```
-docker pull cskiraly/agile:v0.0.2-arm
-docker-scripts/docker-start cskiraly/agile:v0.0.2-arm
-. docker-scripts/docker-env
+docker pull cskiraly/agile-arm:latest # Not strictly needed, as the container is also pulled by docker-start, if not done before.
+```
+
+Starting/Stopping AGILE
+---
+
+- starting AGILE
+
+```
+docker-scripts/docker-start cskiraly/agile-arm:latest
+. docker-scripts/docker-env # Expose AGILE D-Bus in shell. 
+```
+
+- stopping AGILE
+```
+sudo docker-scripts/docker-stop
+```
+
+- alternative start AGILE with per-service containers
+```
+docker-scripts/docker-start-perservice cskiraly/agile-arm:latest
 ```
 
 Testing the installation
 ---
 
 ```
-sudo apt-get install python3-dbus -y
-. docker-scripts/docker-env
+sudo apt-get install python3-dbus -y # Make sure D-Bus python support is available.
+. docker-scripts/docker-env # Set up environment to connect to AGILE D-Bus.                                                      
 test/discover.py
 ```

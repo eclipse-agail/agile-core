@@ -45,12 +45,6 @@ public interface ProtocolManager extends DBusInterface {
   public List<String> Protocols();
 
   /**
-   * Starts device discovery on all managed protocols (deprecated)
-   */
-  @org.freedesktop.DBus.Description("Starts device discovery on all managed protocols (deprecated)")
-  public void Discover();
-
-  /**
    * Starts device discovery on all managed protocols
    */
   @org.freedesktop.DBus.Description("Starts device discovery on all managed protocols")

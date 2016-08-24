@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceComponet;
+import iot.agile.object.RecordObject;
+
 import java.util.List;
 
 /**
@@ -58,12 +60,12 @@ public class Device {
 
   @GET
   @Path("/lastUpdate")
-  public int LastUpdate(@PathParam("id") String id) throws DBusException {
+  public long LastUpdate(@PathParam("id") String id) throws DBusException {
     return getDevice(id).LastUpdate();
   }
 
   @GET
-  public String Data(@PathParam("id") String id) throws DBusException {
+  public RecordObject Data(@PathParam("id") String id) throws DBusException {
     return getDevice(id).Data();
   }
 
@@ -90,8 +92,8 @@ public class Device {
 
   @GET
   @Path("/{sensorName}")
-  @Produces(MediaType.TEXT_PLAIN)
-  public String Read(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
+  @Produces(MediaType.APPLICATION_JSON)
+  public RecordObject Read(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     return getDevice(id).Read(sensorName);
   }
 

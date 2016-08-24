@@ -20,6 +20,7 @@ import java.util.List;
 import org.freedesktop.dbus.DBusInterface;
 
 import iot.agile.object.DeviceComponet;
+import iot.agile.object.RecordObject;
 
 /**
  * @author dagi
@@ -73,7 +74,7 @@ public interface Device extends DBusInterface {
    * device
    */
   @org.freedesktop.DBus.Description("returns the last data update received by the device")
-  public int LastUpdate();
+  public long LastUpdate();
 
   /**
    *
@@ -81,7 +82,7 @@ public interface Device extends DBusInterface {
    * asynchronously from subscribe all
    */
   @org.freedesktop.DBus.Description("returns the most recent update of a sensor")
-  public String Data();
+  public RecordObject Data();
 
   /**
    *
@@ -122,7 +123,7 @@ public interface Device extends DBusInterface {
    * Read data from the device
    */
   @org.freedesktop.DBus.Description("Read data from the device")
-  public String Read(String sensorName);
+  public RecordObject Read(String sensorName);
 
   /**
    * Write data on the device
