@@ -106,9 +106,9 @@ public class Device {
 
   @POST
   @Path("/subscribe")
-  public String Subscribe(@PathParam("id") String id) throws DBusException {
-    getDevice(id).Subscribe();
-    return "";
+  public String Subscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
+	  getDevice(id).Subscribe(sensorName);
+	  return "";
   }
   
   @DELETE

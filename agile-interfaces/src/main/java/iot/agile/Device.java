@@ -18,6 +18,7 @@ package iot.agile;
 import java.util.List;
 
 import org.freedesktop.dbus.DBusInterface;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceComponet;
 import iot.agile.object.RecordObject;
@@ -100,7 +101,7 @@ public interface Device extends DBusInterface {
    * and retrieve the id and other properties from it
    */
   @org.freedesktop.DBus.Description("Setup connection and initialize BLE connection for the given device")
-  public boolean Connect();
+  public void Connect()throws DBusException;
 
   /**
    *
@@ -111,13 +112,13 @@ public interface Device extends DBusInterface {
    * @param deviceAddress
    */
   @org.freedesktop.DBus.Description("Safely disconnect the device from the BLE adapter")
-  public boolean Disconnect();
+  public void Disconnect() throws DBusException ;
 
   /**
    * Execute an operation on the device
    */
   @org.freedesktop.DBus.Description("Execute an operation on the device")
-  public void Execute(String command);
+  public void Execute(String command) throws DBusException;
 
   /**
    * Read data from the device
@@ -129,11 +130,11 @@ public interface Device extends DBusInterface {
    * Write data on the device
    */
   @org.freedesktop.DBus.Description("Write data on the device")
-  public void Write();
+  public void Write() throws DBusException;
 
   /**
    * Enable subscription
    */
   @org.freedesktop.DBus.Description("Enable subscription")
-  public void Subscribe();
+  public void Subscribe(String component) throws DBusException;
 }

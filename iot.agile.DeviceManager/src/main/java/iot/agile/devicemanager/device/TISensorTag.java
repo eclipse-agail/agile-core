@@ -1,14 +1,13 @@
 package iot.agile.devicemanager.device;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.RecordObject;
-
-import org.freedesktop.dbus.exceptions.DBusException;
 
 public class TISensorTag extends DeviceImp implements Device {
 
@@ -113,15 +112,14 @@ public class TISensorTag extends DeviceImp implements Device {
 						 */
 						Thread.sleep(1010);
 						// read value
-						RecordObject readValue = deviceProtocol.Read(deviceID, getReadValueProfile(sensorName));
-						data = readValue;
-						lastUpdate = readValue.getLastUpdate();
+						byte[] readValue = deviceProtocol.Read(deviceID, getReadValueProfile(sensorName));
+						RecordObject recObj = new RecordObject(deviceID, sensorName, formatReading(sensorName, readValue), "", "", System.currentTimeMillis());
+						data = recObj;
+						lastUpdate = recObj.getLastUpdate();
 
 						// turnoff sensor
 						deviceProtocol.Write(deviceID, getTurnOffSensorProfile(sensorName));
-						return new RecordObject(readValue.getDeviceID(), readValue.getComponentID(),
-								formatReading(sensorName, readValue.getValue()), readValue.getUnit(),
-								readValue.getFormat(), readValue.getLastUpdate());
+						return recObj;
 					} catch (Exception e) {
 						logger.debug("Error in reading value from Sensor {}", e);
 						e.printStackTrace();
@@ -142,29 +140,29 @@ public class TISensorTag extends DeviceImp implements Device {
 	}
 
 	@Override
-	public boolean Subscribe(String sensorName) {
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (deviceStatus.equals(CONNECTED)) {
-				if (isSensorSupported(sensorName.trim())) {
-					try {
-//						deviceProtocol.Subscribe(deviceID, getProfile(sensorName));
-						return true;
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				} else {
-					logger.debug("Sensor not supported: {}", sensorName);
-					return false;
-				}
-			} else {
-				logger.debug("BLE Device not connected: {}", deviceName);
-				return false;
-			}
-		} else {
-			logger.debug("Protocol not supported:: {}", protocol);
-			return false;
-		}
-		return false;
+	public void Subscribe(String sensorName) {
+//		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+//			if (deviceStatus.equals(CONNECTED)) {
+//				if (isSensorSupported(sensorName.trim())) {
+//					try {
+////						deviceProtocol.Subscribe(deviceID, getProfile(sensorName));
+//						return true;
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				} else {
+//					logger.debug("Sensor not supported: {}", sensorName);
+//					return false;
+//				}
+//			} else {
+//				logger.debug("BLE Device not connected: {}", deviceName);
+//				return false;
+//			}
+//		} else {
+//			logger.debug("Protocol not supported:: {}", protocol);
+//			return false;
+//		}
+//		return false;
 	}
 
 	@Override
@@ -278,26 +276,24 @@ public class TISensorTag extends DeviceImp implements Device {
 	 *            the raw value read from the sensor
 	 * @return
 	 */
-	private String formatReading(String sensorName, String readingValue) {
+	private String formatReading(String sensorName, byte[] readingValue) {
 		String result;
 		if (sensorName.contains(TEMPERATURE)) {
-			byte[] temp = readingValue.getBytes(StandardCharsets.ISO_8859_1);
-			int lowerByte = Byte.toUnsignedInt(temp[2]);
-			int upperByte = Byte.toUnsignedInt(temp[3]);
+			int lowerByte = Byte.toUnsignedInt(readingValue[2]);
+			int upperByte = Byte.toUnsignedInt(readingValue[3]);
 
 			int ambientTempRaw = (lowerByte & 0xff) + (upperByte << 8);
 			float ambientTempCelsius = convertCelsius(ambientTempRaw);
 			result = Float.toString(ambientTempCelsius);
 		} else if (sensorName.contains(HUMIDITY)) {
-			byte[] humidity = readingValue.getBytes(StandardCharsets.ISO_8859_1);
-			int lowerByte = Byte.toUnsignedInt(humidity[2]);
-			int upperByte = Byte.toUnsignedInt(humidity[3]);
+			int lowerByte = Byte.toUnsignedInt(readingValue[2]);
+			int upperByte = Byte.toUnsignedInt(readingValue[3]);
 			int rawResult = (upperByte << 8) + (lowerByte & 0xff);
 			float hum = convertHumidity(rawResult);
 			result = Float.toString(hum);
 		} else {
 			// TODO Other sensor values
-			result = readingValue;
+			result = new String(readingValue);
 		}
 
 		return result;

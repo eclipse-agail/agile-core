@@ -86,17 +86,17 @@ public class Protocol {
 
   @POST  
   @Path("/{deviceAddress}")
-  public String Write(
+  public void Write(
           @PathParam("id") String id, 
           @PathParam("deviceAddress") String deviceAddress, 
           Map<String, String> profile
   ) throws DBusException {
-    return getProtocol(id).Write(deviceAddress, profile);
+     getProtocol(id).Write(deviceAddress, profile);
   }
 
   @GET
   @Path("/{deviceAddress}")
-  public RecordObject Read(
+  public byte[] Read(
           @PathParam("id") String id,
           @PathParam("deviceAddress") String deviceAddress, 
           Map<String, String> profile

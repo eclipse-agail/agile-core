@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
+import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceOverview;
@@ -59,7 +60,7 @@ public interface Protocol extends DBusInterface {
 	 * @return the last record received by the read or subscribe operation
 	 */
 	@org.freedesktop.DBus.Description("Store the last record recived by read or subscribe")
-	public RecordObject Data();
+	public byte[] Data();
 
 	/**
 	 * List of all devices discovered by the BLE protocol
@@ -83,7 +84,7 @@ public interface Protocol extends DBusInterface {
 	 * @return true if successfully connected, or if it was already connected
 	 */
 	@org.freedesktop.DBus.Description("Setup connection and initialize protocol connection for the given device")
-	public boolean Connect(String deviceAddress) throws DBusException;
+	public void Connect(String deviceAddress) throws DBusException;
 
 	/**
 	 *
@@ -94,7 +95,7 @@ public interface Protocol extends DBusInterface {
 	 * @param deviceAddress
 	 */
 	@org.freedesktop.DBus.Description("Safely disconnect the device from the protocol adapter")
-	public boolean Disconnect(String deviceAddress);
+	public void Disconnect(String deviceAddress) throws DBusException;
 
 	/**
 	 * List all discovered BLE devices
@@ -115,13 +116,13 @@ public interface Protocol extends DBusInterface {
 	 *
 	 * TODO: Detail of this method should be discussed
 	 */
-	public String Write(String deviceAddress, Map<String, String> profile) throws DBusException;
+	public void Write(String deviceAddress, Map<String, String> profile) throws DBusException;
 
 	/**
 	 * Read data over the Protocol, may be cached in the Data property depending
 	 * on implementation to save resources
 	 */
-	public RecordObject Read(String deviceAddress, Map<String, String> profile) throws DBusException;
+	public byte[] Read(String deviceAddress, Map<String, String> profile) throws DBusException;
 
 	/**
 	 * Subscribe to data update over the protocol
@@ -137,5 +138,19 @@ public interface Protocol extends DBusInterface {
 	 */
 	public void Unsubscribe(String deviceAddress, Map<String, String> profile);
 
-	
+	/**
+	 * New data reading signal for subscribe methods
+	 * 
+	 * @author dagi
+	 *
+	 */
+	public class NewRecordSignal extends DBusSignal {
+ 		public final RecordObject record;
+
+		public NewRecordSignal(String path, RecordObject record) throws DBusException {
+			super(path, record);
+ 			this.record = record;
+		}
+
+	}
 }
