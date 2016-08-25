@@ -35,4 +35,4 @@ docker run \
   -p 8080:8080/tcp \
   -v $HOME/agile_bus_socket:/usr/src/app/agile_bus_socket \
   -e DBUS_SESSION_BUS_ADDRESS=unix:path=/usr/src/app/agile_bus_socket \
-  $1 scripts/start.sh DeviceManager
+  $1 scripts/start.sh http
