@@ -80,13 +80,11 @@ public interface ProtocolManager extends DBusInterface {
    *
    */
   public class FoundNewDeviceSignal extends DBusSignal {
-    public final String path;
-    public final DeviceOverview device;
+     public final DeviceOverview device;
 
     public FoundNewDeviceSignal(String path, DeviceOverview device) throws DBusException {
       super(path, device);
-      this.path = path;
-      this.device = device;
+       this.device = device;
     }
 
   }

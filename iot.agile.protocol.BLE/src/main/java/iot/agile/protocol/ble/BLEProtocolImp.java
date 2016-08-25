@@ -17,6 +17,7 @@ package iot.agile.protocol.ble;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -38,6 +39,8 @@ import tinyb.BluetoothException;
 import tinyb.BluetoothGattCharacteristic;
 import tinyb.BluetoothGattService;
 import tinyb.BluetoothManager;
+import tinyb.BluetoothNotification;
+import tinyb.BluetoothType;
 
 /**
  * Agile Bluetooth Low Energy(BLE) Protocol implementation
@@ -60,9 +63,14 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	private static final String AGILE_BLUETOOTH_BUS_PATH = "/iot/agile/protocol/BLE";
 
 	/**
-	 * DBus bus path for the protocol manager
+	 * DBus bus path for found new device signal
 	 */
-	private static final String AGILE_PROTOCOL_MANAGER_BUS_PATH = "/iot/agile/ProtocolManager";
+	private static final String AGILE_NEW_DEVICE_SIGNAL_PATH = "/iot/agile/NewDevice";
+
+	/**
+	 * DBus bus path for for new record/data reading
+	 */
+	private static final String AGILE_NEW_RECORD_SIGNAL_PATH = "/iot/agile/NewRecord";
 
 	/**
 	 * Protocol name
@@ -88,17 +96,13 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	private static final String UNIT = "UNIT";
 
 	private static final String GATT_SERVICE = "GATT_SERVICE";
+	
+	private static final String GATT_CHARACTERSTICS = "GATT_CHARACTERSTICS";
 
-	private static final String GATT_CHARACTERSTICS_VALUE = "VALUE_CHAR";
+	private static final String PAYLOAD = "PAYLOAD";
 
-	private static final String GATT_CHARACTERSTICS_CONFIG = "CONFIGURATION_CHAR";
-
-	private static final String SENSOR_TURN_ON = "SENSOR_TURN_ON";
-
-	private static final String SENSOR_TURN_OFF = "SENSOR_TURN_OFF";
 	/**
-	 * Lists of device names TODO: Should return lists of devices in terms of
-	 * Dbus object
+	 * Device list
 	 */
 	protected List<DeviceOverview> deviceList = new ArrayList<DeviceOverview>();
 
@@ -109,8 +113,6 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 
 	protected RecordObject lastRecord;
 
-	private BluetoothGattCharacteristic sensorValue;
-	private BluetoothGattCharacteristic sensorConfig;
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
 	private ScheduledFuture future;
@@ -138,20 +140,13 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	}
 
 	/**
-	 * Returns lists of devices
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.Protocol#name()
 	 */
 	@Override
-	public List<DeviceOverview> Devices() {
-		return deviceList;
-	}
-
-	/**
-	 *
-	 *
-	 * @see iot.agile.protocol.ble.Protocol#protocolStatus()
-	 */
-	public void ProtocolStatus() {
-		logger.debug("Protocol.ProtocolStatus not implemented");
+	public String Name() {
+		return PROTOCOL_NAME;
 	}
 
 	/**
@@ -166,11 +161,28 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	/**
 	 *
 	 *
-	 * @see iot.agile.protocol.ble.Protocol#name()
+	 * @see iot.agile.protocol.ble.Protocol#Status()
 	 */
 	@Override
-	public String Name() {
-		return PROTOCOL_NAME;
+	public String Status() {
+		logger.debug("Protocol.Status not implemented");
+		return null;
+	}
+
+	/**
+	 * Returns lists of devices
+	 */
+	@Override
+	public List<DeviceOverview> Devices() {
+		return deviceList;
+	}
+
+	/**
+	 * @see iot.agile.protocol.ble.Protocol#DataStore()
+	 */
+	@Override
+	public RecordObject Data() {
+		return lastRecord;
 	}
 
 	/**
@@ -184,14 +196,14 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		logger.debug("Connecting to BLE device {}", deviceAddress);
 		BluetoothDevice bleDevice;
 		try {
-			bleDevice = getDevice(deviceAddress);
+			bleDevice = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
 			if (bleDevice.getConnected()) {
 				return true;
 			}
 			if (bleDevice.connect()) {
 				return true;
 			}
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			logger.error("Failed to connect: {}", deviceAddress, e);
 		}
 		return false;
@@ -209,11 +221,11 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		logger.info("Disconnecting from BLE device {}", deviceAddress);
 		BluetoothDevice bleDevice;
 		try {
-			bleDevice = getDevice(deviceAddress);
+			bleDevice = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
 			if (bleDevice != null) {
 				return bleDevice.disconnect();
 			}
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			logger.error("Failed to disconnect {}", deviceAddress, e);
 		}
 		return false;
@@ -243,7 +255,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 						deviceList.add(deviceOverview);
 						try {
 							ProtocolManager.FoundNewDeviceSignal foundNewDevSig = new ProtocolManager.FoundNewDeviceSignal(
-									AGILE_PROTOCOL_MANAGER_BUS_PATH, deviceOverview);
+									AGILE_NEW_DEVICE_SIGNAL_PATH, deviceOverview);
 							connection.sendSignal(foundNewDevSig);
 						} catch (DBusException e) {
 							e.printStackTrace();
@@ -260,181 +272,6 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		};
 
 		future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
-		// try {
-		// future.get(10, TimeUnit.SECONDS);
-		// } catch (InterruptedException | ExecutionException | TimeoutException
-		// ex) {
-		// logger.debug("Aborted execution scheduler: {}", ex.getMessage());
-		// } finally {
-		// logger.debug("Stopped BLE discovery");
-		// }
-
-	}
-
-	/**
-	 * @see iot.agile.protocol.ble.Protocol#protocolProfile()
-	 */
-	public void ProtocolProfile() {
-		logger.debug("Protocol.ProtocolProfile not implemented");
-	}
-
-	/**
-	 *
-	 *
-	 * @see iot.agile.protocol.ble.Protocol#Status()
-	 */
-	@Override
-	public String Status() {
-		logger.debug("Protocol.Status not implemented");
-		return null;
-	}
-
-	/**
-	 *
-	 *
-	 * @see iot.agile.protocol.ble.Protocol#execute()
-	 */
-	public void Execute(String... executeParams) {
-		logger.debug("Protocol.Execute not implemented");
-
-	}
-
-	/**
-	 *
-	 *
-	 * @see iot.agile.protocol.ble.Protocol#write()
-	 */
-	@Override
-	public String Write(String deviceAddress, Map<String, String> profile) {
-		String sensorName = profile.get(SENSOR_NAME);
-		BluetoothDevice device;
-		try {
-			device = getDevice(deviceAddress);
-			if (device == null) {
-				logger.error("Device not found: {}", deviceAddress);
-				return "Device not found";
-			}
-			if (!device.getConnected()) {
-				logger.error("Device not connected: {}", deviceAddress);
-				return "Device not connected";
-			} else {
-				BluetoothGattService sensorService = getService(device, profile.get(GATT_SERVICE));
-				if (sensorService == null) {
-					logger.error("The device does not have {} service: {}", sensorName, deviceAddress);
-					return sensorName + " service not found";
-				} else {
-					sensorValue = getCharacteristic(sensorService, profile.get(GATT_CHARACTERSTICS_VALUE));
-					sensorConfig = getCharacteristic(sensorService, profile.get(GATT_CHARACTERSTICS_CONFIG));
-
-					if (sensorValue == null || sensorConfig == null) {
-						logger.error("Could not find the correct characterstics");
-						return "Incorrect characterstics";
-					}
-					byte[] configValue = profile.get(SENSOR_TURN_ON).getBytes();
-					sensorConfig.writeValue(configValue);
-					return "Done";
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "Error on sensor config";
-	}
-
-	/**
-	 *
-	 *
-	 * @param profile
-	 * @see iot.agile.protocol.ble.Protocol#read()
-	 */
-	public RecordObject Read(String deviceAddress, Map<String, String> profile) throws DBusException {
-		BluetoothDevice device;
-		try {
-			device = getDevice(deviceAddress);
-			if (device == null) {
-				logger.error("Device not found: {}", deviceAddress);
-				return null;
-			}
-			if (!device.getConnected()) {
-				logger.error("Device not connected: {}", deviceAddress);
-				return null;
-			} else {
-				/**
-				 * Read the service value from value characteristics
-				 */
-				byte[] readValue = sensorValue.readValue();
-				// Extract Turn off sensor command value from the profile
-				if (profile.containsKey(SENSOR_TURN_OFF)) {
-					byte[] turnoffCMD = profile.get(SENSOR_TURN_OFF).getBytes();
-					int intermediateValue = turnoffCMD[0] - 1;
-					byte[] value = { (byte) intermediateValue };
-					sensorConfig.writeValue(value);
-				}
-				lastRecord = new RecordObject(deviceAddress, profile.get(SENSOR_NAME),
-						new String(readValue, StandardCharsets.ISO_8859_1), profile.get(UNIT), "String",
-						System.currentTimeMillis());
-				return lastRecord;
-			}
-		} catch (InterruptedException e) {
-			logger.error("InterruptedException occured", e);
-			throw new DBusException("Operation interrupted abnormally");
-		}
-	}
-
-	public void Receive(String args) throws DBusException {
-		logger.debug("Protocol.Receive not implemented");
-	}
-
-	/**
-	 *
-	 *
-	 * @see iot.agile.protocol.ble.Protocol#subscribe(java.lang.String[])
-	 */
-	@Override
-	public void Subscribe(String deviceAddress, Map<String, String> profile) {
-		logger.debug("Protocol.Subscribe not implemented");
-	}
-
-	@Override
-	public void Unsubscribe(String deviceAddress, Map<String, String> profile) {
-		logger.debug("Protocol.Unsubscribe not implemented");
-	}
-
-	/**
-	 * @see iot.agile.protocol.ble.Protocol#DataStore()
-	 */
-	@Override
-	public RecordObject Data() {
-		return lastRecord;
-	}
-
-	public boolean isRemote() {
-		return false;
-	}
-
-	// =========================UTILITY METHODS==============
-
-	void printDevice(BluetoothDevice device) {
-		logger.info("Name = {}", device.getName());
-		logger.info("Address = {}", device.getAddress());
-		logger.info("Connected= {}", device.getConnected());
-	}
-
-	private BluetoothDevice getDevice(String address) throws InterruptedException {
-		BluetoothDevice bleDevice = null;
-		List<BluetoothDevice> list = bleManager.getDevices();
-		for (BluetoothDevice device : list) {
-			if (device.getAddress().equals(address)) {
-				bleDevice = device;
-			}
-		}
-		return bleDevice;
-	}
-
-	@Override
-	public void finalize() {
-		connection.disconnect();
 	}
 
 	/**
@@ -450,6 +287,222 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 	}
 
+	/**
+	 *
+	 *
+	 * @see iot.agile.protocol.ble.Protocol#write()
+	 */
+	@Override
+	// TODO return boolean
+	public String Write(String deviceAddress, Map<String, String> profile) {
+		BluetoothDevice device;
+		try {
+			device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
+			if (device == null) {
+				logger.error("Device not found: {}", deviceAddress);
+				return "Device not found";
+			} else {
+				if (!device.getConnected()) {
+					logger.error("Device not connected: {}", deviceAddress);
+					return "Device not connected";
+				} else { 
+					BluetoothGattService gattService = device.find(profile.get(GATT_SERVICE));
+					if (gattService == null) {
+						logger.error("The device does not have {} service: {}", profile.get(GATT_SERVICE),
+								deviceAddress);
+						return profile.get(SENSOR_NAME) + " service not found";
+					} else {
+						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
+						if (gattChar == null) {
+							logger.error("Could not find the correct characterstics");
+							return "Incorrect characterstics";
+						} else {
+							byte[] value = profile.get(PAYLOAD).getBytes();
+							gattChar.writeValue(value);
+							return "Done";
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "Error on sensor config";
+	}
+
+	/**
+	 *
+	 *
+	 * @param profile
+	 * @see iot.agile.protocol.ble.Protocol#read()
+	 */
+	// TODO return ByteArray
+	public RecordObject Read(String deviceAddress, Map<String, String> profile) throws DBusException {
+		BluetoothDevice device;
+		try {
+			device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
+			if (device == null) {
+				logger.error("Device not found: {}", deviceAddress);
+				return null;
+			} else {
+				if (!device.getConnected()) {
+					logger.error("Device not connected: {}", deviceAddress);
+					return null;
+				} else {
+					BluetoothGattService gattService = device.find(profile.get(GATT_SERVICE));
+
+					if (gattService == null) {
+						logger.error("The device does not have {} service: {}", profile.get(SENSOR_NAME),
+								deviceAddress);
+						return null;
+					} else {
+						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
+						if(gattChar == null){
+							logger.error("Could not find the correct characterstics");
+							return null;					
+						}else{
+							/**
+							 * Read the service value from value characteristics
+							 */
+							byte[] readValue = gattChar.readValue();
+							if(readValue == null){
+								logger.error("Error on reading value");
+								return null;
+							}else {
+								lastRecord = new RecordObject(deviceAddress, profile.get(SENSOR_NAME),
+									new String(readValue, StandardCharsets.ISO_8859_1), profile.get(UNIT), "String",
+									System.currentTimeMillis());
+ 							}
+						}
+					}
+					return lastRecord;
+				}
+			}
+
+		} catch (Exception e) {
+			logger.error("InterruptedException occured", e);
+			throw new DBusException("Operation interrupted abnormally");
+		}
+	}
+ 
+ 
+	/**
+	 * 
+	 */
+	@Override
+	public void Subscribe(String deviceAddress, Map<String, String> profile) {
+//		BluetoothDevice device;
+//		try {
+//			device = getDevice(deviceAddress);
+//			if (device == null) {
+//				logger.error("Device not found: {}", deviceAddress);
+//			}
+//			if (!device.getConnected()) {
+//				logger.error("Device not connected: {}", deviceAddress);
+//			} else {
+//				BluetoothGattService sensorService = getService(device, profile.get(GATT_SERVICE));
+//				if (sensorService == null) {
+//					logger.error("The device does not have {} service: {}", profile.get(SENSOR_NAME), deviceAddress);
+//				} else {
+//					BluetoothGattCharacteristic sensorValue = getCharacteristic(sensorService,
+//							profile.get(GATT_CHARACTERSTICS_VALUE));
+//					BluetoothGattCharacteristic sensorConfig = getCharacteristic(sensorService,
+//							profile.get(GATT_CHARACTERSTICS_CONFIG));
+//					BluetoothGattCharacteristic sensorPeriod = getCharacteristic(sensorService,
+//							profile.get(GATT_CHARACTERSTICS_FREQ));
+//					if (sensorValue == null || sensorConfig == null || sensorPeriod == null) {
+//						logger.error("Could not find the correct characterstics");
+//					} else {
+//						byte[] config = profile.get(SENSOR_TURN_ON).getBytes();
+//						byte[] period = profile.get(SENSOR_FREQUENCY).getBytes();
+//						sensorConfig.writeValue(config);
+//						sensorPeriod.writeValue(period);
+//						sensorValue.enableValueNotifications(new NewRecordNotification());
+//					}
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
+
+	@Override
+	public void Unsubscribe(String deviceAddress, Map<String, String> profile) {
+//		
+//		BluetoothDevice device;
+//		try {
+//			device = getDevice(deviceAddress);
+//			if (device == null) {
+//				logger.error("Device not found: {}", deviceAddress);
+//			}
+//			if (!device.getConnected()) {
+//				logger.error("Device not connected: {}", deviceAddress);
+//			} else {
+//
+//				BluetoothGattService sensorService = getService(device, profile.get(GATT_SERVICE));
+//				if (sensorService == null) {
+//					logger.error("The device does not have {} service: {}", profile.get(SENSOR_NAME), deviceAddress);
+//				} else {
+//
+//					BluetoothGattCharacteristic sensorValue = getCharacteristic(sensorService,
+//							profile.get(GATT_CHARACTERSTICS_VALUE));
+//					if (sensorValue == null) {
+//						logger.error("Could not find the correct characterstics");
+//					} else {
+//						sensorValue.disableValueNotifications();
+//					}
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
+
+	/**
+	 * 
+	 * @author dagi
+	 * 
+	 *         New record signal for Subscription
+	 */
+//	private class NewRecordNotification implements BluetoothNotification<byte[]> {
+//		@Override
+//		public void run(byte[] record) {
+//			lastRecord = new RecordObject("", "", new String(record, StandardCharsets.ISO_8859_1), "", "String",
+//					System.currentTimeMillis());
+//			try {
+//				Protocol.NewRecordSignal newRecordSignal = new Protocol.NewRecordSignal(AGILE_NEW_RECORD_SIGNAL_PATH,
+//						lastRecord);
+//				connection.sendSignal(newRecordSignal);
+//			} catch (DBusException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
+
+	public boolean isRemote() {
+		return false;
+	}
+
+	// =========================UTILITY ==============
+
+	void printDevice(BluetoothDevice device) {
+		logger.info("Name = {}", device.getName());
+		logger.info("Address = {}", device.getAddress());
+		logger.info("Connected= {}", device.getConnected());
+	}
+	 
+
+	@Override
+	public void finalize() {
+		connection.disconnect();
+	}
+
+	/**
+	 * Check if the device is newly discovered device
+	 * 
+	 * @param device
+	 * @return
+	 */
 	private boolean isNewDevice(DeviceOverview device) {
 		for (DeviceOverview dev : deviceList) {
 			if (dev.getId().equals(device.getId())) {
@@ -458,57 +511,5 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 		return true;
 	}
-
-	/**
-	 * Returns a Bluetooth GATT service from the given device based on the UUID
-	 * of the service
-	 *
-	 * @param device
-	 *            The device id
-	 * @param UUID
-	 *            service UUID
-	 * @return
-	 * @throws InterruptedException
-	 */
-	private BluetoothGattService getService(BluetoothDevice device, String UUID) {
-		BluetoothGattService service = null;
-		List<BluetoothGattService> bluetoothServices = null;
-		bluetoothServices = device.getServices();
-		if (bluetoothServices == null) {
-			return null;
-		}
-
-		for (BluetoothGattService gattservice : bluetoothServices) {
-			if (gattservice.getUUID().equals(UUID)) {
-				service = gattservice;
-			}
-		}
-		return service;
-	}
-
-	/**
-	 * Returns a GATT characteristics from the given GATT service based on the
-	 * given UUID
-	 *
-	 * @param service
-	 *            The GATT Service
-	 *
-	 * @param UUID
-	 *            The required GATT characteristics UUID
-	 *
-	 * @return
-	 */
-	private BluetoothGattCharacteristic getCharacteristic(BluetoothGattService service, String UUID) {
-		List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
-		if (characteristics == null) {
-			return null;
-		}
-		for (BluetoothGattCharacteristic characteristic : characteristics) {
-			if (characteristic.getUUID().equals(UUID)) {
-				return characteristic;
-			}
-		}
-		return null;
-	}
-
+ 
 }
