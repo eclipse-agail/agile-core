@@ -284,8 +284,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 * @see iot.agile.protocol.ble.device.IDevice#Subscribe()
 	 */
 	public void Subscribe(String component) {
-		logger.debug("Device. Subscribe not implemented");
-	}
+ 	}
 
 	/**
 	 *
@@ -305,6 +304,10 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	protected boolean isSensorSupported(String sensorName) {
 		return true;
+	}
+
+	@Override
+	public void Unsubscribe(String component) throws DBusException {
 	}
 
 }

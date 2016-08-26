@@ -23,7 +23,6 @@ import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceOverview;
-import iot.agile.object.RecordObject;
 
 /**
  * Agile BLE Protocol interface
@@ -128,15 +127,16 @@ public interface Protocol extends DBusInterface {
 	 * Subscribe to data update over the protocol
 	 *
 	 * @param subscribeParams
+	 * @throws DBusException 
 	 */
-	public void Subscribe(String deviceAddress, Map<String, String> profile);
+	public void Subscribe(String deviceAddress, Map<String, String> profile) throws DBusException;
 
 	/**
 	 * unsubscribe to data update over the protocol
 	 *
 	 * @param subscribeParams
 	 */
-	public void Unsubscribe(String deviceAddress, Map<String, String> profile);
+	public void Unsubscribe(String deviceAddress, Map<String, String> profile)throws DBusException;
 
 	/**
 	 * New data reading signal for subscribe methods
@@ -145,9 +145,9 @@ public interface Protocol extends DBusInterface {
 	 *
 	 */
 	public class NewRecordSignal extends DBusSignal {
- 		public final RecordObject record;
+ 		public final byte[] record;
 
-		public NewRecordSignal(String path, RecordObject record) throws DBusException {
+		public NewRecordSignal(String path, byte[] record) throws DBusException {
 			super(path, record);
  			this.record = record;
 		}
