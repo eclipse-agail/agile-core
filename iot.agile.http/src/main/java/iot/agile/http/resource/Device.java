@@ -53,7 +53,12 @@ public class Device {
   @Inject DbusClient client;
   
   protected iot.agile.Device getDevice(String id) throws DBusException {
-    return client.getDevice(id);
+    int pos = id.indexOf('_');
+    if (pos < 0) {
+      return client.getDevice(id);
+    } else {
+      return client.getDevice("iot.agile.Device." + id.substring(0, pos), id.substring(pos+1));
+    }
   }
 
   @GET
