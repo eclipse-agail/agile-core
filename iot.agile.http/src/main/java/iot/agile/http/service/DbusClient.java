@@ -67,6 +67,10 @@ public class DbusClient {
     String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + id;
     return (Device) getObject(busname, path, Device.class);
   }
+
+  public Device getDevice(String busname, String id) throws DBusException {
+    String path = "/" + busname.replace(".", "/")  + "/" + id;
+    return (Device) getObject(busname, path, Device.class);
   }
   
   public Protocol getProtocol(String id) throws DBusException {
