@@ -83,7 +83,7 @@ public class Device {
     return "";    
   }
 
-  @DELETE
+  @POST
   @Path("/execute/{command}")
   public String Execute(@PathParam("id") String id, @PathParam("command") String command) throws DBusException {
     getDevice(id).Execute(command);
