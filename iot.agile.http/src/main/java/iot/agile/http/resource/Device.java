@@ -34,6 +34,10 @@ import iot.agile.object.DeviceComponet;
 import iot.agile.object.RecordObject;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+import org.freedesktop.dbus.Variant;
 
 /**
  *
@@ -85,8 +89,11 @@ public class Device {
 
   @POST
   @Path("/execute/{command}")
-  public String Execute(@PathParam("id") String id, @PathParam("command") String command) throws DBusException {
-    getDevice(id).Execute(command);
+  public String Execute(@PathParam("id") String id, @PathParam("command") String command, Map<String,Variant> args) throws DBusException {
+    if (args == null) {
+      args = new HashMap<String,Variant>();
+    }
+    getDevice(id).Execute(command, args);
     return "";
   }
 
