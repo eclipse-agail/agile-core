@@ -16,9 +16,11 @@
 package iot.agile;
 
 import java.util.List;
+import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.Variant;
 
 import iot.agile.object.DeviceComponet;
 import iot.agile.object.RecordObject;
@@ -118,7 +120,7 @@ public interface Device extends DBusInterface {
    * Execute an operation on the device
    */
   @org.freedesktop.DBus.Description("Execute an operation on the device")
-  public void Execute(String command) throws DBusException;
+  public void Execute(String command, Map<String, Variant> args) throws DBusException;
 
   /**
    * Read data from the device
