@@ -44,28 +44,29 @@ public class DbusClient {
     connection = DBusConnection.getConnection(AgileObjectInterface.DEFAULT_DBUS_CONNECTION);
   }
 
-  protected DBusInterface getObject(String objectInterface, String objectPath, Class<? extends DBusInterface> clazz) throws DBusException {
+  protected DBusInterface getObject(String objectBusname, String objectPath, Class<? extends DBusInterface> clazz) throws DBusException {
     
-    String key = objectInterface + ":" + objectPath;
+    String key = objectBusname + ":" + objectPath;
     if(instances.containsKey(key)) {
-      logger.debug("Load cached object {}:{}", objectInterface, objectPath);
+      logger.debug("Load cached object {}:{}", objectBusname, objectPath);
       return instances.get(key);
     }
     
     try {
-      DBusInterface obj = connection.getRemoteObject(objectInterface, objectPath, clazz);
+      DBusInterface obj = connection.getRemoteObject(objectBusname, objectPath, clazz);
       instances.put(key, obj);
       return obj;
     } catch (DBusException e) {
-      logger.error("Failed to load object {}:{}", objectInterface, objectPath, e);
+      logger.error("Failed to load object {}:{}", objectBusname, objectPath, e);
       throw e;
     }
   }
   
   public Device getDevice(String id) throws DBusException {
-    String iface = Device.AGILE_INTERFACE;
+    String busname = Device.AGILE_INTERFACE;
     String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + id;
-    return (Device) getObject(iface, path, Device.class);
+    return (Device) getObject(busname, path, Device.class);
+  }
   }
   
   public Protocol getProtocol(String id) throws DBusException {
