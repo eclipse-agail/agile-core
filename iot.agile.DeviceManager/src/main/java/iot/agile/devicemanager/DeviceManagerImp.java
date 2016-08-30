@@ -91,8 +91,8 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
     Device device = isRegistered(deviceDefinition);
 
     Map<String, String> ret = new HashMap<String,String>();
-    ret.put("id","ble_" + deviceDefinition.id.replace(":", ""));
-    ret.put("path","/iot/agile/Device/ble_" + deviceDefinition.id.replace(":", ""));
+    ret.put("id","ble" + deviceDefinition.id.replace(":", ""));
+    ret.put("path","/iot/agile/Device/ble" + deviceDefinition.id.replace(":", ""));
     ret.put("conn","iot.agile.Device");
     // Register device
     try {
@@ -197,7 +197,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
   private Device isRegistered(DeviceDefinition devDef) {
     String objectName = "iot.agile.Device";
-    String objectPath = "/iot/agile/Device/ble_" + devDef.id.replace(":", "");
+    String objectPath = "/iot/agile/Device/ble" + devDef.id.replace(":", "");
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
       Device device = (Device) connection.getRemoteObject(objectName, objectPath);

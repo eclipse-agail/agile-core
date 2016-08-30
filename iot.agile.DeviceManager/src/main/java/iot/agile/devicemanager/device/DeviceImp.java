@@ -126,7 +126,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 		// this.protocol =devicedefinition.protocol;
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
 
-		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "ble" + "_" + devicedefinition.id.replace(":", "");
+		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "ble" + devicedefinition.id.replace(":", "");
 		;
 
 		dbusConnect(deviceAgileID, devicePath, this);
