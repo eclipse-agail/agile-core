@@ -16,7 +16,9 @@
 package iot.agile.devicemanager.device;
 
 import java.util.List;
+import java.util.Map;
 
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,7 +250,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 *
 	 * @see iot.agile.protocol.ble.device.IDevice#Execute(java.lang.String)
 	 */
-	public void Execute(String command) {
+	public void Execute(String command, Map<String,Variant> args) {
 		logger.debug("Device. Execute not implemented");
 	}
 
