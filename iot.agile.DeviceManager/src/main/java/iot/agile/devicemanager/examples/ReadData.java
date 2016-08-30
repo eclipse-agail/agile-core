@@ -46,7 +46,7 @@ public class ReadData {
 	/**
 	 * Bus path for AGILE BLE Device interface
 	 */
-	private static String agileDeviceObjectPath = "/iot/agile/device/ble/";
+	private static String agileDeviceObjectPath = "/iot/agile/Device/ble_";
 	/**
 	 * Sensor name
 	 */

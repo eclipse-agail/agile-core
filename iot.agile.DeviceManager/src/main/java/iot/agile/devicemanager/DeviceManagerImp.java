@@ -101,7 +101,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
         devices.add(ret);
         logger.info("Device registered: {}", device.Id());
        } else {
-         logger.info("Device already registered:  {}", device.Id());
+          logger.info("Device already registered:  {}", device.Id());
        }
       registered =true;
     } catch (Exception e) {
@@ -197,7 +197,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
   private Device isRegistered(DeviceDefinition devDef) {
     String objectName = "iot.agile.Device";
-    String objectPath = "/iot/agile/device/ble/" + devDef.id.replace(":", "");
+    String objectPath = "/iot/agile/Device/ble_" + devDef.id.replace(":", "");
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
       Device device = (Device) connection.getRemoteObject(objectName, objectPath);

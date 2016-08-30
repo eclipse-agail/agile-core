@@ -139,4 +139,10 @@ public interface Device extends DBusInterface {
    */
   @org.freedesktop.DBus.Description("Enable subscription")
   public void Subscribe(String component) throws DBusException;
+  
+  /**
+   * disable subscription
+   */
+  @org.freedesktop.DBus.Description("Enable subscription")
+  public void Unsubscribe(String component) throws DBusException;
 }
