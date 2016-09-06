@@ -228,6 +228,20 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	}
 
 	/**
+	 * Discover status
+	 *
+	 * @see iot.agile.protocol.ble.Protocol#StopDiscovery()
+	 */
+	@Override
+	public String DiscoveryStatus() {
+		if (future != null) {
+			return "RUNNING";
+		} else {
+			return "NONE";
+		}
+	}
+
+	/**
 	 * Discover BLE devices, towards a more descriptive name
 	 */
 	@Override
