@@ -72,6 +72,12 @@ public class Protocol {
     getProtocol(id).Disconnect(deviceId);
   }
 
+  @GET
+  @Path("/discovery")
+  public String DiscoveryStatus(@PathParam("id") String id) throws DBusException {
+    return getProtocol(id).DiscoveryStatus();
+  }
+
   @POST
   @Path("/discovery")
   public void Discover(@PathParam("id") String id) throws DBusException {

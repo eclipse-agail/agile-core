@@ -97,6 +97,12 @@ public interface Protocol extends DBusInterface {
 	public void Disconnect(String deviceAddress) throws DBusException;
 
 	/**
+	 * Get discovery status
+	 */
+	@org.freedesktop.DBus.Description("Get discovery status")
+	public String DiscoveryStatus() throws DBusException;
+
+	/**
 	 * List all discovered BLE devices
 	 *
 	 * TODO - return list of devices
