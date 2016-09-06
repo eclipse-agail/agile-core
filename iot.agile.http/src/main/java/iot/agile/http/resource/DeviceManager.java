@@ -57,7 +57,7 @@ public class DeviceManager {
   @POST
 //  public String Create(@NotNull DeviceDefinition body) throws DBusException {
   public Map<String,String> Create(DeviceDefinition body) throws DBusException, IOException {
-    logger.debug("Create new device {} ({}) on {}", body.id, body.name, body.protocol);
+    logger.debug("Create new device {} ({}) on {}", body.address, body.name, body.protocol);
     return client.getDeviceManager().Create(body);
   }
   

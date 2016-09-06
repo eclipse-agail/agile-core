@@ -120,13 +120,13 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	public DeviceImp(DeviceDefinition devicedefinition) throws DBusException {
 		this.deviceName = devicedefinition.name;
-		this.deviceID = devicedefinition.id;
+		this.deviceID = devicedefinition.address;
 		this.protocol = BLUETOOTH_LOW_ENERGY;
 		this.profile = devicedefinition.streams;
 		// this.protocol =devicedefinition.protocol;
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
 
-		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "ble" + devicedefinition.id.replace(":", "");
+		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "ble" + devicedefinition.address.replace(":", "");
 		;
 
 		dbusConnect(deviceAgileID, devicePath, this);

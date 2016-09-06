@@ -15,11 +15,10 @@
  */
 package iot.agile;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
-import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceDefinition;
 
