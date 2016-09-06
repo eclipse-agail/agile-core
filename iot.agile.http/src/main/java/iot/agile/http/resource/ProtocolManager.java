@@ -17,6 +17,7 @@ package iot.agile.http.resource;
 
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceOverview;
+import iot.agile.object.DiscoveryStatus;
 import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -72,6 +73,12 @@ public class ProtocolManager {
 	@GET
 	public List<String> Protocols() throws DBusException {
 		return getProtocolManager().Protocols();
+	}
+
+	@GET
+	@Path("/discovery")
+	public List<DiscoveryStatus> DiscoveryStatus() throws DBusException {
+		return getProtocolManager().DiscoveryStatus();
 	}
 
 	@POST
