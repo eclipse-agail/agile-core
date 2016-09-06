@@ -30,6 +30,7 @@ import iot.agile.Protocol;
 import iot.agile.ProtocolManager;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceOverview;
+import iot.agile.object.DiscoveryStatus;
 
 /**
  * @author dagi
@@ -104,6 +105,31 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 */
 	public List<String> Protocols() {
 		return protocols;
+	}
+
+	/**
+	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#DiscoveryStatus()
+	 */
+	public List<DiscoveryStatus> DiscoveryStatus() {
+		logger.info("discovery status");
+
+		List<DiscoveryStatus> ret = new ArrayList<DiscoveryStatus>();
+
+		for (String protocol : protocols) {
+			String objectPath = "/" + protocol.replace(".", "/");
+
+			Protocol protocolInstance;
+			try {
+
+				protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
+				String status = protocolInstance.DiscoveryStatus();
+				ret.add(new DiscoveryStatus(protocol, status));
+			} catch (DBusException ex) {
+				logger.error("DBus exception on protocol {}", protocol, ex);
+				ret.add(new DiscoveryStatus(protocol, "FAILURE"));
+			}
+		}
+		return ret;
 	}
 
 	/**
