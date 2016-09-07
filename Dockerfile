@@ -80,16 +80,15 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # resin-sync will always sync to /usr/src/app, so code needs to be here.
 WORKDIR /usr/src/app
-
 ENV APATH /usr/src/app
 
 COPY scripts scripts
 
-RUN cd /usr/src/app && CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
-$APATH/scripts/install-dbus-java.sh $APATH/deps
+RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
+scripts/install-dbus-java.sh $APATH/deps
 
-RUN cd /usr/src/app && PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
-$APATH/scripts/install-tinyb.sh $APATH/deps
+RUN PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
+scripts/install-tinyb.sh $APATH/deps
 
 # we need dbus-launch
 RUN apt-get update && apt-get install --no-install-recommends -y \
