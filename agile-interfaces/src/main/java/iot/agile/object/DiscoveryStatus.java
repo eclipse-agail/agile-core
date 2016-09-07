@@ -2,7 +2,9 @@ package iot.agile.object;
 
 import org.freedesktop.dbus.Position;
 import org.freedesktop.dbus.Struct;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties({"parameters"})
 public  final class DiscoveryStatus extends Struct {
   @Position(0)
   public final String name;
