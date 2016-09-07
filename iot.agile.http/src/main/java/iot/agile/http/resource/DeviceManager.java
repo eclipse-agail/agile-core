@@ -80,9 +80,9 @@ public class DeviceManager {
 
   @PUT
   @Path("/{id}")
-  public boolean Update(@PathParam("id") String id, DeviceDefinition definition) throws DBusException {
+  public void Update(@PathParam("id") String id, DeviceDefinition definition) throws DBusException {
     //TODO: check consistency of id and definition.get("id);
-    return client.getDeviceManager().Update(id, definition);
+    client.getDeviceManager().Update(id, definition);
   }
 
   @DELETE
@@ -93,9 +93,8 @@ public class DeviceManager {
 
   @POST
   @Path("/batch")
-  public String Batch(BatchBody body) throws DBusException {
+  public void Batch(BatchBody body) throws DBusException {
     client.getDeviceManager().Batch(body.operation, body.arguments);
-    return "";
   }
   
 }
