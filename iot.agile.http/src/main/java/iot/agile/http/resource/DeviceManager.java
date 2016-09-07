@@ -56,16 +56,14 @@ public class DeviceManager {
   
   @POST
 //  public String Create(@NotNull DeviceDefinition body) throws DBusException {
-  public Map<String,String> Create(DeviceDefinition body) throws DBusException, IOException {
+  public DeviceDefinition Create(DeviceDefinition body) throws DBusException, IOException {
     logger.debug("Create new device {} ({}) on {}", body.address, body.name, body.protocol);
-    return client.getDeviceManager().Create(body);
+    return getDeviceManager().Create(body);
   }
   
   @GET
-  public List<Map<String, String>> List() throws DBusException, JsonProcessingException {
-    List<Map<String, String>> list = client.getDeviceManager().devices();
-    logger.debug("{} managed devices", list.size());
-    return list;
+  public List<DeviceDefinition> Devices() throws DBusException, JsonProcessingException {
+    return client.getDeviceManager().devices();
   }
   
   @POST
@@ -76,21 +74,21 @@ public class DeviceManager {
 
   @GET
   @Path("/{id}")
-  public String Read(@PathParam("id") String id) {
-//    return client.getDeviceManager().Read(id);
-    throw new InternalError("Not implemented");
+  public DeviceDefinition Read(@PathParam("id") String id) {
+    return client.getDeviceManager().Read(id);
   }
 
   @PUT
   @Path("/{id}")
-  public boolean Update(@PathParam("id") String id, String definition) throws DBusException {
+  public boolean Update(@PathParam("id") String id, DeviceDefinition definition) throws DBusException {
+    //TODO: check consistency of id and definition.get("id);
     return client.getDeviceManager().Update(id, definition);
   }
 
   @DELETE
   @Path("/{id}")
-  public void Delete(@PathParam("id") String id, String definition) throws DBusException {
-    client.getDeviceManager().Delete(id, definition);
+  public void Delete(@PathParam("id") String id) throws DBusException {
+    client.getDeviceManager().Delete(id);
   }
 
   @POST
