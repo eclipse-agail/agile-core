@@ -81,27 +81,15 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # resin-sync will always sync to /usr/src/app, so code needs to be here.
 WORKDIR /usr/src/app
 
-# copy app/ directory into WORKDIR
-#COPY app/ ./
-COPY agile-interfaces agile-interfaces
-COPY agile-main agile-main
-COPY iot.agile.DeviceManager iot.agile.DeviceManager
-COPY iot.agile.ProtocolManager iot.agile.ProtocolManager
-COPY iot.agile.http iot.agile.http
-COPY iot.agile.protocol.BLE iot.agile.protocol.BLE
-COPY scripts scripts
-COPY test test
-COPY pom.xml pom.xml
-
 ENV APATH /usr/src/app
+
+COPY scripts scripts
 
 RUN cd /usr/src/app && CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 $APATH/scripts/install-dbus-java.sh $APATH/deps
 
 RUN cd /usr/src/app && PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 $APATH/scripts/install-tinyb.sh $APATH/deps
-
-RUN cd $APATH && mvn clean install -U
 
 # we need dbus-launch
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -110,5 +98,17 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # required by tinyb JNI
 RUN apt-get update && apt-get install --no-install-recommends -y \
     libxrender1
+
+# copy directories into WORKDIR
+COPY agile-interfaces agile-interfaces
+COPY agile-main agile-main
+COPY iot.agile.DeviceManager iot.agile.DeviceManager
+COPY iot.agile.ProtocolManager iot.agile.ProtocolManager
+COPY iot.agile.http iot.agile.http
+COPY iot.agile.protocol.BLE iot.agile.protocol.BLE
+COPY test test
+COPY pom.xml pom.xml
+
+RUN cd $APATH && mvn clean install -U
 
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
