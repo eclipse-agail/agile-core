@@ -66,9 +66,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    bluetooth \
-    bluez \
-#    bluez-firmware \
     libbluetooth-dev \
     libudev-dev
 
@@ -109,5 +106,21 @@ COPY test test
 COPY pom.xml pom.xml
 
 RUN mvn clean install -U
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    libglib2.0-dev \
+    libdbus-1-dev \
+    libudev-dev \
+    libical-dev \
+    libreadline-dev
+
+RUN wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.39.tar.xz \
+    && tar xf bluez-5.39.tar.xz \
+    && rm bluez-5.39.tar.xz \
+    && cd bluez-5.39 \
+    && ./configure \
+    && make -j 4 \
+    && sudo make install \
+    && cd .. && rm -rf bluez-5.39
 
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
