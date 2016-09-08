@@ -16,14 +16,12 @@
 package iot.agile;
 
 import java.util.List;
-import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
 
 import iot.agile.object.DeviceDefinition;
 
-//import iot.agile.protocol.ble.device.utils.DeviceDescription;
-/**
+ /**
  * AGILE Device Manager Interface
  *
  * @author dagi
@@ -41,15 +39,7 @@ public interface DeviceManager extends DBusInterface {
    * @return
    */
   @org.freedesktop.DBus.Description("Returns all registered devices")
-  public List<Map<String, String>> Devices();
-
-  /**
-   * Return all registered devices (deprecated)
-   *
-   * @return
-   */
-  @org.freedesktop.DBus.Description("Returns all registered devices (deprecated)")
-  public List<Map<String, String>> devices();
+  public List<DeviceDefinition> Devices();
 
   /**
    * search for devices based on specific criteria
@@ -62,8 +52,8 @@ public interface DeviceManager extends DBusInterface {
   /**
    * Creates devices
    */
-  @org.freedesktop.DBus.Description("Returns all registered devices")
-  public Map<String,String> Create(DeviceDefinition devicedefinition);
+  @org.freedesktop.DBus.Description("Returns the registered device definition")
+  public DeviceDefinition Create(DeviceDefinition devicedefinition);
 
   /**
    * Load a device definition by its ID
@@ -71,7 +61,7 @@ public interface DeviceManager extends DBusInterface {
    * @param id
    */
   @org.freedesktop.DBus.Description("Load a device definition by its ID")
-  public void Read(String id);
+  public DeviceDefinition Read(String id);
 
   /**
    * UPdate a device definition by its ID
@@ -81,7 +71,7 @@ public interface DeviceManager extends DBusInterface {
    * @return
    */
   @org.freedesktop.DBus.Description("Update a device definition by its ID")
-  public boolean Update(String id, String definition);
+  public void Update(String id, DeviceDefinition definition);
 
   /**
    * Delete a device definition by its ID. this will deactivate the Device DBus
@@ -91,7 +81,7 @@ public interface DeviceManager extends DBusInterface {
    * @param definition
    */
   @org.freedesktop.DBus.Description("Delete a device definition by its ID")
-  public void Delete(String id, String definition);
+  public void Delete(String id);
 
   /**
    * Perform a batch operation over a set of devices
@@ -101,6 +91,6 @@ public interface DeviceManager extends DBusInterface {
    * @return
    */
   @org.freedesktop.DBus.Description("Perform a batch operation")
-  public boolean Batch(String operation, String arguments);
+  public void Batch(String operation, String arguments);
 
 }

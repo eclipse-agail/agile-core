@@ -15,17 +15,11 @@
  */
 package iot.agile.http.resource;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import iot.agile.http.Util;
-import iot.agile.http.resource.devicemanager.BatchBody;
-import iot.agile.http.service.DbusClient;
-import iot.agile.object.DeviceDefinition;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -34,10 +28,23 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import iot.agile.http.Util;
+import iot.agile.http.resource.devicemanager.BatchBody;
+import iot.agile.http.service.DbusClient;
+import iot.agile.object.DeviceDefinition;
 
 /**
  *
@@ -47,54 +54,66 @@ import org.slf4j.LoggerFactory;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class DeviceManager {
-  
-  protected Logger logger = LoggerFactory.getLogger(DeviceManager.class);
-  
-  @Inject DbusClient client;
-  
-  ObjectMapper mapper = Util.mapper;
-  
-  @POST
-//  public String Create(@NotNull DeviceDefinition body) throws DBusException {
-  public DeviceDefinition Create(DeviceDefinition body) throws DBusException, IOException {
-    logger.debug("Create new device {} ({}) on {}", body.address, body.name, body.protocol);
-    return getDeviceManager().Create(body);
-  }
-  
-  @GET
-  public List<DeviceDefinition> Devices() throws DBusException, JsonProcessingException {
-    return client.getDeviceManager().devices();
-  }
-  
-  @POST
-  @Path("/find")
-  public String Find() {
-    throw new InternalError("Not implemented");
-  }
 
-  @GET
-  @Path("/{id}")
-  public DeviceDefinition Read(@PathParam("id") String id) {
-    return client.getDeviceManager().Read(id);
-  }
+	protected Logger logger = LoggerFactory.getLogger(DeviceManager.class);
 
-  @PUT
-  @Path("/{id}")
-  public void Update(@PathParam("id") String id, DeviceDefinition definition) throws DBusException {
-    //TODO: check consistency of id and definition.get("id);
-    client.getDeviceManager().Update(id, definition);
-  }
+	@Inject
+	DbusClient client;
 
-  @DELETE
-  @Path("/{id}")
-  public void Delete(@PathParam("id") String id) throws DBusException {
-    client.getDeviceManager().Delete(id);
-  }
+	ObjectMapper mapper = Util.mapper;
 
-  @POST
-  @Path("/batch")
-  public void Batch(BatchBody body) throws DBusException {
-    client.getDeviceManager().Batch(body.operation, body.arguments);
-  }
-  
+	@Context
+	private HttpServletResponse response;
+
+	@POST
+	public DeviceDefinition Create(DeviceDefinition body) throws DBusException, IOException {
+		logger.debug("Create new device {} ({}) on {}", body.address, body.name, body.protocol);
+		return client.getDeviceManager().Create(body);
+	}
+
+	@GET
+	public List<DeviceDefinition> Devices() throws DBusException, JsonProcessingException {
+		return client.getDeviceManager().Devices();
+	}
+
+	@POST
+	@Path("/find")
+	public String Find() {
+		throw new InternalError("Not implemented");
+	}
+
+	@GET
+	@Path("/{id}")
+	public DeviceDefinition Read(@PathParam("id") String id) throws DBusException {
+		try {
+			DeviceDefinition result = client.getDeviceManager().Read(id);
+			return result;
+		} catch (Exception e) {
+			logger.debug("device not found");
+			ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
+			builder.entity("404: Device not found");
+			Response response = builder.build();
+			throw new WebApplicationException(response);
+		}
+	}
+
+	@PUT
+	@Path("/{id}")
+	public void Update(@PathParam("id") String id, DeviceDefinition definition) throws DBusException {
+		// TODO: check consistency of id and definition.get("id);
+		client.getDeviceManager().Update(id, definition);
+	}
+
+	@DELETE
+	@Path("/{id}")
+	public void Delete(@PathParam("id") String id) throws DBusException {
+		client.getDeviceManager().Delete(id);
+	}
+
+	@POST
+	@Path("/batch")
+	public void Batch(BatchBody body) throws DBusException {
+		client.getDeviceManager().Batch(body.operation, body.arguments);
+	}
+
 }

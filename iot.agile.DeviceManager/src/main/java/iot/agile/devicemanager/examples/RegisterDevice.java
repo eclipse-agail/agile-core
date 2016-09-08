@@ -59,9 +59,9 @@ public class RegisterDevice {
           AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
 
       // Register device
-      String deviceAgileID = (deviceManager
-          .Create(new DeviceDefinition("",deviceAddress, deviceName, "",PROTOCOL_ID,  "", getDeviceStreams()))).get("id");
-      logger.info("Device ID: {}", deviceAgileID);
+      DeviceDefinition dev = (deviceManager
+          .Create(new DeviceDefinition("",deviceAddress, deviceName, "",PROTOCOL_ID,  "", getDeviceStreams())));
+      logger.info("Device ID: {}", dev.deviceId);
     } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
       logger.debug("Unkown method");
     } catch (ServiceUnknown e) {
