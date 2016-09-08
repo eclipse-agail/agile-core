@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.DeviceManager;
-import iot.agile.object.DeviceComponet;
+import iot.agile.object.DeviceComponent;
 import iot.agile.object.DeviceDefinition;
 
 /**
@@ -99,11 +99,11 @@ public class RegisterDevice {
     return false;
   }
 
-  private static List<DeviceComponet> getDeviceStreams() {
-    List<DeviceComponet> streamList = new ArrayList<DeviceComponet>();
-    streamList.add(new DeviceComponet("Temperature", "Celsius"));
-    streamList.add(new DeviceComponet("Accelerometer", "MeterPerSecond"));
-    streamList.add(new DeviceComponet("Humidity", "Percent"));
+  private static List<DeviceComponent> getDeviceStreams() {
+    List<DeviceComponent> streamList = new ArrayList<DeviceComponent>();
+    streamList.add(new DeviceComponent("Temperature", "Celsius"));
+    streamList.add(new DeviceComponent("Accelerometer", "MeterPerSecond"));
+    streamList.add(new DeviceComponent("Humidity", "Percent"));
     return streamList;
   }
 }

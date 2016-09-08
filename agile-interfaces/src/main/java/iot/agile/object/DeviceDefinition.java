@@ -31,13 +31,13 @@ public class DeviceDefinition extends Struct {
 	public final String path;
 	@Position(6)
 	@JsonProperty("streams")
-	public final List<DeviceComponet> streams;
+	public final List<DeviceComponent> streams;
 
 	@JsonCreator
 	public DeviceDefinition(@JsonProperty("deviceId") String deviceId, @JsonProperty("address") String address,
 			@JsonProperty("name") String name, @JsonProperty("description") String description,
 			@JsonProperty("protocol") String protocol, @JsonProperty("path") String path,
-			@JsonProperty("streams") List<DeviceComponet> streams) {
+			@JsonProperty("streams") List<DeviceComponent> streams) {
 		this.deviceId = deviceId;
 		this.address = address;
 		this.name = name;
@@ -71,7 +71,7 @@ public class DeviceDefinition extends Struct {
 		return path;
 	}
 
-	public List<DeviceComponet> getStreams() {
+	public List<DeviceComponent> getStreams() {
 		return streams;
 	}
 

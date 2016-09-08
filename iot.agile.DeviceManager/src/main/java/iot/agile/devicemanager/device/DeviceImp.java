@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import iot.agile.Device;
 import iot.agile.Protocol;
 import iot.agile.object.AbstractAgileObject;
-import iot.agile.object.DeviceComponet;
+import iot.agile.object.DeviceComponent;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.RecordObject;
 
@@ -91,7 +91,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	protected String protocol;
 
-	protected List<DeviceComponet> profile;
+	protected List<DeviceComponent> profile;
 	/**
 	 * The device protocol interface
 	 */
@@ -178,7 +178,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	/**
 	 * Returns the profile of the device
 	 */
-	public List<DeviceComponet> Profile() {
+	public List<DeviceComponent> Profile() {
 		return null;
 	}
 
