@@ -31,6 +31,8 @@ if __name__ == "__main__":
      print (sensortag["path"])
      dbusd = session_bus.get_object(sensortag["conn"], sensortag["path"])
      device = dbus.Interface(dbusd, dbus_interface=sensortag["conn"])
-     print(device.Read('Temperature'))
-
+     try:
+       print(device.Read('Temperature'))
+     except dbus.exceptions.DBusException as e:
+       print(e)
 
