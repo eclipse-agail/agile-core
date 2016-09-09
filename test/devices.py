@@ -20,4 +20,4 @@ if __name__ == "__main__":
    dbusdm = session_bus.get_object(DM_BUS_NAME, DM_OBJ_PATH)
    device_manager = dbus.Interface(dbusdm, dbus_interface=DM_BUS_NAME)
 
-   print (device_manager.devices())
+   print (device_manager.Devices())
