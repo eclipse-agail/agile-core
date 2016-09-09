@@ -39,14 +39,11 @@ if __name__ == "__main__":
    for device in devices:
      if (device[2] == 'SensorTag' or device[2] == 'CC2650 SensorTag'):
 #     if (device[2] == 'SensorTag'):
-       sensortag = device_manager.Create((device[0], device[1], device[2], '',[('Temperature','celsius')]))
+       sensortag = device_manager.Create(("", device[0], device[2], "", device[1], "", [('Temperature','celsius')]))
        print (sensortag)
        sensortags.append(sensortag)
 
    for sensortag in sensortags:
-     print (sensortag["conn"])
-     print (sensortag["path"])
-     dbusd = session_bus.get_object(sensortag["conn"], sensortag["path"])
-     device = dbus.Interface(dbusd, dbus_interface=sensortag["conn"])
+     print (sensortag[0])
 
 
