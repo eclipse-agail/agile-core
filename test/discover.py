@@ -9,14 +9,11 @@ import dbus
 # DBus
 PM_BUS_NAME = "iot.agile.ProtocolManager"
 PM_OBJ_PATH = "/iot/agile/ProtocolManager"
-DM_BUS_NAME = "iot.agile.DeviceManager"
-DM_OBJ_PATH = "/iot/agile/DeviceManager"
 
 # --- Main program ------
 if __name__ == "__main__":
 
    global protocol_manager
-   global device_manager
 
    # DBus
    session_bus = dbus.SessionBus()
