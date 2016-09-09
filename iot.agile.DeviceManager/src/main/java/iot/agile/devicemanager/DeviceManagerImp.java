@@ -60,7 +60,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	public DeviceManagerImp() throws DBusException {
 
 		dbusConnect(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
-
 		logger.debug("Started Device Manager");
 	}
 
@@ -88,9 +87,9 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		DeviceDefinition registeredDev = null;
 
 		// For demo purpose we create only sensor tag device
-		Device device = isRegistered(deviceDefinition);
+		Device device = getDevice(deviceDefinition);
 
- 		// Register device
+		// Register device
 		try {
 			if (device == null) {
 				registeredDev = new DeviceDefinition("ble" + deviceDefinition.address.replace(":", ""),
@@ -128,9 +127,8 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 */
 	@Override
 	public DeviceDefinition Read(String id) {
-		//logger.debug("DeviceManager.Read not implemented");
-		for(DeviceDefinition dd : devices){
-			if(dd.deviceId.trim().equals(id)){
+		for (DeviceDefinition dd : devices) {
+			if (dd.deviceId.trim().equals(id)) {
 				return dd;
 			}
 		}
@@ -166,7 +164,19 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 */
 	@Override
 	public void Delete(String id) {
-		logger.debug("DeviceManager.Delete not implemented");
+		DeviceDefinition devDefn = Read(id);
+		if(devDefn != null){
+			Device device = getDevice(devDefn);
+			if (device != null) {
+				try {
+					device.Disconnect();
+					connection.unExportObject(devDefn.path);
+					devices.remove(devDefn);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}	
+		}
 	}
 
 	/**
@@ -190,7 +200,14 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		return false;
 	}
 
-	private Device isRegistered(DeviceDefinition devDef) {
+	/**
+	 * Get device based on {@code DeviceDefinition}
+	 * 
+	 * @param devDef
+	 *            Device definition
+	 * @return
+	 */
+	private Device getDevice(DeviceDefinition devDef) {
 		String objectName = "iot.agile.Device";
 		String objectPath = "/iot/agile/Device/ble" + devDef.address.replace(":", "");
 		try {

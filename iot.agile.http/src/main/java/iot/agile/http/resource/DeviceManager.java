@@ -96,6 +96,9 @@ public class DeviceManager {
 			throw new WebApplicationException(response);
 		}
 	}
+	
+	
+	
 
 	@PUT
 	@Path("/{id}")
@@ -107,7 +110,11 @@ public class DeviceManager {
 	@DELETE
 	@Path("/{id}")
 	public void Delete(@PathParam("id") String id) throws DBusException {
-		client.getDeviceManager().Delete(id);
+		try {
+			client.getDeviceManager().Delete(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@POST
