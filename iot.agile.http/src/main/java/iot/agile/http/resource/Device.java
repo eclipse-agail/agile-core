@@ -16,6 +16,10 @@
 package iot.agile.http.resource;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -25,6 +29,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +38,6 @@ import org.slf4j.LoggerFactory;
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.RecordObject;
-
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-import org.freedesktop.dbus.Variant;
 
 /**
  *
@@ -68,9 +68,9 @@ public class Device {
   }
 
   @GET
-  @Path("/lastUpdate")
-  public long LastUpdate(@PathParam("id") String id) throws DBusException {
-    return getDevice(id).LastUpdate();
+  @Path("/{componentID}/lastUpdate")
+  public RecordObject LastUpdate(@PathParam("id") String id, @PathParam("componentID") String componentID) throws DBusException {
+	return getDevice(id).LastUpdate(componentID);
   }
 
   @GET
