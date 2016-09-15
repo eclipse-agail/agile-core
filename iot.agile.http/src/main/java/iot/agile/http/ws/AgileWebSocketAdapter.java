@@ -24,8 +24,10 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-import iot.agile.Protocol;
-import iot.agile.Protocol.NewRecordSignal;
+import iot.agile.Device;
+import iot.agile.Device.NewSubscribeValueSignal;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  *
@@ -35,6 +37,7 @@ import iot.agile.Protocol.NewRecordSignal;
 public class AgileWebSocketAdapter extends WebSocketAdapter {
 
   private Session session;
+  private ObjectMapper mapper = new ObjectMapper();
 
   @Override
   public void onWebSocketConnect(Session sess) {
@@ -43,13 +46,13 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
 
 		 try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-			connection.addSigHandler(Protocol.NewRecordSignal.class	, new DBusSigHandler<Protocol.NewRecordSignal>() {
+			connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
 
 				@Override
-				public void handle(NewRecordSignal sig) {
+				public void handle(NewSubscribeValueSignal sig) {
 					System.out.printf("http: New value %s%n", sig.record);
 					try {
-						session.getRemote().sendString(new String(sig.record));
+						session.getRemote().sendString(mapper.writeValueAsString(sig.record));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
