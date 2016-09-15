@@ -16,7 +16,7 @@
 package iot.agile.http;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
-import iot.agile.http.ws.MyEchoSocket;
+import iot.agile.http.ws.AgileWebSocketAdapter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -62,7 +62,7 @@ public class HttpServer {
         @Override
         public void configure(WebSocketServletFactory factory)
         {
-            factory.register(MyEchoSocket.class);
+            factory.register(AgileWebSocketAdapter.class);
         }
     };
     context.addServlet(new ServletHolder(wsServlet), "/ws/*");

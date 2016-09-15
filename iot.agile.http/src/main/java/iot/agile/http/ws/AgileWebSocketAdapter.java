@@ -18,13 +18,22 @@ package iot.agile.http.ws;
 import java.io.IOException;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.Session;
 
 /**
  *
- * @author Luca Capra <lcapra@create-net.org>
+ * @author Csaba Kiraly <kiraly@fbk.eu>
  */
 @WebSocket
-public class MyEchoSocket extends WebSocketAdapter {
+public class AgileWebSocketAdapter extends WebSocketAdapter {
+
+  private Session session;
+
+  @Override
+  public void onWebSocketConnect(Session sess) {
+    session = sess;
+    System.out.printf("New websocket connection %s%n", sess.getRemoteAddress());
+  }
 
   @Override
   public void onWebSocketText(String message) {
@@ -37,4 +46,7 @@ public class MyEchoSocket extends WebSocketAdapter {
       }
     }
   }
+
+  
+
 }
