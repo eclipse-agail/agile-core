@@ -77,7 +77,14 @@ mvn="mvn"
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
   cd iot.agile.protocol.BLE
-  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE" $mvn exec:java &
+  # in what follows we need an ugly workaround to pass the classpath correctly, otherwise TinyB JNI will throw a class not found exception
+  #MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE" $mvn exec:java &
+  java \
+    $MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE \
+    -classpath /usr/share/maven/boot/plexus-classworlds-2.x.jar:../deps/tinyb.jar \
+    -Dclassworlds.conf=/usr/share/maven/bin/m2.conf -Dmaven.home=/usr/share/maven -Dmaven.multiModuleProjectDirectory=$PWD \
+    org.codehaus.plexus.classworlds.launcher.Launcher \
+    exec:java &
   echo "Started AGILE BLE protocol"
   cd ../
 fi

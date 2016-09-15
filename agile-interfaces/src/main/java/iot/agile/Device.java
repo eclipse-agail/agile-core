@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusInterface;
-import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.Variant;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.RecordObject;
@@ -145,4 +146,20 @@ public interface Device extends DBusInterface {
    */
   @org.freedesktop.DBus.Description("Enable subscription")
   public void Unsubscribe(String component) throws DBusException;
+  
+	/**
+	 * New data reading signal for subscribe methods
+	 * 
+	 * @author dagi
+	 *
+	 */
+	public class NewSubscribeValueSignal extends DBusSignal {
+		public final RecordObject record;
+
+		public NewSubscribeValueSignal(String path, RecordObject record) throws DBusException {
+			super(path, record);
+			this.record = record;
+		}
+
+	}
 }

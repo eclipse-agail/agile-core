@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.Protocol;
+import iot.agile.Protocol.NewRecordSignal;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.DeviceDefinition;
@@ -59,6 +61,11 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	private static final String BLE_PROTOCOL_PATH = "/iot/agile/protocol/BLE";
 
+	/**
+	 * DBus bus path for for new subscribe record
+	 * 
+	 * 	 */
+	private static final String AGILE_NEW_RECORD_SUBSCRIBE_SIGNAL_PATH = "/iot/agile/NewRecord/Subscribe";
 	/**
 	 * Device status
 	 */
@@ -315,6 +322,10 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	public void Subscribe(String component) {
  	}
 
+	@Override
+	public void Unsubscribe(String component) throws DBusException {
+	}
+
 	/**
 	 *
 	 *
@@ -334,8 +345,41 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	protected boolean isSensorSupported(String sensorName) {
 		return true;
 	}
-
-	@Override
-	public void Unsubscribe(String component) throws DBusException {
+	
+	protected void signalNewSubscribeValue(String componentName){
+		
+		try {
+			connection.addSigHandler(Protocol.NewRecordSignal.class	, new DBusSigHandler<Protocol.NewRecordSignal>() {
+				@Override
+				public void handle(NewRecordSignal sig) {
+					RecordObject recObj = new RecordObject(deviceID, componentName,
+							formatReading(componentName, sig.record), getMeasurementUnit(componentName), "",
+							System.currentTimeMillis());
+					data = recObj;
+					lastReadStore.put(componentName, recObj);
+					try {
+						Device.NewSubscribeValueSignal newRecordSignal = new Device.NewSubscribeValueSignal(AGILE_NEW_RECORD_SUBSCRIBE_SIGNAL_PATH,
+								recObj);
+						connection.sendSignal(newRecordSignal);
+						logger.info("Device notification component {} value {}",componentName, recObj.value);
+					} catch (DBusException e) {
+ 						e.printStackTrace();
+					}
+				}
+			});
+		} catch (DBusException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Override by child classes 
+	 * @param sensorName
+	 * @param readData
+	 * @return
+	 */
+	protected String formatReading(String sensorName, byte[] readData) {
+		return null;
 	}
 }

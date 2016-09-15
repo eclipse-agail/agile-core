@@ -448,7 +448,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		@Override
 		public void run(byte[] record) {
 			lastRecord = record;
-			logger.info("new reading:.."+formatReading(record));
+			logger.info("Protocol Notification:.."+new String(record));
 			try {
 				Protocol.NewRecordSignal newRecordSignal = new Protocol.NewRecordSignal(AGILE_NEW_RECORD_SIGNAL_PATH,
 						lastRecord);
@@ -489,40 +489,6 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 			}
 		}
 		return true;
-	}
-
-	//
-
-	private String formatReading(byte[] readData) {
-		float result;
-		int rawData;
-		rawData = shortSignedAtOffset(readData, 0);
-		result = convertOpticalRead(rawData);
-
-		return Float.toString(result);
-	}
-
-	/**
-	 * Gyroscope, Magnetometer, Barometer, IR temperature all store 16 bit two's
-	 * complement values in the format LSB MSB.
-	 *
-	 * This function extracts these 16 bit two's complement values.
-	 */
-	private static Integer shortSignedAtOffset(byte[] value, int offset) {
-		Integer lowerByte = Byte.toUnsignedInt(value[offset]);
-		Integer upperByte = Byte.toUnsignedInt(value[offset + 1]); // Note:
-																	// interpret
-																	// MSB as
-																	// signed.
-
-		return (upperByte << 8) + lowerByte;
-	}
-
-	private float convertOpticalRead(int raw) {
-		int e = (raw & 0x0F000) >> 12; // Interim value in calculation
-		int m = raw & 0x0FFF; // Interim value in calculation
-
-		return (float) (m * (0.01 * Math.pow(2.0, e)));
 	}
 
 }

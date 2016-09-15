@@ -5,15 +5,16 @@
  */
 package iot.agile.main;
 
-import iot.agile.devicemanager.DeviceManagerImp;
-import iot.agile.http.HttpServer;
-import iot.agile.protocol.ble.BLEProtocolImp;
-import iot.agile.protocolmanager.ProtocolManagerImp;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import iot.agile.devicemanager.DeviceManagerImp;
+import iot.agile.http.HttpServer;
+import iot.agile.protocolmanager.ProtocolManagerImp;
 
 /**
  *

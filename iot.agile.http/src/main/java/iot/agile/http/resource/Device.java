@@ -117,16 +117,17 @@ public class Device {
   }
 
   @POST
-  @Path("/subscribe")
+  @Path("/{sensorName}/subscribe")
   public String Subscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
 	  getDevice(id).Subscribe(sensorName);
 	  return "";
   }
   
   @DELETE
-  @Path("/subscribe")
+  @Path("/{sensorName}/subscribe")
   public String Unsubscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
-    throw new InternalError("Not implemented");
+	  getDevice(id).Unsubscribe(sensorName);
+	  return "";
   }
   
 }

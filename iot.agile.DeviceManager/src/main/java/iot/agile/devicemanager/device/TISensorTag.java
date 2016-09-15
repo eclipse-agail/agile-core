@@ -171,6 +171,10 @@ public class TISensorTag extends DeviceImp implements Device {
 						byte[] period = { 100 };
 						deviceProtocol.Write(deviceID, getFrequencyProfile(sensorName, period));
 						deviceProtocol.Subscribe(deviceID, getReadValueProfile(sensorName));
+						
+						//send signal 
+						signalNewSubscribeValue(sensorName);
+						
 					} catch (DBusException e) {
 						e.printStackTrace();
 					}
@@ -347,7 +351,8 @@ public class TISensorTag extends DeviceImp implements Device {
 	 *            the raw value read from the sensor
 	 * @return
 	 */
-	private String formatReading(String sensorName, byte[] readData) {
+	@Override
+	protected String formatReading(String sensorName, byte[] readData) {
 		float result;
 		int rawData;
 		if (sensorName.contains(TEMPERATURE)) {
@@ -417,10 +422,6 @@ public class TISensorTag extends DeviceImp implements Device {
 	private static Integer shortSignedAtOffset(byte[] value, int offset) {
 		Integer lowerByte = Byte.toUnsignedInt(value[offset]);
 		Integer upperByte = Byte.toUnsignedInt(value[offset + 1]); // Note:
-																	// interpret
-																	// MSB as
-																	// signed.
-
 		return (upperByte << 8) + lowerByte;
 	}
 
