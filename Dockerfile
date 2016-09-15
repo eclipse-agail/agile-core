@@ -95,6 +95,24 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 RUN apt-get update && apt-get install --no-install-recommends -y \
     libxrender1
 
+# required by bluez
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    libglib2.0-dev \
+    libdbus-1-dev \
+    libudev-dev \
+    libical-dev \
+    libreadline-dev
+
+# isntall bluez
+RUN wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.39.tar.xz \
+    && tar xf bluez-5.39.tar.xz \
+    && rm bluez-5.39.tar.xz \
+    && cd bluez-5.39 \
+    && ./configure \
+    && make -j 4 \
+    && sudo make install \
+    && cd .. && rm -rf bluez-5.39
+
 # copy directories into WORKDIR
 COPY agile-interfaces agile-interfaces
 COPY agile-main agile-main
@@ -107,20 +125,5 @@ COPY pom.xml pom.xml
 
 RUN mvn clean install -U
 
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    libglib2.0-dev \
-    libdbus-1-dev \
-    libudev-dev \
-    libical-dev \
-    libreadline-dev
-
-RUN wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.39.tar.xz \
-    && tar xf bluez-5.39.tar.xz \
-    && rm bluez-5.39.tar.xz \
-    && cd bluez-5.39 \
-    && ./configure \
-    && make -j 4 \
-    && sudo make install \
-    && cd .. && rm -rf bluez-5.39
 
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
