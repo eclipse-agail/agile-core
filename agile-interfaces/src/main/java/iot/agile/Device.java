@@ -74,11 +74,17 @@ public interface Device extends DBusInterface {
 
   /**
    *
-   * @return A UNIX time stamp to indicate the last data update received by the
-   * device
+   * @return A RecordObject with the last data update received from the component
    */
   @org.freedesktop.DBus.Description("returns the last data update received by the device")
   public RecordObject LastUpdate(String componentID);
+
+  /**
+   *
+   * @return A list of RecordObjects with the last read value of all components
+   */
+  @org.freedesktop.DBus.Description("returns the last data updates received by the device")
+  public List<RecordObject> LastUpdate();
 
   /**
    *
@@ -122,6 +128,12 @@ public interface Device extends DBusInterface {
    */
   @org.freedesktop.DBus.Description("Execute an operation on the device")
   public void Execute(String command, Map<String, Variant> args) throws DBusException;
+
+  /**
+   * Read data from all components
+   */
+  @org.freedesktop.DBus.Description("Read data from all components")
+  public List<RecordObject> Read();
 
   /**
    * Read data from the device
