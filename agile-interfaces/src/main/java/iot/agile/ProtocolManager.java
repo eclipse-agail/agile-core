@@ -23,6 +23,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.DiscoveryStatus;
+import iot.agile.object.ProtocolOverview;
 
 /**
  * @author dagi AGILE Protocol Manager Interface
@@ -43,7 +44,7 @@ public interface ProtocolManager extends DBusInterface {
    * @return List of supported/Managed protocols
    */
   @org.freedesktop.DBus.Description("Returns List of supported/Managed protocols")
-  public List<String> Protocols();
+  public List<ProtocolOverview> Protocols();
 
   /**
    * Discovery status on all managed protocols
