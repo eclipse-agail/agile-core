@@ -68,14 +68,14 @@ public class Device {
   }
 
   @GET
-  @Path("/{componentID}/lastUpdate")
-  public RecordObject LastUpdate(@PathParam("id") String id, @PathParam("componentID") String componentID) throws DBusException {
-	return getDevice(id).LastUpdate(componentID);
+  public List<RecordObject> Read(@PathParam("id") String id) throws DBusException {
+    return getDevice(id).Read();
   }
 
   @GET
-  public RecordObject Data(@PathParam("id") String id) throws DBusException {
-    return getDevice(id).Data();
+  @Path("/lastUpdate")
+  public List<RecordObject> LastUpdate(@PathParam("id") String id) throws DBusException {
+    return getDevice(id).LastUpdate();
   }
 
   @POST
@@ -108,6 +108,13 @@ public class Device {
   public RecordObject Read(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     return getDevice(id).Read(sensorName);
   }
+
+  @GET
+  @Path("/{componentID}/lastUpdate")
+  public RecordObject LastUpdate(@PathParam("id") String id, @PathParam("componentID") String componentID) throws DBusException {
+    return getDevice(id).LastUpdate(componentID);
+  }
+
 
   @POST
   @Path("/{sensorName}")
