@@ -17,6 +17,7 @@ package iot.agile.devicemanager.device;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusSigHandler;
@@ -111,11 +112,6 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	protected RecordObject data;
 
 	/**
-	 * UNIX time stamp to indicate the last updated received by the device
-	 */
-	protected long lastUpdate;
-
-	/**
 	 * Map to store the last reads of each components of the device
 	 */
 	private  Map<String, RecordObject> lastReadStore = new HashMap<String, RecordObject>();
@@ -202,6 +198,13 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	}
 
 	/**
+	 * Returns the last update of value
+	 */
+	public List<RecordObject> LastUpdate() {
+		return new ArrayList<RecordObject>(lastReadStore.values());
+	}
+
+	/**
 	 *
 	 *
 	 * @see iot.agile.protocol.ble.device.IDevice#Data()
@@ -264,6 +267,21 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	public void Execute(String command, Map<String,Variant> args) {
 		logger.debug("Device. Execute not implemented");
+	}
+
+	/**
+	 *
+	 * Reads data from all sensors
+	 *
+	 *
+	 */
+	@Override
+	public List<RecordObject> Read() {
+		List<RecordObject> recObjs = new ArrayList<RecordObject>();
+		for (DeviceComponent component : profile) {
+			recObjs.add(Read(component.id));
+		}
+		return recObjs;
 	}
 
 	/**
