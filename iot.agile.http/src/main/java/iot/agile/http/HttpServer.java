@@ -16,11 +16,11 @@
 package iot.agile.http;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
-import iot.agile.http.ws.MyEchoSocket;
+import iot.agile.http.ws.AgileWebSocketAdapter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -53,31 +53,28 @@ public class HttpServer {
       
 
     server = new Server(port);
+    ServletContextHandler context = new ServletContextHandler(server, "/");
 
     
     // register WS handler
-    ServletContextHandler wsContext = new ServletContextHandler(server, "/*");
-    WebSocketHandler wsHandler = new WebSocketHandler()
+    WebSocketServlet wsServlet = new WebSocketServlet()
     {
         @Override
         public void configure(WebSocketServletFactory factory)
         {
-            factory.register(MyEchoSocket.class);
+            factory.register(AgileWebSocketAdapter.class);
         }
     };
-    
-    wsContext.setContextPath("/ws/*");
-    wsContext.setHandler(wsHandler);
+    context.addServlet(new ServletHolder(wsServlet), "/ws/*");
     
     // register HTTP API servlet
-    ServletContextHandler apiContext = new ServletContextHandler(server, "/*");
     
     ResourceConfig res = new AgileApplication();
     ServletHolder servlet = new ServletHolder(new ServletContainer(res));
-    apiContext.addServlet(servlet, "/api/*");
+    context.addServlet(servlet, "/api/*");
     
     ServletHolder logbackServlet = new ServletHolder(new ViewStatusMessagesServlet());
-    apiContext.addServlet(logbackServlet, "/logs");
+    context.addServlet(logbackServlet, "/logs");
     
     
     server.start();
