@@ -20,6 +20,13 @@ import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.Session;
 
+import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.DBusSigHandler;
+import org.freedesktop.dbus.exceptions.DBusException;
+
+import iot.agile.Protocol;
+import iot.agile.Protocol.NewRecordSignal;
+
 /**
  *
  * @author Csaba Kiraly <kiraly@fbk.eu>
@@ -33,6 +40,26 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
   public void onWebSocketConnect(Session sess) {
     session = sess;
     System.out.printf("New websocket connection %s%n", sess.getRemoteAddress());
+
+		 try {
+			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+			connection.addSigHandler(Protocol.NewRecordSignal.class	, new DBusSigHandler<Protocol.NewRecordSignal>() {
+
+				@Override
+				public void handle(NewRecordSignal sig) {
+					System.out.printf("http: New value %s%n", sig.record);
+					try {
+						session.getRemote().sendString(new String(sig.record));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (DBusException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
   }
 
   @Override
