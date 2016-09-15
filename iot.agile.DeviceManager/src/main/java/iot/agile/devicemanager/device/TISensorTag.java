@@ -7,7 +7,6 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
-import iot.agile.object.RecordObject;
 
 public class TISensorTag extends DeviceImp implements Device {
 
@@ -105,9 +104,9 @@ public class TISensorTag extends DeviceImp implements Device {
 	private static final String OPTICAL_GATT_CHARACTERSTICS_CONFIG_UUID = "f000aa72-0451-4000-b000-000000000000";
 
 	private static final String OPTICAL_GATT_CHARACTERSTICS_FREQ_UUID = "f000aa73-0451-4000-b000-000000000000";
-	
-//	Write 0x0001 to enable notifications, 0x0000 to disable.
-//	Write 0x01 to enable data collection, 0x00 to disable.
+
+	// Write 0x0001 to enable notifications, 0x0000 to disable.
+	// Write 0x01 to enable data collection, 0x00 to disable.
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
 
 	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
@@ -122,7 +121,7 @@ public class TISensorTag extends DeviceImp implements Device {
 	}
 
 	@Override
-	public RecordObject Read(String sensorName) {
+	public String DeviceRead(String sensorName) {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (deviceStatus.equals(CONNECTED)) {
 				if (isSensorSupported(sensorName.trim())) {
@@ -138,14 +137,10 @@ public class TISensorTag extends DeviceImp implements Device {
 						Thread.sleep(1010);
 						// read value
 						byte[] readValue = deviceProtocol.Read(deviceID, getReadValueProfile(sensorName));
-						RecordObject recObj = new RecordObject(deviceID, sensorName,
-								formatReading(sensorName, readValue), getMeasurementUnit(sensorName.trim()), "", System.currentTimeMillis());
-						data = recObj;
-						lastUpdate = recObj.getLastUpdate();
-						// TODO: Sending {0x00} rased error on dbus
+ 						// TODO: Sending {0x00} raised error on dbus
 						// deviceProtocol.Write(deviceID,
 						// getTurnOffSensorProfile(sensorName));
-						return recObj;
+						return formatReading(sensorName, readValue);
 					} catch (Exception e) {
 						logger.debug("Error in reading value from Sensor {}", e);
 						e.printStackTrace();
@@ -167,21 +162,42 @@ public class TISensorTag extends DeviceImp implements Device {
 
 	@Override
 	public void Subscribe(String sensorName) {
-		logger.info("subscribing");
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (deviceStatus.equals(CONNECTED)) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
-						// enable sensor
+						logger.info("Enabling sensor for subscribtion");
 						deviceProtocol.Write(deviceID, getEnableSensorProfile(sensorName));
-						// set frequency..JUST FOR TEST SHOULD COME FORM THE
-						// CLIENT
-						//set frequency for notification
 						byte[] period = { 100 };
 						deviceProtocol.Write(deviceID, getFrequencyProfile(sensorName, period));
-						// subscribe : enable notification
 						deviceProtocol.Subscribe(deviceID, getReadValueProfile(sensorName));
 					} catch (DBusException e) {
+						e.printStackTrace();
+					}
+				} else {
+					logger.info("Sensor not supported: {}", sensorName);
+				}
+			} else {
+				logger.info("BLE Device not connected: {}", deviceName);
+			}
+		} else {
+			logger.info("Protocol not supported:: {}", protocol);
+		}
+	}
+
+	@Override
+	public void Unsubscribe(String sensorName) throws DBusException {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+			if (deviceStatus.equals(CONNECTED)) {
+				if (isSensorSupported(sensorName.trim())) {
+					try {
+						// disable notification
+						deviceProtocol.Unsubscribe(deviceID, getReadValueProfile(sensorName));
+						// TODO: Sending {0x00} on dbus has an exception
+						// turn off sensor
+						// deviceProtocol.Write(deviceID,
+						// getTurnOffSensorProfile(sensorName));
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				} else {
@@ -195,41 +211,12 @@ public class TISensorTag extends DeviceImp implements Device {
 		}
 	}
 
-	
-	
-	@Override
-	public void Unsubscribe(String sensorName) throws DBusException {
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (deviceStatus.equals(CONNECTED)) {
-				if (isSensorSupported(sensorName.trim())) {
-					try {
-						//disable notification
-						deviceProtocol.Unsubscribe(deviceID, getReadValueProfile(sensorName));
-						//TODO: Sending {0x00} on dbus has an exception
-						//turn off sensor
-						//		deviceProtocol.Write(deviceID, getTurnOffSensorProfile(sensorName));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}else {
-					logger.debug("Sensor not supported: {}", sensorName);
-				}
-			}else {
-				logger.debug("BLE Device not connected: {}", deviceName);
-			}
-		} else {
-			logger.debug("Protocol not supported:: {}", protocol);
-		}
-	}
-	
-	
-	
-
 	// =======================Utility methods===========================
 	@Override
 	protected boolean isSensorSupported(String sensorName) {
 		if (sensorName.equals(TEMPERATURE) || sensorName.equals(ACCELEROMETER) || sensorName.equals(HUMIDITY)
-				|| sensorName.equals(PRESSURE) || sensorName.equals(GYROSCOPE) || sensorName.equals(MAGNETOMETER) || sensorName.equals(OPTICAL)) {
+				|| sensorName.equals(PRESSURE) || sensorName.equals(GYROSCOPE) || sensorName.equals(MAGNETOMETER)
+				|| sensorName.equals(OPTICAL)) {
 			return true;
 		}
 		return false;
@@ -364,79 +351,79 @@ public class TISensorTag extends DeviceImp implements Device {
 		float result;
 		int rawData;
 		if (sensorName.contains(TEMPERATURE)) {
-			 rawData = shortSignedAtOffset(readData, 2);
+			rawData = shortSignedAtOffset(readData, 2);
 			result = convertCelsius(rawData);
 		} else if (sensorName.contains(HUMIDITY)) {
 			rawData = shortSignedAtOffset(readData, 2);
 			result = convertHumidity(rawData);
-		}else if(sensorName.contains(PRESSURE)){
+		} else if (sensorName.contains(PRESSURE)) {
 			int lowerByte = Byte.toUnsignedInt(readData[3]);
 			int upperByte = Byte.toUnsignedInt(readData[4]);
 			int upper = Byte.toUnsignedInt(readData[5]);
-			int rawResult = (upperByte << 8) + (lowerByte & 0xff) +upper;
+			int rawResult = (upperByte << 8) + (lowerByte & 0xff) + upper;
 			float pressure = convertPressure(rawResult);
-			
-			
-			int t_r;	// Temperature raw value from sensor
-			int p_r;	// Pressure raw value from sensor
-		     Double t_a; 	// Temperature actual value in unit centi degrees celsius
-		     Double S;	// Interim value in calculation
-		     Double O;	// Interim value in calculation
-		     Double p_a; 	// Pressure actual value in unit Pascal.
 
-		    t_r = shortSignedAtOffset(readData, 0);
-		    p_r = shortSignedAtOffset(readData, 3);
+			int t_r; // Temperature raw value from sensor
+			int p_r; // Pressure raw value from sensor
+			Double t_a; // Temperature actual value in unit centi degrees
+						// celsius
+			Double S; // Interim value in calculation
+			Double O; // Interim value in calculation
+			Double p_a; // Pressure actual value in unit Pascal.
 
-		    t_a = (100 * (readData[0] * t_r / Math.pow(2, 8) + readData[1] * Math.pow(2,6))) / Math.pow(2,16);
-		    S = readData[3] + readData[4] * t_r / Math.pow(2,17) + ((readData[5] * t_r / Math.pow(2,15)) * t_r) / Math.pow(2,19);
- 		    p_a =   ((S * p_r ) / Math.pow(2,14));
+			t_r = shortSignedAtOffset(readData, 0);
+			p_r = shortSignedAtOffset(readData, 3);
+
+			t_a = (100 * (readData[0] * t_r / Math.pow(2, 8) + readData[1] * Math.pow(2, 6))) / Math.pow(2, 16);
+			S = readData[3] + readData[4] * t_r / Math.pow(2, 17)
+					+ ((readData[5] * t_r / Math.pow(2, 15)) * t_r) / Math.pow(2, 19);
+			p_a = ((S * p_r) / Math.pow(2, 14));
 			return Double.toString(p_a);
-//			result = Float.toString(pressure);
-		}else if(sensorName.equals(OPTICAL)){
- 			rawData = shortSignedAtOffset(readData, 0);
- 			result =   convertOpticalRead(rawData);
-		}
-		 else {
+			// result = Float.toString(pressure);
+		} else if (sensorName.equals(OPTICAL)) {
+			rawData = shortSignedAtOffset(readData, 0);
+			result = convertOpticalRead(rawData);
+		} else {
 			// TODO Other sensor values
 			return readData.toString();
 		}
 		return Float.toString(result);
 	}
-	
-	
-	private String getMeasurementUnit(String sensor){
+
+	@Override
+	protected String getMeasurementUnit(String sensor) {
 		switch (sensor) {
 		case TEMPERATURE:
 			return "Degree celsius (°C)";
 		case HUMIDITY:
-			//Relative humidity
+			// Relative humidity
 			return "Relative humidity (%RH)";
 		case PRESSURE:
-			//hecto pascal
-			return "Hecto pascal (hPa)"; 
+			// hecto pascal
+			return "Hecto pascal (hPa)";
 		case OPTICAL:
-			return "Light intensity (W/sr)"; //watts per steradian
+			return "Light intensity (W/sr)"; // watts per steradian
 		default:
 			return "Byte array";
- 		}
+		}
 	}
-	
-	
-	
-	
+
 	/**
-	 * Gyroscope, Magnetometer, Barometer, IR temperature
-	 * all store 16 bit two's complement values in the format
-	 * LSB MSB.
+	 * Gyroscope, Magnetometer, Barometer, IR temperature all store 16 bit two's
+	 * complement values in the format LSB MSB.
 	 *
 	 * This function extracts these 16 bit two's complement values.
-	 * */
+	 */
 	private static Integer shortSignedAtOffset(byte[] value, int offset) {
-	    Integer lowerByte = Byte.toUnsignedInt(value[offset]);
-	    Integer upperByte = Byte.toUnsignedInt(value[offset+1] ); // Note: interpret MSB as signed.
+		Integer lowerByte = Byte.toUnsignedInt(value[offset]);
+		Integer upperByte = Byte.toUnsignedInt(value[offset + 1]); // Note:
+																	// interpret
+																	// MSB as
+																	// signed.
 
-	    return (upperByte << 8) + lowerByte;
+		return (upperByte << 8) + lowerByte;
 	}
+
 	/**
 	 * Converts temperature into degree Celsius
 	 *
@@ -454,19 +441,18 @@ public class TISensorTag extends DeviceImp implements Device {
 	 * @return
 	 */
 	private float convertHumidity(int raw) {
-		return (((float)raw)/65536)*100;
+		return (((float) raw) / 65536) * 100;
 	}
-	
-	private float convertPressure(int raw){
-		return raw/100;
+
+	private float convertPressure(int raw) {
+		return raw / 100;
 	}
-	
-	private float convertOpticalRead(int raw){
-		int e = (raw & 0x0F000) >>12; // Interim value in calculation
-		int m = raw & 0x0FFF;  // Interim value in calculation
-		
-		return (float) (m *(0.01 * Math.pow(2.0, e)));
+
+	private float convertOpticalRead(int raw) {
+		int e = (raw & 0x0F000) >> 12; // Interim value in calculation
+		int m = raw & 0x0FFF; // Interim value in calculation
+
+		return (float) (m * (0.01 * Math.pow(2.0, e)));
 	}
-	
-	
+
 }

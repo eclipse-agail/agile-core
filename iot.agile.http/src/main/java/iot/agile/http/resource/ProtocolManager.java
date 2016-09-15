@@ -15,10 +15,8 @@
  */
 package iot.agile.http.resource;
 
-import iot.agile.http.service.DbusClient;
-import iot.agile.object.DeviceOverview;
-import iot.agile.object.DiscoveryStatus;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -28,9 +26,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import iot.agile.http.service.DbusClient;
+import iot.agile.object.DeviceOverview;
+import iot.agile.object.DiscoveryStatus;
+import iot.agile.object.ProtocolOverview;
 
 /**
  *
@@ -71,7 +75,7 @@ public class ProtocolManager {
 	}
 
 	@GET
-	public List<String> Protocols() throws DBusException {
+	public List<ProtocolOverview> Protocols() throws DBusException {
 		return getProtocolManager().Protocols();
 	}
 

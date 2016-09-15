@@ -304,36 +304,36 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * @see iot.agile.protocol.ble.Protocol#write()
 	 */
 	@Override
-	public void Write(String deviceAddress, Map<String, String> profile) throws DBusException {
-		BluetoothDevice device;
-		try {
-			device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
-			if (device != null) {
-				if (device.getConnected()) {
-					BluetoothGattService gattService = device.find(profile.get(GATT_SERVICE));
-					if (gattService != null) {
-						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
-						if (gattChar != null) {
-							byte[] value = profile.get(PAYLOAD).getBytes();
-							gattChar.writeValue(value);
+	public synchronized void Write(String deviceAddress, Map<String, String> profile) throws DBusException {
+			BluetoothDevice device;
+			try {
+				device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
+				if (device != null) {
+					if (device.getConnected()) {
+						BluetoothGattService gattService = device.find(profile.get(GATT_SERVICE));
+						if (gattService != null) {
+							BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
+							if (gattChar != null) {
+								byte[] value = profile.get(PAYLOAD).getBytes();
+								gattChar.writeValue(value);
+							} else {
+								logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
+							}
 						} else {
-							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
+							logger.error("The device does not {} have gatt service", profile.get(GATT_CHARACTERSTICS));
 						}
 					} else {
-						logger.error("The device does not {} have gatt service", profile.get(GATT_CHARACTERSTICS));
+						logger.error("Device not connected: {}", deviceAddress);
 					}
 				} else {
-					logger.error("Device not connected: {}", deviceAddress);
+					logger.error("Device not found: {}", deviceAddress);
 				}
-			} else {
-				logger.error("Device not found: {}", deviceAddress);
-			}
 
-		} catch (Exception e) {
-			logger.error("Failed to write value: {}", deviceAddress, e);
-			throw new DBusException("Failed to write value:" + deviceAddress);
+			} catch (Exception e) {
+				logger.error("Failed to write value: {}", deviceAddress, e);
+					throw new DBusException("Failed to write value:" + deviceAddress);
+			}
 		}
-	}
 
 	/**
 	 *
@@ -341,7 +341,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * @param profile
 	 * @see iot.agile.protocol.ble.Protocol#read()
 	 */
-	public byte[] Read(String deviceAddress, Map<String, String> profile) throws DBusException {
+	public synchronized byte[] Read(String deviceAddress, Map<String, String> profile) throws DBusException {
 		BluetoothDevice device;
 		try {
 			device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
@@ -371,6 +371,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 		return null;
 	}
+
 
 	/**
 	 * @throws DBusException
@@ -405,7 +406,8 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 			throw new DBusException("Failed to subscribe");
 		}
 	}
-
+	
+	
 	@Override
 	public void Unsubscribe(String deviceAddress, Map<String, String> profile) throws DBusException {
 		BluetoothDevice device;
@@ -442,11 +444,11 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * 
 	 *         New record signal for Subscription
 	 */
-	private class NewRecordNotification implements BluetoothNotification<byte[]> {
+	protected class NewRecordNotification implements BluetoothNotification<byte[]> {
 		@Override
 		public void run(byte[] record) {
 			lastRecord = record;
-			logger.info("new temeprature reading:.."+new String(record));
+			logger.info("new reading:.."+formatReading(record));
 			try {
 				Protocol.NewRecordSignal newRecordSignal = new Protocol.NewRecordSignal(AGILE_NEW_RECORD_SIGNAL_PATH,
 						lastRecord);
@@ -488,4 +490,39 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 		return true;
 	}
+
+	//
+
+	private String formatReading(byte[] readData) {
+		float result;
+		int rawData;
+		rawData = shortSignedAtOffset(readData, 0);
+		result = convertOpticalRead(rawData);
+
+		return Float.toString(result);
+	}
+
+	/**
+	 * Gyroscope, Magnetometer, Barometer, IR temperature all store 16 bit two's
+	 * complement values in the format LSB MSB.
+	 *
+	 * This function extracts these 16 bit two's complement values.
+	 */
+	private static Integer shortSignedAtOffset(byte[] value, int offset) {
+		Integer lowerByte = Byte.toUnsignedInt(value[offset]);
+		Integer upperByte = Byte.toUnsignedInt(value[offset + 1]); // Note:
+																	// interpret
+																	// MSB as
+																	// signed.
+
+		return (upperByte << 8) + lowerByte;
+	}
+
+	private float convertOpticalRead(int raw) {
+		int e = (raw & 0x0F000) >> 12; // Interim value in calculation
+		int m = raw & 0x0FFF; // Interim value in calculation
+
+		return (float) (m * (0.01 * Math.pow(2.0, e)));
+	}
+
 }

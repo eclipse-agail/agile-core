@@ -31,6 +31,7 @@ import iot.agile.ProtocolManager;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.DiscoveryStatus;
+import iot.agile.object.ProtocolOverview;
 
 /**
  * @author dagi
@@ -59,7 +60,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	/**
 	 * List of supported protocols
 	 */
-	final private List<String> protocols = new ArrayList<String>();
+	final private List<ProtocolOverview> protocols = new ArrayList<ProtocolOverview>();
 
 	/**
 	 * List of discovered devices from all the protocols
@@ -103,7 +104,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 *
 	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#Protocols()
 	 */
-	public List<String> Protocols() {
+	public List<ProtocolOverview> Protocols() {
 		return protocols;
 	}
 
@@ -115,18 +116,18 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 		List<DiscoveryStatus> ret = new ArrayList<DiscoveryStatus>();
 
-		for (String protocol : protocols) {
-			String objectPath = "/" + protocol.replace(".", "/");
+		for (ProtocolOverview protocol : protocols) {
+			String objectPath = "/" + protocol.getDbusInterface().replace(".", "/");
 
 			Protocol protocolInstance;
 			try {
 
-				protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
+				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
 				String status = protocolInstance.DiscoveryStatus();
-				ret.add(new DiscoveryStatus(protocol, status));
+				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), status));
 			} catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
-				ret.add(new DiscoveryStatus(protocol, "FAILURE"));
+				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), "FAILURE"));
 			}
 		}
 		return ret;
@@ -138,14 +139,14 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	public void StartDiscovery() {
 		logger.info("Initializing discovery");
 
-		for (String protocol : protocols) {
-			String objectPath = "/" + protocol.replace(".", "/");
+		for (ProtocolOverview protocol : protocols) {
+			String objectPath = "/" + protocol.getDbusInterface().replace(".", "/");
 			logger.info("Discovery for protocol {} : {}", protocol, objectPath);
 
 			Protocol protocolInstance;
 			try {
 
-				protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
+				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
 				protocolInstance.StartDiscovery();
 			} catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
@@ -158,13 +159,13 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 * @see iot.agile.protocol.ble.protocolmanager.ProtocolManager#StopDiscovery()
 	 */
 	public void StopDiscovery() {
-		for (String protocol : protocols) {
-			String objectPath = "/" + protocol.replace(".", "/");
+		for (ProtocolOverview protocol : protocols) {
+			String objectPath = "/" + protocol.getDbusInterface().replace(".", "/");
 			logger.info("StopDiscovery for protocol {} : {}", protocol, objectPath);
 
 			Protocol protocolInstance;
 			try {
-				protocolInstance = connection.getRemoteObject(protocol, objectPath, Protocol.class);
+				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
 				protocolInstance.StopDiscovery();
 			} catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
@@ -192,7 +193,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 	protected void addProtocol(String protocolId) {
 		if (!protocols.contains(protocolId)) {
-			protocols.add(protocolId);
+			protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolId, "Avaliable"));
 		}
 	}
 

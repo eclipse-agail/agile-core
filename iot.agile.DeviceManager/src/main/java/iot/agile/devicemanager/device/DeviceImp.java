@@ -15,6 +15,7 @@
  */
 package iot.agile.devicemanager.device;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -108,6 +109,10 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	protected long lastUpdate;
 
 	/**
+	 * Map to store the last reads of each components of the device
+	 */
+	private  Map<String, RecordObject> lastReadStore = new HashMap<String, RecordObject>();
+	/**
 	 * 
 	 * @param deviceID
 	 *            the device address (MAC in BLE case)
@@ -185,8 +190,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	/**
 	 * Returns the last update of value
 	 */
-	public long LastUpdate() {
-		return lastUpdate;
+	public RecordObject LastUpdate(String componentID) {
+		return lastReadStore.get(componentID);
 	}
 
 	/**
@@ -261,10 +266,32 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 *
 	 */
 	@Override
-	public RecordObject Read(String sensorName) {
-		return null;
+	public RecordObject Read(String componentName) {
+		RecordObject recObj = new RecordObject(deviceID, componentName,
+				DeviceRead(componentName), getMeasurementUnit(componentName), "",
+				System.currentTimeMillis());
+		data = recObj;
+		lastReadStore.put(componentName, recObj);
+		return recObj;
 	}
 
+	
+	/**
+	 * Read Method to be implemented by sub-class
+	 * @param componentName
+	 * @return
+	 */
+	protected  String DeviceRead(String componentName){
+		return null;
+	}
+	/**
+	 * Get measurement unit method to be implemented by child class
+	 * @param sensor
+	 * @return
+	 */
+	protected String getMeasurementUnit(String sensor) {
+		return null;
+	}
 	/**
 	 * Writes data into the given sensor
 	 *
@@ -311,5 +338,4 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	@Override
 	public void Unsubscribe(String component) throws DBusException {
 	}
-
 }
