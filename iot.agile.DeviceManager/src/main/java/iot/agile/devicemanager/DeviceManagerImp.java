@@ -110,11 +110,19 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
 		// connect device
 		if (registered) {
-			try {
-				device.Connect();
-			} catch (Exception e) {
-				logger.error("Error encountered while attempting to connect: {}", e.getMessage());
-			}
+			final Device dev = device;
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						dev.Connect();
+						logger.info("Device connected: {}", deviceDefinition.address);
+					} catch (Exception e) {
+						logger.error("Error encountered while attempting to connect: {}", e.getMessage());
+					}
+				}
+			}).start();
+
 		}
 		return registeredDev;
 	}
@@ -165,7 +173,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	@Override
 	public void Delete(String id) {
 		DeviceDefinition devDefn = Read(id);
-		if(devDefn != null){
+		if (devDefn != null) {
 			Device device = getDevice(devDefn);
 			if (device != null) {
 				try {
@@ -175,7 +183,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}	
+			}
 		}
 	}
 
