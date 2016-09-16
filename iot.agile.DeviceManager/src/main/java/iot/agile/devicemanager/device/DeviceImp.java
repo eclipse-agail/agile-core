@@ -15,9 +15,9 @@
  */
 package iot.agile.devicemanager.device;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusSigHandler;
@@ -68,20 +68,10 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 * 	 */
 	private static final String AGILE_NEW_RECORD_SUBSCRIBE_SIGNAL_PATH = "/iot/agile/NewRecord/Subscribe";
 	/**
-	 * Device status
-	 */
-	protected static final String CONNECTED = "Connected";
-
-	protected static final String DISCONNECTED = "Disconnected";
-	/**
 	 * Protocol
 	 */
 	protected static final String BLUETOOTH_LOW_ENERGY = "iot.agile.protocol.BLE";
-	/**
-	 * Device status TODO: Needs implementation Default : Disconnected
-	 */
-	protected static String deviceStatus = DISCONNECTED;
-
+	
 	/**
 	 * Agile specific device ID
 	 */
@@ -172,7 +162,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 * returns the status of the device
 	 */
 	public String Status() {
-		return deviceStatus;
+		return deviceProtocol.DeviceStatus(deviceAgileID);
 	}
 
 	/**
@@ -229,7 +219,6 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 		try {
 			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
 				deviceProtocol.Connect(deviceID);
-				deviceStatus = CONNECTED;
 				logger.info("Device Connected {}", deviceID);
 			} else {
 				logger.debug("Protocol not supported: {}", protocol);
@@ -247,7 +236,6 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 		try {
 			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
 				deviceProtocol.Disconnect(deviceID);
-				deviceStatus = DISCONNECTED;
 				logger.info("Device disconnected {}", deviceID);
 			} else {
 				logger.debug("Protocol not supported: {}", protocol);
@@ -279,7 +267,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	public List<RecordObject> Read() {
 		List<RecordObject> recObjs = new ArrayList<RecordObject>();
 		for (DeviceComponent component : profile) {
-			recObjs.add(Read(component.id));
+ 			recObjs.add(Read(component.id));
 		}
 		return recObjs;
 	}
@@ -365,7 +353,6 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	}
 	
 	protected void signalNewSubscribeValue(String componentName){
-		
 		try {
 			connection.addSigHandler(Protocol.NewRecordSignal.class	, new DBusSigHandler<Protocol.NewRecordSignal>() {
 				@Override

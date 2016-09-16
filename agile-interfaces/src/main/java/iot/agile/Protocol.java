@@ -145,6 +145,12 @@ public interface Protocol extends DBusInterface {
 	public void Unsubscribe(String deviceAddress, Map<String, String> profile)throws DBusException;
 
 	/**
+	 * Check the status of the device 
+	 * 
+	 * @param deviceAddress
+	 */
+	public String DeviceStatus(String deviceAddress);
+	/**
 	 * New data reading signal for subscribe methods
 	 * 
 	 * @author dagi
