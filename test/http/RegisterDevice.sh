@@ -13,5 +13,5 @@ else
   protocol=$( echo "$device" | jq '.protocol' )
 
   #Register sensor tag devices
-  curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d ' {"deviceId":"", "address": '$address' ,"name": '"$name"', "description":"", "protocol": '$protocol' , "path": "iot.agile.device.CCSensorTag","streams": [{"id": "Temperature", "unit": "C"}]}' 'http://localhost:8080/api/devices'
+  curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d ' {"deviceId":"", "address": '$address' ,"name": '"$name"', "description":"", "protocol": '$protocol' , "path": "iot.agile.device.CCSensorTag","streams": [{"id": "Temperature", "unit": "C"}, {"id": "Optical", "unit": "Lux"}]}' 'http://localhost:8080/api/devices'
 fi
