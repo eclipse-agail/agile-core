@@ -51,49 +51,48 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
     Pattern p = Pattern.compile("^/ws/device/([^/]+)/([^/]+)/subscribe");
     Matcher m = p.matcher(uripath);
 
-	try {
-		DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+    try {
+      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 
-		if (m.matches()) {
-			String id = m.group(1);
-			String sensorName = m.group(2);
-			connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
-				@Override
-				public void handle(NewSubscribeValueSignal sig) {
-					if (sig.record.getDeviceID() == id && sig.record.getComponentID() == sensorName) {
-						System.out.printf("http: New value %s%n", sig.record);
-						try {
-							session.getRemote().sendString(mapper.writeValueAsString(sig.record));
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			});
+      if (m.matches()) {
+        String id = m.group(1);
+        String sensorName = m.group(2);
+        connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
+          @Override
+          public void handle(NewSubscribeValueSignal sig) {
+            if (sig.record.getDeviceID() == id && sig.record.getComponentID() == sensorName) {
+              System.out.printf("http: New value %s%n", sig.record);
+              try {
+                session.getRemote().sendString(mapper.writeValueAsString(sig.record));
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+        });
 
-			String busname = Device.AGILE_INTERFACE;
-			String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + id;
-			Device device = connection.getRemoteObject(busname, path, Device.class);
-			device.Subscribe(sensorName);
+        String busname = Device.AGILE_INTERFACE;
+        String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + id;
+        Device device = connection.getRemoteObject(busname, path, Device.class);
+        device.Subscribe(sensorName);
 
-		} else {
-			connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
-				@Override
-				public void handle(NewSubscribeValueSignal sig) {
-					System.out.printf("http: New value %s%n", sig.record);
-					try {
-						session.getRemote().sendString(mapper.writeValueAsString(sig.record));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		}
-	} catch (DBusException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-
+      } else {
+        connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
+          @Override
+          public void handle(NewSubscribeValueSignal sig) {
+            System.out.printf("http: New value %s%n", sig.record);
+            try {
+              session.getRemote().sendString(mapper.writeValueAsString(sig.record));
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+        });
+      }
+    } catch (DBusException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -107,7 +106,5 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
       }
     }
   }
-
-  
 
 }
