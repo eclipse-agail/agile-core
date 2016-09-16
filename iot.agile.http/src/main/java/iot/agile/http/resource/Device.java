@@ -66,6 +66,12 @@ public class Device {
   public List<DeviceComponent> Profile(@PathParam("id") String id) throws DBusException {
     return getDevice(id).Profile();
   }
+  
+  @GET
+  @Path("/status")
+  public String Status(@PathParam("id") String id) throws DBusException {
+    return getDevice(id).Status();
+  }
 
   @GET
   public List<RecordObject> Read(@PathParam("id") String id) throws DBusException {
