@@ -100,6 +100,11 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	protected String protocol;
 
+	/**
+	 * Protocol specific address
+	 */
+	protected String address;
+
 	protected List<DeviceComponent> profile;
 	/**
 	 * The device protocol interface
@@ -128,7 +133,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	public DeviceImp(DeviceDefinition devicedefinition) throws DBusException {
 		this.deviceName = devicedefinition.name;
-		this.deviceID = devicedefinition.address;
+		this.deviceID = devicedefinition.deviceId;
+		this.address = devicedefinition.address;
 		this.protocol = BLUETOOTH_LOW_ENERGY;
 		this.profile = devicedefinition.streams;
 		// this.protocol =devicedefinition.protocol;
@@ -228,7 +234,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	public void Connect() throws DBusException {
 		try {
 			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
-				deviceProtocol.Connect(deviceID);
+				deviceProtocol.Connect(address);
 				deviceStatus = CONNECTED;
 				logger.info("Device Connected {}", deviceID);
 			} else {
@@ -246,7 +252,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	public void Disconnect() throws DBusException {
 		try {
 			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
-				deviceProtocol.Disconnect(deviceID);
+				deviceProtocol.Disconnect(address);
 				deviceStatus = DISCONNECTED;
 				logger.info("Device disconnected {}", deviceID);
 			} else {

@@ -127,7 +127,7 @@ public class TISensorTag extends DeviceImp implements Device {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
 						// turn on sensor
-						deviceProtocol.Write(deviceID, getEnableSensorProfile(sensorName));
+						deviceProtocol.Write(address, getEnableSensorProfile(sensorName));
 						/**
 						 * The default read data period (frequency) of most of
 						 * sensor tag sensors is 1000ms therefore the first data
@@ -136,9 +136,9 @@ public class TISensorTag extends DeviceImp implements Device {
 						 */
 						Thread.sleep(1010);
 						// read value
-						byte[] readValue = deviceProtocol.Read(deviceID, getReadValueProfile(sensorName));
+						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
  						// TODO: Sending {0x00} raised error on dbus
-						// deviceProtocol.Write(deviceID,
+						// deviceProtocol.Write(address,
 						// getTurnOffSensorProfile(sensorName));
 						return formatReading(sensorName, readValue);
 					} catch (Exception e) {
@@ -167,10 +167,10 @@ public class TISensorTag extends DeviceImp implements Device {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
 						logger.info("Enabling sensor for subscribtion");
-						deviceProtocol.Write(deviceID, getEnableSensorProfile(sensorName));
+						deviceProtocol.Write(address, getEnableSensorProfile(sensorName));
 						byte[] period = { 100 };
-						deviceProtocol.Write(deviceID, getFrequencyProfile(sensorName, period));
-						deviceProtocol.Subscribe(deviceID, getReadValueProfile(sensorName));
+						deviceProtocol.Write(address, getFrequencyProfile(sensorName, period));
+						deviceProtocol.Subscribe(address, getReadValueProfile(sensorName));
 						
 						//send signal 
 						signalNewSubscribeValue(sensorName);
@@ -196,10 +196,10 @@ public class TISensorTag extends DeviceImp implements Device {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
 						// disable notification
-						deviceProtocol.Unsubscribe(deviceID, getReadValueProfile(sensorName));
+						deviceProtocol.Unsubscribe(address, getReadValueProfile(sensorName));
 						// TODO: Sending {0x00} on dbus has an exception
 						// turn off sensor
-						// deviceProtocol.Write(deviceID,
+						// deviceProtocol.Write(address,
 						// getTurnOffSensorProfile(sensorName));
 					} catch (Exception e) {
 						e.printStackTrace();
