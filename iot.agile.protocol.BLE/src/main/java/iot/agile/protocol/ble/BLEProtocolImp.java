@@ -31,7 +31,6 @@ import iot.agile.Protocol;
 import iot.agile.ProtocolManager;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceOverview;
-import iot.agile.object.StatusType;
 import tinyb.BluetoothDevice;
 import tinyb.BluetoothException;
 import tinyb.BluetoothGattCharacteristic;
@@ -282,7 +281,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 			}
 		};
 
- 		future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
+		future = executor.scheduleWithFixedDelay(task, 0, 1, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -460,26 +459,6 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 	}
 
-	
-	/**
-	 * 	Check the status of a device 
-	 * @param deviceAddress
-	 * @return
-	 */
-	@Override
-	public String DeviceStatus(String deviceAddress){
-		try {
-			if(((BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null)).getConnected()){
-				return StatusType.CONNECTED.toString();
-			}else{
-				return StatusType.DISCONNECTED.toString();	
-			}
-		} catch (Exception e) {
-			logger.error("Error on checking device status {}", e.getMessage());
-			}
-		return StatusType.ERROR.toString();
-	}
-	
 	public boolean isRemote() {
 		return false;
 	}

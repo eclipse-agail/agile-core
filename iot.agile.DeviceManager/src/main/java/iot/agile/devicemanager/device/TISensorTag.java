@@ -7,7 +7,6 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
-import iot.agile.object.StatusType;
 
 public class TISensorTag extends DeviceImp implements Device {
 
@@ -124,7 +123,7 @@ public class TISensorTag extends DeviceImp implements Device {
 	@Override
 	public String DeviceRead(String sensorName) {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (Status().equals(StatusType.CONNECTED.toString())) {
+			if (deviceStatus.equals(CONNECTED)) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
 						// turn on sensor
@@ -164,7 +163,7 @@ public class TISensorTag extends DeviceImp implements Device {
 	@Override
 	public void Subscribe(String sensorName) {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (Status().equals(StatusType.CONNECTED.toString())) {
+			if (deviceStatus.equals(CONNECTED)) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
 						logger.info("Enabling sensor for subscribtion");
@@ -193,7 +192,7 @@ public class TISensorTag extends DeviceImp implements Device {
 	@Override
 	public void Unsubscribe(String sensorName) throws DBusException {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (Status().equals(StatusType.CONNECTED.toString())) {
+			if (deviceStatus.equals(CONNECTED)) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
 						// disable notification
