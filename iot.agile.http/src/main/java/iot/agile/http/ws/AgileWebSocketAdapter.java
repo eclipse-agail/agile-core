@@ -29,6 +29,9 @@ import iot.agile.Device.NewSubscribeValueSignal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *
  * @author Csaba Kiraly <kiraly@fbk.eu>
@@ -42,12 +45,39 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
   @Override
   public void onWebSocketConnect(Session sess) {
     session = sess;
-    System.out.printf("New websocket connection %s%n", sess.getRemoteAddress());
+    String uripath = sess.getUpgradeRequest().getRequestURI().getPath();
+    System.out.printf("New websocket connection from %s for %s %n", sess.getRemoteAddress(), uripath);
 
-		 try {
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+    Pattern p = Pattern.compile("^/ws/device/([^/]+)/([^/]+)/subscribe");
+    Matcher m = p.matcher(uripath);
+
+	try {
+		DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+
+		if (m.matches()) {
+			String id = m.group(1);
+			String sensorName = m.group(2);
 			connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
+				@Override
+				public void handle(NewSubscribeValueSignal sig) {
+					if (sig.record.getDeviceID() == id && sig.record.getComponentID() == sensorName) {
+						System.out.printf("http: New value %s%n", sig.record);
+						try {
+							session.getRemote().sendString(mapper.writeValueAsString(sig.record));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
 
+			String busname = Device.AGILE_INTERFACE;
+			String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + id;
+			Device device = connection.getRemoteObject(busname, path, Device.class);
+			device.Subscribe(sensorName);
+
+		} else {
+			connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
 				@Override
 				public void handle(NewSubscribeValueSignal sig) {
 					System.out.printf("http: New value %s%n", sig.record);
@@ -58,10 +88,11 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
 					}
 				}
 			});
-		} catch (DBusException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+	} catch (DBusException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 
   }
 
