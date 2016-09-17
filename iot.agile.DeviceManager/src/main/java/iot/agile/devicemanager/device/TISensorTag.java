@@ -16,94 +16,51 @@ public class TISensorTag extends DeviceImp implements Device {
 
 	private static final String PAYLOAD = "PAYLOAD";
 
-	/**
-	 * TI Sensor Tag temperature service
-	 */
-	private static final String TEMPERATURE = "Temperature";
+        private static final String TEMPERATURE = "Temperature";
+        private static final String ACCELEROMETER = "Accelerometer";
+        private static final String HUMIDITY = "Humidity";
+        private static final String MAGNETOMETER = "Magnetometer";
+        private static final String PRESSURE = "Pressure";
+        private static final String GYROSCOPE = "Gyroscope";
+        private static final String OPTICAL = "Optical";
 
-	private static final String TEMP_GATT_SERVICE_UUID = "f000aa00-0451-4000-b000-000000000000";
+	private static class SensorUuid {
+		public String serviceUuid;
+		public String charUuid;
+		public String charConfigUuid;
+		public String charFreqUuid;
 
-	private static final String TEMP_GATT_CHARACTERSTICS_UUID = "f000aa01-0451-4000-b000-000000000000";
+		public SensorUuid(String service, String ch, String charConfig, String charFreq) {
+			serviceUuid = service;
+			charUuid = ch;
+			charConfigUuid = charConfig;
+			charFreqUuid = charFreq;
+		}
+	}
 
-	private static final String TEMP_GATT_CHARACTERSTICS_CONFIG_UUID = "f000aa02-0451-4000-b000-000000000000";
+	private static final Map<String, String> componentUnits = new HashMap<String, String>();
+	static {
+		componentUnits.put(TEMPERATURE, "Degree celsius (°C)");
+		componentUnits.put(ACCELEROMETER, "");
+		componentUnits.put(HUMIDITY, "Relative humidity (%RH)");
+		componentUnits.put(MAGNETOMETER, "");
+		componentUnits.put(PRESSURE, "Hecto pascal (hPa)");
+		componentUnits.put(GYROSCOPE, "");
 
-	private static final String TEMP_GATT_CHARACTERSTICS_FREQ_UUID = "f000aa03-0451-4000-b000-000000000000";
+		componentUnits.put(OPTICAL, "Light intensity (W/sr)");
+	}
 
-	/**
-	 * TI Sensor Tag Accelerometer service
-	 */
-	private static final String ACCELEROMETER = "Accelerometer";
+	private static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
+	static {
+		sensors.put(TEMPERATURE,   new SensorUuid("f000aa00-0451-4000-b000-000000000000", "f000aa01-0451-4000-b000-000000000000", "f000aa02-0451-4000-b000-000000000000", "f000aa03-0451-4000-b000-000000000000"));
+		sensors.put(ACCELEROMETER, new SensorUuid("f000aa10-0451-4000-b000-000000000000", "f000aa11-0451-4000-b000-000000000000", "f000aa12-0451-4000-b000-000000000000", "f000aa13-0451-4000-b000-000000000000"));
+		sensors.put(HUMIDITY,      new SensorUuid("f000aa20-0451-4000-b000-000000000000", "f000aa21-0451-4000-b000-000000000000", "f000aa22-0451-4000-b000-000000000000", "f000aa23-0451-4000-b000-000000000000"));
+		sensors.put(MAGNETOMETER,  new SensorUuid("f000aa30-0451-4000-b000-000000000000", "f000aa31-0451-4000-b000-000000000000", "f000aa32-0451-4000-b000-000000000000", "f000aa33-0451-4000-b000-000000000000"));
+		sensors.put(PRESSURE,      new SensorUuid("f000aa40-0451-4000-b000-000000000000", "f000aa41-0451-4000-b000-000000000000", "f000aa42-0451-4000-b000-000000000000", "f000aa43-0451-4000-b000-000000000000"));
+		sensors.put(GYROSCOPE,     new SensorUuid("f000aa50-0451-4000-b000-000000000000", "f000aa51-0451-4000-b000-000000000000", "f000aa52-0451-4000-b000-000000000000", "f000aa53-0451-4000-b000-000000000000"));
 
-	private static final String ACC_GATT_SERVICE_UUID = "f000aa10-0451-4000-b000-000000000000";
-
-	private static final String ACC_GATT_CHARACTERSTICS_UUID = "f000aa11-0451-4000-b000-000000000000";
-
-	private static final String ACC_GATT_CHARACTERSTICS_CONFIG_UUID = "f000aa12-0451-4000-b000-000000000000";
-
-	private static final String ACC_GATT_CHARACTERSTICS_FREQ_UUID = "f000aa23-0451-4000-b000-000000000000";
-
-	/**
-	 * TI Sensor Tag Humidity service
-	 */
-	private static final String HUMIDITY = "Humidity";
-
-	private static final String HUMIDITY_GATT_SERVICE_UUID = "f000aa20-0451-4000-b000-000000000000";
-
-	private static final String HUMIDITY_GATT_CHARACTERSTICS_UUID = "f000aa21-0451-4000-b000-000000000000";
-
-	private static final String HUMIDITY_GATT_CHARACTERSTICS_CONFIG_UUID = "f000aa22-0451-4000-b000-000000000000";
-
-	private static final String HUMIDITY_GATT_CHARACTERSTICS_FREQ_UUID = "f000aa03-0451-4000-b000-000000000000";
-
-	/**
-	 * TI Sensor Tag Magnetometer service
-	 */
-	private static final String MAGNETOMETER = "Magnetometer";
-
-	private static final String MAGNETOMETER_GATT_SERVICE_UUID = "f000aa30-0451-4000-b000-000000000000";
-
-	private static final String MAGNETOMETER_GATT_CHARACTERSTICS_UUID = "f000aa31-0451-4000-b000-000000000000";
-
-	private static final String MAGNETOMETER_GATT_CHARACTERSTICS_CONFIG_UUID = "f000aa32-0451-4000-b000-000000000000";
-
-	private static final String MAGNETOMETER_GATT_CHARACTERSTICS_FREQ_UUID = "f000aa33-0451-4000-b000-000000000000";
-	/**
-	 * TI Sensor Tag Barometer service
-	 */
-	private static final String PRESSURE = "Pressure";
-
-	private static final String BAROMETER_GATT_SERVICE_UUID = "f000aa40-0451-4000-b000-000000000000";
-
-	private static final String BAROMETER_GATT_CHARACTERSTICS_UUID = "f000aa41-0451-4000-b000-000000000000";
-
-	private static final String BAROMETER_GATT_CHARACTERSTICS_CONFIG_UUID = "f000aa42-0451-4000-b000-000000000000";
-
-	private static final String BAROMETER_GATT_CHARACTERSTICS_FREQ_UUID = "f000aa44-0451-4000-b000-000000000000";
-	/**
-	 * TI Sensor Tag Gyroscope service
-	 */
-	private static final String GYROSCOPE = "Gyroscope";
-
-	private static final String GYROSCOPE_GATT_SERVICE_UUID = "f000aa50-0451-4000-b000-000000000000";
-
-	private static final String GYROSCOPE_GATT_CHARACTERSTICS_UUID = "f000aa51-0451-4000-b000-000000000000";
-
-	private static final String GYROSCOPE_GATT_CHARACTERSTICS_CONFIG_UUID = "f000aa52-0451-4000-b000-000000000000";
-
-	private static final String GYROSCOPE_GATT_CHARACTERSTICS_FREQ_UUID = "f000aa53-0451-4000-b000-000000000000";
-
-	/**
-	 * TI Sensor Tag optical sensor
-	 */
-	private static final String OPTICAL = "Optical";
-
-	private static final String OPTICAL_GATT_SERVICE_UUID = "f000aa70-0451-4000-b000-000000000000";
-
-	private static final String OPTICAL_GATT_CHARACTERSTICS_UUID = "f000aa71-0451-4000-b000-000000000000";
-
-	private static final String OPTICAL_GATT_CHARACTERSTICS_CONFIG_UUID = "f000aa72-0451-4000-b000-000000000000";
-
-	private static final String OPTICAL_GATT_CHARACTERSTICS_FREQ_UUID = "f000aa73-0451-4000-b000-000000000000";
+		sensors.put(OPTICAL,       new SensorUuid("f000aa70-0451-4000-b000-000000000000", "f000aa71-0451-4000-b000-000000000000", "f000aa72-0451-4000-b000-000000000000", "f000aa73-0451-4000-b000-000000000000"));
+	}
 
 	// Write 0x0001 to enable notifications, 0x0000 to disable.
 	// Write 0x01 to enable data collection, 0x00 to disable.
@@ -218,37 +175,15 @@ public class TISensorTag extends DeviceImp implements Device {
 	// =======================Utility methods===========================
 	@Override
 	protected boolean isSensorSupported(String sensorName) {
-		if (sensorName.equals(TEMPERATURE) || sensorName.equals(ACCELEROMETER) || sensorName.equals(HUMIDITY)
-				|| sensorName.equals(PRESSURE) || sensorName.equals(GYROSCOPE) || sensorName.equals(MAGNETOMETER)
-				|| sensorName.equals(OPTICAL)) {
-			return true;
-		}
-		return false;
+		return sensors.containsKey(sensorName);
 	}
 
 	private Map<String, String> getEnableSensorProfile(String sensorName) {
 		Map<String, String> profile = new HashMap<String, String>();
-		if (sensorName.equals(TEMPERATURE)) {
-			profile.put(GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, TEMP_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(ACCELEROMETER)) {
-			profile.put(GATT_SERVICE, ACC_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, ACC_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(HUMIDITY)) {
-			profile.put(GATT_SERVICE, HUMIDITY_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, HUMIDITY_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(PRESSURE)) {
-			profile.put(GATT_SERVICE, BAROMETER_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, BAROMETER_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(GYROSCOPE)) {
-			profile.put(GATT_SERVICE, GYROSCOPE_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, GYROSCOPE_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(MAGNETOMETER)) {
-			profile.put(GATT_SERVICE, MAGNETOMETER_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, MAGNETOMETER_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(OPTICAL)) {
-			profile.put(GATT_SERVICE, OPTICAL_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, OPTICAL_GATT_CHARACTERSTICS_CONFIG_UUID);
+		SensorUuid s = sensors.get(sensorName);
+		if (s != null) {
+			profile.put(GATT_SERVICE, s.serviceUuid);
+			profile.put(GATT_CHARACTERSTICS, s.charConfigUuid);
 		}
 		profile.put(PAYLOAD, new String(TURN_ON_SENSOR));
 		return profile;
@@ -256,54 +191,20 @@ public class TISensorTag extends DeviceImp implements Device {
 
 	private Map<String, String> getReadValueProfile(String sensorName) {
 		Map<String, String> profile = new HashMap<String, String>();
-		if (sensorName.equals(TEMPERATURE)) {
-			profile.put(GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, TEMP_GATT_CHARACTERSTICS_UUID);
-		} else if (sensorName.equals(ACCELEROMETER)) {
-			profile.put(GATT_SERVICE, ACC_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, ACC_GATT_CHARACTERSTICS_UUID);
-		} else if (sensorName.equals(HUMIDITY)) {
-			profile.put(GATT_SERVICE, HUMIDITY_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, HUMIDITY_GATT_CHARACTERSTICS_UUID);
-		} else if (sensorName.equals(PRESSURE)) {
-			profile.put(GATT_SERVICE, BAROMETER_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, BAROMETER_GATT_CHARACTERSTICS_UUID);
-		} else if (sensorName.equals(GYROSCOPE)) {
-			profile.put(GATT_SERVICE, GYROSCOPE_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, GYROSCOPE_GATT_CHARACTERSTICS_UUID);
-		} else if (sensorName.equals(MAGNETOMETER)) {
-			profile.put(GATT_SERVICE, MAGNETOMETER_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, MAGNETOMETER_GATT_CHARACTERSTICS_UUID);
-		} else if (sensorName.equals(OPTICAL)) {
-			profile.put(GATT_SERVICE, OPTICAL_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, OPTICAL_GATT_CHARACTERSTICS_UUID);
+		SensorUuid s = sensors.get(sensorName);
+		if (s != null) {
+			profile.put(GATT_SERVICE, s.serviceUuid);
+			profile.put(GATT_CHARACTERSTICS, s.charUuid);
 		}
 		return profile;
 	}
 
 	private Map<String, String> getTurnOffSensorProfile(String sensorName) {
 		Map<String, String> profile = new HashMap<String, String>();
-		if (sensorName.equals(TEMPERATURE)) {
-			profile.put(GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, TEMP_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(ACCELEROMETER)) {
-			profile.put(GATT_SERVICE, ACC_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, ACC_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(HUMIDITY)) {
-			profile.put(GATT_SERVICE, HUMIDITY_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, HUMIDITY_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(PRESSURE)) {
-			profile.put(GATT_SERVICE, BAROMETER_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, BAROMETER_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(GYROSCOPE)) {
-			profile.put(GATT_SERVICE, GYROSCOPE_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, GYROSCOPE_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(MAGNETOMETER)) {
-			profile.put(GATT_SERVICE, MAGNETOMETER_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, MAGNETOMETER_GATT_CHARACTERSTICS_CONFIG_UUID);
-		} else if (sensorName.equals(OPTICAL)) {
-			profile.put(GATT_SERVICE, OPTICAL_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, OPTICAL_GATT_CHARACTERSTICS_CONFIG_UUID);
+		SensorUuid s = sensors.get(sensorName);
+		if (s != null) {
+			profile.put(GATT_SERVICE, s.serviceUuid);
+			profile.put(GATT_CHARACTERSTICS, s.charConfigUuid);
 		}
 		profile.put(PAYLOAD, new String(TURN_OFF_SENSOR));
 		return profile;
@@ -311,27 +212,10 @@ public class TISensorTag extends DeviceImp implements Device {
 
 	private Map<String, String> getFrequencyProfile(String sensorName, byte[] frequency) {
 		Map<String, String> profile = new HashMap<String, String>();
-		if (sensorName.equals(TEMPERATURE)) {
-			profile.put(GATT_SERVICE, TEMP_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, TEMP_GATT_CHARACTERSTICS_FREQ_UUID);
-		} else if (sensorName.equals(ACCELEROMETER)) {
-			profile.put(GATT_SERVICE, ACC_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, ACC_GATT_CHARACTERSTICS_FREQ_UUID);
-		} else if (sensorName.equals(HUMIDITY)) {
-			profile.put(GATT_SERVICE, HUMIDITY_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, HUMIDITY_GATT_CHARACTERSTICS_FREQ_UUID);
-		} else if (sensorName.equals(PRESSURE)) {
-			profile.put(GATT_SERVICE, BAROMETER_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, BAROMETER_GATT_CHARACTERSTICS_FREQ_UUID);
-		} else if (sensorName.equals(GYROSCOPE)) {
-			profile.put(GATT_SERVICE, GYROSCOPE_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, GYROSCOPE_GATT_CHARACTERSTICS_FREQ_UUID);
-		} else if (sensorName.equals(MAGNETOMETER)) {
-			profile.put(GATT_SERVICE, MAGNETOMETER_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, MAGNETOMETER_GATT_CHARACTERSTICS_FREQ_UUID);
-		} else if (sensorName.equals(OPTICAL)) {
-			profile.put(GATT_SERVICE, OPTICAL_GATT_SERVICE_UUID);
-			profile.put(GATT_CHARACTERSTICS, OPTICAL_GATT_CHARACTERSTICS_FREQ_UUID);
+		SensorUuid s = sensors.get(sensorName);
+		if (s != null) {
+			profile.put(GATT_SERVICE, s.serviceUuid);
+			profile.put(GATT_CHARACTERSTICS, s.charFreqUuid);
 		}
 		profile.put(PAYLOAD, new String(frequency));
 		return profile;
@@ -396,21 +280,10 @@ public class TISensorTag extends DeviceImp implements Device {
 	}
 
 	@Override
-	protected String getMeasurementUnit(String sensor) {
-		switch (sensor) {
-		case TEMPERATURE:
-			return "Degree celsius (°C)";
-		case HUMIDITY:
-			// Relative humidity
-			return "Relative humidity (%RH)";
-		case PRESSURE:
-			// hecto pascal
-			return "Hecto pascal (hPa)";
-		case OPTICAL:
-			return "Light intensity (W/sr)"; // watts per steradian
-		default:
-			return "Byte array";
-		}
+	protected String getMeasurementUnit(String sensorName) {
+		String ret = componentUnits.get(sensorName);
+		if (ret == null) ret = "Byte array";
+		return ret;
 	}
 
 	/**
