@@ -74,21 +74,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib:/usr/lib:/usr/lib/jvm/jd
 
 mvn="mvn"
 
-if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
-  ./scripts/stop.sh "protocol.BLE"
-  cd iot.agile.protocol.BLE
-  # in what follows we need an ugly workaround to pass the classpath correctly, otherwise TinyB JNI will throw a class not found exception
-  #MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE" $mvn exec:java &
-  java \
-    $MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE \
-    -classpath /usr/share/maven/boot/plexus-classworlds-2.x.jar:../deps/tinyb.jar \
-    -Dclassworlds.conf=/usr/share/maven/bin/m2.conf -Dmaven.home=/usr/share/maven -Dmaven.multiModuleProjectDirectory=$PWD \
-    org.codehaus.plexus.classworlds.launcher.Launcher \
-    exec:java &
-  echo "Started AGILE BLE protocol"
-  cd ../
-fi
-
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "protocolmanager"
   cd iot.agile.ProtocolManager
@@ -111,6 +96,28 @@ if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
   MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.http" $mvn exec:java &
   echo "Started AGILE HTTP API"
   cd ..
+fi
+
+if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
+  ./scripts/stop.sh "protocol.BLE"
+  cd iot.agile.protocol.BLE
+
+  # wait for ProtocolManager to initialize
+  while `! qdbus iot.agile.ProtocolManager > /dev/null`; do
+    echo "waiting for ProtocolManager to initialize";
+    sleep 1;
+  done
+
+  # in what follows we need an ugly workaround to pass the classpath correctly, otherwise TinyB JNI will throw a class not found exception
+  #MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE" $mvn exec:java &
+  java \
+    $MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE \
+    -classpath /usr/share/maven/boot/plexus-classworlds-2.x.jar:../deps/tinyb.jar \
+    -Dclassworlds.conf=/usr/share/maven/bin/m2.conf -Dmaven.home=/usr/share/maven -Dmaven.multiModuleProjectDirectory=$PWD \
+    org.codehaus.plexus.classworlds.launcher.Launcher \
+    exec:java &
+  echo "Started AGILE BLE protocol"
+  cd ../
 fi
 
 
