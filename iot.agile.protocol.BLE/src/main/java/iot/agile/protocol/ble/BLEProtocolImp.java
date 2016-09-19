@@ -251,11 +251,14 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 */
 	@Override
 	public String DiscoveryStatus() {
-		if (future != null) {
-			return "RUNNING";
-		} else {
-			return "NONE";
+		if(future != null){
+			if(future.isCancelled()){
+				return "NONE";
+			}else{
+				return "RUNNING";
+			}	
 		}
+		return "NONE";
 	}
 
 	/**
