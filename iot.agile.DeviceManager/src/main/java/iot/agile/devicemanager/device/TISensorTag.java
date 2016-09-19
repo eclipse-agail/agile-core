@@ -11,18 +11,28 @@ import iot.agile.object.DeviceDefinition;
 public class TISensorTag extends DeviceImp implements Device {
 
 	private static final String GATT_SERVICE = "GATT_SERVICE";
-
 	private static final String GATT_CHARACTERSTICS = "GATT_CHARACTERSTICS";
-
 	private static final String PAYLOAD = "PAYLOAD";
 
-        private static final String TEMPERATURE = "Temperature";
-        private static final String ACCELEROMETER = "Accelerometer";
-        private static final String HUMIDITY = "Humidity";
-        private static final String MAGNETOMETER = "Magnetometer";
-        private static final String PRESSURE = "Pressure";
-        private static final String GYROSCOPE = "Gyroscope";
-        private static final String OPTICAL = "Optical";
+	private static final String TEMPERATURE = "Temperature";
+	private static final String ACCELEROMETER = "Accelerometer";
+	private static final String HUMIDITY = "Humidity";
+	private static final String MAGNETOMETER = "Magnetometer";
+	private static final String PRESSURE = "Pressure";
+	private static final String GYROSCOPE = "Gyroscope";
+	private static final String OPTICAL = "Optical";
+
+	private static final Map<String, String> componentUnits = new HashMap<String, String>();
+	static {
+		componentUnits.put(TEMPERATURE, "Degree celsius (°C)");
+		componentUnits.put(ACCELEROMETER, "");
+		componentUnits.put(HUMIDITY, "Relative humidity (%RH)");
+		componentUnits.put(MAGNETOMETER, "");
+		componentUnits.put(PRESSURE, "Hecto pascal (hPa)");
+		componentUnits.put(GYROSCOPE, "");
+
+		componentUnits.put(OPTICAL, "Light intensity (W/sr)");
+	}
 
 	private static class SensorUuid {
 		public String serviceUuid;
@@ -38,17 +48,6 @@ public class TISensorTag extends DeviceImp implements Device {
 		}
 	}
 
-	private static final Map<String, String> componentUnits = new HashMap<String, String>();
-	static {
-		componentUnits.put(TEMPERATURE, "Degree celsius (°C)");
-		componentUnits.put(ACCELEROMETER, "");
-		componentUnits.put(HUMIDITY, "Relative humidity (%RH)");
-		componentUnits.put(MAGNETOMETER, "");
-		componentUnits.put(PRESSURE, "Hecto pascal (hPa)");
-		componentUnits.put(GYROSCOPE, "");
-
-		componentUnits.put(OPTICAL, "Light intensity (W/sr)");
-	}
 
 	private static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
 	static {
@@ -65,7 +64,6 @@ public class TISensorTag extends DeviceImp implements Device {
 	// Write 0x0001 to enable notifications, 0x0000 to disable.
 	// Write 0x01 to enable data collection, 0x00 to disable.
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
-
 	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
 
 	/**
