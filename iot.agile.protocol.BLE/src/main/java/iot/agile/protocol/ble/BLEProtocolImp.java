@@ -130,6 +130,23 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 			logger.error("Error in getting BluetoothManager instance", e);
 		}
 		logger.debug("Started BLE Protocol");
+
+		// fill initial list of devices
+		List<BluetoothDevice> list = bleManager.getDevices();
+		for (BluetoothDevice device : list) {
+			//if (device.getRSSI() != 0) {	// TODO: verify if we need to filter based on some condition
+				DeviceOverview deviceOverview = new DeviceOverview(device.getAddress(), AGILE_BLUETOOTH_BUS_NAME, device.getName(), AVAILABLE);
+				if (isNewDevice(deviceOverview)) {
+					deviceList.add(deviceOverview);
+					try {
+						ProtocolManager.FoundNewDeviceSignal foundNewDevSig = new ProtocolManager.FoundNewDeviceSignal(AGILE_NEW_DEVICE_SIGNAL_PATH, deviceOverview);
+						connection.sendSignal(foundNewDevSig);
+					} catch (DBusException e) {
+						e.printStackTrace();
+					}
+				}
+			//}
+		}
 	}
 
 	/**
