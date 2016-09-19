@@ -282,7 +282,6 @@ public class TISensorTag extends DeviceImp implements Device {
 	@Override
 	protected String getMeasurementUnit(String sensorName) {
 		String ret = componentUnits.get(sensorName);
-		if (ret == null) ret = "Byte array";
 		return ret;
 	}
 
