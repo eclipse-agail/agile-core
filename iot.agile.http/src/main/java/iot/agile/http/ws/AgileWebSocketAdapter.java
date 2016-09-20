@@ -82,7 +82,8 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
         device.Subscribe(sensorName);
 
       } else {
-        connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
+
+        sigHandler = new DBusSigHandler<Device.NewSubscribeValueSignal>() {
           @Override
           public void handle(NewSubscribeValueSignal sig) {
             try {
@@ -91,7 +92,8 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
               e.printStackTrace();
             }
           }
-        });
+        };
+        connection.addSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
       }
     } catch (DBusException e) {
       // TODO Auto-generated catch block
@@ -101,23 +103,23 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
 
   @Override
   public void onWebSocketClose(int statusCode, String reason) {
-    if (deviceID != null) {
-      System.out.printf("ws: closing %s/%s reason:%s%n", deviceID, sensorName, reason);
-      try {
-        DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+    try {
+      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+      connection.removeSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
 
-        connection.removeSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
+      if (deviceID != null) {
+        System.out.printf("ws: closing %s/%s reason:%s%n", deviceID, sensorName, reason);
 
         String busname = Device.AGILE_INTERFACE;
         String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + deviceID;
         Device device = connection.getRemoteObject(busname, path, Device.class);
         device.Unsubscribe(sensorName);
-      } catch (DBusException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      } else {
+        System.out.printf("ws: closing reason:%s%n", deviceID, sensorName, reason);
       }
-    } else {
-      System.out.printf("ws: closing reason:%s%n", deviceID, sensorName, reason);
+    } catch (DBusException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 }
