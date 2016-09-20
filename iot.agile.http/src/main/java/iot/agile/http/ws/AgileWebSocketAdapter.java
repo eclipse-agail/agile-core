@@ -32,6 +32,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author Csaba Kiraly <kiraly@fbk.eu>
@@ -46,11 +49,13 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
 
   private ObjectMapper mapper = new ObjectMapper();
 
+  protected Logger logger = LoggerFactory.getLogger(AgileWebSocketAdapter.class);
+
   @Override
   public void onWebSocketConnect(Session sess) {
     session = sess;
     String uripath = sess.getUpgradeRequest().getRequestURI().getPath();
-    System.out.printf("New websocket connection from %s for %s %n", sess.getRemoteAddress(), uripath);
+    logger.info("New websocket connection from {} for {}", sess.getRemoteAddress(), uripath);
 
     Pattern p = Pattern.compile("^/ws/device/([^/]+)/([^/]+)/subscribe");
     Matcher m = p.matcher(uripath);
@@ -65,7 +70,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
           @Override
           public void handle(NewSubscribeValueSignal sig) {
             if (sig.record.getDeviceID().equals(deviceID) && sig.record.getComponentID().equals(sensorName)) {
-              System.out.printf("http: New value %s%n", sig.record);
+              logger.debug("http: New value {}%n", sig.record);
               try {
                 session.getRemote().sendString(mapper.writeValueAsString(sig.record));
               } catch (IOException e) {
@@ -108,14 +113,14 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
       connection.removeSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
 
       if (deviceID != null) {
-        System.out.printf("ws: closing %s/%s reason:%s%n", deviceID, sensorName, reason);
+        logger.info("closing {}/{} reason:{}/{}", deviceID, sensorName, statusCode, reason);
 
         String busname = Device.AGILE_INTERFACE;
         String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + deviceID;
         Device device = connection.getRemoteObject(busname, path, Device.class);
         device.Unsubscribe(sensorName);
       } else {
-        System.out.printf("ws: closing reason:%s%n", deviceID, sensorName, reason);
+        logger.info("closing reason:{}/{}", deviceID, sensorName, statusCode, reason);
       }
     } catch (DBusException e) {
       // TODO Auto-generated catch block
