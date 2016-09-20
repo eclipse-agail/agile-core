@@ -60,7 +60,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
         connection.addSigHandler(Device.NewSubscribeValueSignal.class, new DBusSigHandler<Device.NewSubscribeValueSignal>() {
           @Override
           public void handle(NewSubscribeValueSignal sig) {
-            if (sig.record.getDeviceID() == id && sig.record.getComponentID() == sensorName) {
+            if (sig.record.getDeviceID().equals(id) && sig.record.getComponentID().equals(sensorName)) {
               System.out.printf("http: New value %s%n", sig.record);
               try {
                 session.getRemote().sendString(mapper.writeValueAsString(sig.record));
