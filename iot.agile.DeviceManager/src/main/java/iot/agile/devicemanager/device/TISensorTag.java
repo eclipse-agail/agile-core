@@ -153,6 +153,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			if (Status().equals(StatusType.CONNECTED.toString())) {
 				if (isSensorSupported(componentName.trim())) {
 					try {
+						subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
 						if (!hasotherActiveSubscription(componentName)) {
 							// disable notification
 							deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
@@ -162,7 +163,6 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 							// deviceProtocol.Write(address,
 							// getTurnOffSensorProfile(sensorName));
 						}
-						subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
