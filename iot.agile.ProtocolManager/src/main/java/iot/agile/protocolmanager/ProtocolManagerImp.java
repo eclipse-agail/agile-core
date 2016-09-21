@@ -83,7 +83,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 					@Override
 					public void handle(FoundNewDeviceSignal signal) {
 						devices.add(signal.device);
-						logger.info("Found new device signal recived");
+						logger.info("Found new device signal received");
 					}
 
 				});

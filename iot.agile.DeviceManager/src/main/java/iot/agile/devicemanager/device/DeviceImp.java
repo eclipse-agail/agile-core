@@ -168,7 +168,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * returns the status of the device
 	 */
 	public String Status() {
-		return deviceStatus;
+		return deviceProtocol.DeviceStatus(address);
 	}
 
 	/**
@@ -218,13 +218,9 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 		return protocol;
 	}
 
-
-	
 	public abstract void Connect() throws DBusException;
 
 	public abstract void Disconnect() throws DBusException ;
-
-
 
 	/**
 	 *

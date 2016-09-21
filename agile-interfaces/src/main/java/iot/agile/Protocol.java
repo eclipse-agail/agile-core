@@ -58,7 +58,7 @@ public interface Protocol extends DBusInterface {
 	 *
 	 * @return the last record received by the read or subscribe operation
 	 */
-	@org.freedesktop.DBus.Description("Store the last record recived by read or subscribe")
+	@org.freedesktop.DBus.Description("Store the last record received by read or subscribe")
 	public byte[] Data();
 
 	/**
@@ -144,6 +144,12 @@ public interface Protocol extends DBusInterface {
 	 */
 	public void Unsubscribe(String deviceAddress, Map<String, String> profile)throws DBusException;
 
+	/**
+	 * Check the status of the device
+	 *
+	 * @param deviceAddress
+	 */
+	public String DeviceStatus(String deviceAddress);
 	/**
 	 * New data reading signal for subscribe methods
 	 * 
