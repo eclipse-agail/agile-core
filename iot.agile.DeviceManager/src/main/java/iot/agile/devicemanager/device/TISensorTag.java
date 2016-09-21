@@ -119,6 +119,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 
 	@Override
 	public void Subscribe(String componentName) {
+		logger.info("Subscribe to {}", componentName);
  		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (Status().equals(StatusType.CONNECTED.toString())) {
 				if (isSensorSupported(componentName.trim())) {
@@ -147,6 +148,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 
 	@Override
 	public void Unsubscribe(String componentName) throws DBusException {
+		logger.info("Unsubscribe from {}", componentName);
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (Status().equals(StatusType.CONNECTED.toString())) {
 				if (isSensorSupported(componentName.trim())) {

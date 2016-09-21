@@ -402,6 +402,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	public void Subscribe(String deviceAddress, Map<String, String> profile) throws DBusException {
 		BluetoothDevice device;
 		try {
+			logger.info("Enabling notification on {}", deviceAddress);
 			device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
 			if (device != null) {
 				if (device.getConnected()) {
@@ -435,6 +436,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	public void Unsubscribe(String deviceAddress, Map<String, String> profile) throws DBusException {
 		BluetoothDevice device;
 		try {
+			logger.info("Disabling notification on {}", deviceAddress);
 			device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
 			if (device != null) {
 				if (device.getConnected()) {
