@@ -445,8 +445,8 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
 						if (gattChar != null) {
  							if(gattChar.getNotifying()){
-								gattChar.disableValueNotifications();
-							}
+ 								gattChar.disableValueNotifications();
+ 							}
 						} else {
 							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
 						}
@@ -487,6 +487,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
  			try {
 				Protocol.NewRecordSignal newRecordSignal = new Protocol.NewRecordSignal(AGILE_NEW_RECORD_SIGNAL_PATH,
 						lastRecord, address, profile);
+				logger.info("Notifiying {}", this);
 				connection.sendSignal(newRecordSignal);
 			} catch (DBusException e) {
 				e.printStackTrace();

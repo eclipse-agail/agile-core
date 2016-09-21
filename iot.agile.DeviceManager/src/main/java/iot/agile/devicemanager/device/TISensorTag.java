@@ -125,7 +125,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				if (isSensorSupported(componentName.trim())) {
  					try {
 						if (!hasotherActiveSubscription(componentName)) {
- 							deviceProtocol.Write(address, getEnableSensorProfile(componentName));
+  							deviceProtocol.Write(address, getEnableSensorProfile(componentName));
 							byte[] period = { 100 };
 							deviceProtocol.Write(address, getFrequencyProfile(componentName, period));
 							deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
