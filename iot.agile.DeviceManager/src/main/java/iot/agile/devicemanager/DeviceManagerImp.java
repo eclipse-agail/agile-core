@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
+import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceDefinition;
@@ -97,7 +98,12 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 						deviceDefinition.protocol, "/iot/agile/Device/ble" + deviceDefinition.address.replace(":", ""),
 						deviceDefinition.streams);
 				devices.add(registeredDev);
-				device = new TISensorTag(registeredDev);
+				if(deviceDefinition.name.contains("SensorTag")){
+					device = new TISensorTag(registeredDev);
+				}else if(deviceDefinition.name.contains("Medical")){
+					logger.info("Medical device registered");
+					device = new MedicalDevice(registeredDev);
+ 				} 
 				logger.info("Device registered: {}", device.Id());
 			} else {
 				registeredDev = deviceDefinition;
