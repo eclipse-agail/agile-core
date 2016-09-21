@@ -408,7 +408,9 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 					if (gattService != null) {
 						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
 						if (gattChar != null) {
-							gattChar.enableValueNotifications(new NewRecordNotification());
+							if(!gattChar.getNotifying()){
+								gattChar.enableValueNotifications(new NewRecordNotification(deviceAddress,profile));
+							}
 						} else {
 							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
 						}
@@ -439,7 +441,9 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 					if (gattService != null) {
 						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
 						if (gattChar != null) {
-							gattChar.disableValueNotifications();
+ 							if(gattChar.getNotifying()){
+								gattChar.disableValueNotifications();
+							}
 						} else {
 							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
 						}
@@ -465,13 +469,21 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 *         New record signal for Subscription
 	 */
 	protected class NewRecordNotification implements BluetoothNotification<byte[]> {
+		private final String address;
+		
+		private final Map<String, String> profile;
+
+		public NewRecordNotification(String address, Map<String, String> profile) {
+			this.address = address;
+			this.profile = profile;
+		}
+		
 		@Override
 		public void run(byte[] record) {
 			lastRecord = record;
-			logger.info("Protocol Notification:.."+new String(record));
-			try {
+ 			try {
 				Protocol.NewRecordSignal newRecordSignal = new Protocol.NewRecordSignal(AGILE_NEW_RECORD_SIGNAL_PATH,
-						lastRecord);
+						lastRecord, address, profile);
 				connection.sendSignal(newRecordSignal);
 			} catch (DBusException e) {
 				e.printStackTrace();
@@ -479,12 +491,12 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		}
 	}
 
+
+	// =========================UTILITY ==============
 	public boolean isRemote() {
 		return false;
 	}
-
-	// =========================UTILITY ==============
-
+	
 	void printDevice(BluetoothDevice device) {
 		logger.info("Name = {}", device.getName());
 		logger.info("Address = {}", device.getAddress());
