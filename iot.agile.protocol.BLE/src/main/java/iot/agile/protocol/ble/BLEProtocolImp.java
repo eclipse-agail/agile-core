@@ -445,7 +445,8 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
 						if (gattChar != null) {
  							if(gattChar.getNotifying()){
-								gattChar.disableValueNotifications();
+								// TODO: disableNotification is buggy in TinyB, it is not removing the callback
+								//gattChar.disableValueNotifications();
 							}
 						} else {
 							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
