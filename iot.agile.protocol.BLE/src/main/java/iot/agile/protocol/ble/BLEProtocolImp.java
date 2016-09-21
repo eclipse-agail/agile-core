@@ -444,7 +444,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 					if (gattService != null) {
 						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
 						if (gattChar != null) {
- 							if(gattChar.getNotifying()){
+							if(gattChar.getNotifying()){
 								// TODO: disableNotification is buggy in TinyB, it is not removing the callback
 								//gattChar.disableValueNotifications();
 							}
@@ -488,6 +488,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
  			try {
 				Protocol.NewRecordSignal newRecordSignal = new Protocol.NewRecordSignal(AGILE_NEW_RECORD_SIGNAL_PATH,
 						lastRecord, address, profile);
+				logger.info("Notifiying {}", this);
 				connection.sendSignal(newRecordSignal);
 			} catch (DBusException e) {
 				e.printStackTrace();

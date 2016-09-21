@@ -326,20 +326,12 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * Adds signal handler for a new record value 
 	 */
 	protected void addNewRecordSignalHandler() {
-		logger.info("adding signal handler");
 		try {
 			if (newRecordSigHanlder == null && connection != null) {
  				newRecordSigHanlder = new DBusSigHandler<Protocol.NewRecordSignal>() {
 					@Override
 					public void handle(NewRecordSignal sig) {
-						logger.info("signal reivfdfs");
-
  							String componentName = getComponentName(sig.profile);
- 							logger.info("signal reivfdfs"+componentName);
-
-							logger.info(componentName);
-							String readVal = formatReading(componentName, sig.record);
-							if (Float.parseFloat(readVal) != 0.0) {
 								RecordObject recObj = new RecordObject(deviceID, componentName,
 										formatReading(componentName, sig.record), getMeasurementUnit(componentName), "",
 										System.currentTimeMillis());
@@ -353,7 +345,6 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 								} catch (DBusException e) {
 									e.printStackTrace();
 								}
- 						}
 					}
 				};
 				connection.addSigHandler(Protocol.NewRecordSignal.class, newRecordSigHanlder);
@@ -368,7 +359,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 		if(connection != null && newRecordSigHanlder != null){
 			try {
 				connection.removeSigHandler(Protocol.NewRecordSignal.class, newRecordSigHanlder);
-				newRecordSigHanlder = null;	
+ 				newRecordSigHanlder = null;	
 			} catch (DBusException e) {
 				e.printStackTrace();
 			}
