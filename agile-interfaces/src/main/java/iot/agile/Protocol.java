@@ -151,11 +151,20 @@ public interface Protocol extends DBusInterface {
 	 *
 	 */
 	public class NewRecordSignal extends DBusSignal {
- 		public final byte[] record;
-
-		public NewRecordSignal(String path, byte[] record) throws DBusException {
-			super(path, record);
+ 		/**
+ 		 * The value that is read from the component
+ 		 */
+		public final byte[] record;
+		
+		public final String address;
+		
+		public final Map<String, String> profile;
+		
+		public NewRecordSignal(String path, byte[] record,  String address, Map<String, String> profile) throws DBusException {
+			super(path, record, address, profile);
  			this.record = record;
+			this.address = address;
+			this.profile = profile;
 		}
 
 	}
