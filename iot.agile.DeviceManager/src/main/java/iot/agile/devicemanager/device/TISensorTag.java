@@ -8,11 +8,9 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
 
-public class TISensorTag extends DeviceImp implements Device {
-
-	private static final String GATT_SERVICE = "GATT_SERVICE";
-	private static final String GATT_CHARACTERSTICS = "GATT_CHARACTERSTICS";
-	private static final String PAYLOAD = "PAYLOAD";
+public class TISensorTag extends AgileBLEDevice implements Device {
+	private static final byte[] TURN_ON_SENSOR = { 0X01 };
+	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
 
 	private static final String TEMPERATURE = "Temperature";
 	private static final String ACCELEROMETER = "Accelerometer";
@@ -23,6 +21,16 @@ public class TISensorTag extends DeviceImp implements Device {
 	private static final String OPTICAL = "Optical";
 
 	private static final Map<String, String> componentUnits = new HashMap<String, String>();
+
+	{
+		subscribedComponents.put(TEMPERATURE, 0);
+		subscribedComponents.put(ACCELEROMETER, 0);
+		subscribedComponents.put(HUMIDITY, 0);
+		subscribedComponents.put(PRESSURE, 0);
+		subscribedComponents.put(GYROSCOPE, 0);
+		subscribedComponents.put(OPTICAL, 0);
+	}
+	
 	static {
 		componentUnits.put(TEMPERATURE, "Degree celsius (°C)");
 		componentUnits.put(ACCELEROMETER, "");
@@ -34,37 +42,30 @@ public class TISensorTag extends DeviceImp implements Device {
 		componentUnits.put(OPTICAL, "Light intensity (W/sr)");
 	}
 
-	private static class SensorUuid {
-		public String serviceUuid;
-		public String charUuid;
-		public String charConfigUuid;
-		public String charFreqUuid;
-
-		public SensorUuid(String service, String ch, String charConfig, String charFreq) {
-			serviceUuid = service;
-			charUuid = ch;
-			charConfigUuid = charConfig;
-			charFreqUuid = charFreq;
-		}
-	}
-
-
-	private static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
 	static {
-		sensors.put(TEMPERATURE,   new SensorUuid("f000aa00-0451-4000-b000-000000000000", "f000aa01-0451-4000-b000-000000000000", "f000aa02-0451-4000-b000-000000000000", "f000aa03-0451-4000-b000-000000000000"));
-		sensors.put(ACCELEROMETER, new SensorUuid("f000aa10-0451-4000-b000-000000000000", "f000aa11-0451-4000-b000-000000000000", "f000aa12-0451-4000-b000-000000000000", "f000aa13-0451-4000-b000-000000000000"));
-		sensors.put(HUMIDITY,      new SensorUuid("f000aa20-0451-4000-b000-000000000000", "f000aa21-0451-4000-b000-000000000000", "f000aa22-0451-4000-b000-000000000000", "f000aa23-0451-4000-b000-000000000000"));
-		sensors.put(MAGNETOMETER,  new SensorUuid("f000aa30-0451-4000-b000-000000000000", "f000aa31-0451-4000-b000-000000000000", "f000aa32-0451-4000-b000-000000000000", "f000aa33-0451-4000-b000-000000000000"));
-		sensors.put(PRESSURE,      new SensorUuid("f000aa40-0451-4000-b000-000000000000", "f000aa41-0451-4000-b000-000000000000", "f000aa42-0451-4000-b000-000000000000", "f000aa43-0451-4000-b000-000000000000"));
-		sensors.put(GYROSCOPE,     new SensorUuid("f000aa50-0451-4000-b000-000000000000", "f000aa51-0451-4000-b000-000000000000", "f000aa52-0451-4000-b000-000000000000", "f000aa53-0451-4000-b000-000000000000"));
+		sensors.put(TEMPERATURE,
+				new SensorUuid("f000aa00-0451-4000-b000-000000000000", "f000aa01-0451-4000-b000-000000000000",
+						"f000aa02-0451-4000-b000-000000000000", "f000aa03-0451-4000-b000-000000000000"));
+		sensors.put(ACCELEROMETER,
+				new SensorUuid("f000aa10-0451-4000-b000-000000000000", "f000aa11-0451-4000-b000-000000000000",
+						"f000aa12-0451-4000-b000-000000000000", "f000aa13-0451-4000-b000-000000000000"));
+		sensors.put(HUMIDITY,
+				new SensorUuid("f000aa20-0451-4000-b000-000000000000", "f000aa21-0451-4000-b000-000000000000",
+						"f000aa22-0451-4000-b000-000000000000", "f000aa23-0451-4000-b000-000000000000"));
+		sensors.put(MAGNETOMETER,
+				new SensorUuid("f000aa30-0451-4000-b000-000000000000", "f000aa31-0451-4000-b000-000000000000",
+						"f000aa32-0451-4000-b000-000000000000", "f000aa33-0451-4000-b000-000000000000"));
+		sensors.put(PRESSURE,
+				new SensorUuid("f000aa40-0451-4000-b000-000000000000", "f000aa41-0451-4000-b000-000000000000",
+						"f000aa42-0451-4000-b000-000000000000", "f000aa43-0451-4000-b000-000000000000"));
+		sensors.put(GYROSCOPE,
+				new SensorUuid("f000aa50-0451-4000-b000-000000000000", "f000aa51-0451-4000-b000-000000000000",
+						"f000aa52-0451-4000-b000-000000000000", "f000aa53-0451-4000-b000-000000000000"));
 
-		sensors.put(OPTICAL,       new SensorUuid("f000aa70-0451-4000-b000-000000000000", "f000aa71-0451-4000-b000-000000000000", "f000aa72-0451-4000-b000-000000000000", "f000aa73-0451-4000-b000-000000000000"));
+		sensors.put(OPTICAL,
+				new SensorUuid("f000aa70-0451-4000-b000-000000000000", "f000aa71-0451-4000-b000-000000000000",
+						"f000aa72-0451-4000-b000-000000000000", "f000aa73-0451-4000-b000-000000000000"));
 	}
-
-	// Write 0x0001 to enable notifications, 0x0000 to disable.
-	// Write 0x01 to enable data collection, 0x00 to disable.
-	private static final byte[] TURN_ON_SENSOR = { 0X01 };
-	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
 
 	/**
 	 * 
@@ -92,7 +93,7 @@ public class TISensorTag extends DeviceImp implements Device {
 						Thread.sleep(1010);
 						// read value
 						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
- 						// TODO: Sending {0x00} raised error on dbus
+						// TODO: Sending {0x00} raised error on dbus
 						// deviceProtocol.Write(address,
 						// getTurnOffSensorProfile(sensorName));
 						return formatReading(sensorName, readValue);
@@ -116,25 +117,24 @@ public class TISensorTag extends DeviceImp implements Device {
 	}
 
 	@Override
-	public void Subscribe(String sensorName) {
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+	public void Subscribe(String componentName) {
+ 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (deviceStatus.equals(CONNECTED)) {
-				if (isSensorSupported(sensorName.trim())) {
-					try {
-						logger.info("Enabling sensor for subscribtion");
-						deviceProtocol.Write(address, getEnableSensorProfile(sensorName));
-						byte[] period = { 100 };
-						deviceProtocol.Write(address, getFrequencyProfile(sensorName, period));
-						deviceProtocol.Subscribe(address, getReadValueProfile(sensorName));
-						
-						//send signal 
-						signalNewSubscribeValue(sensorName);
-						
+				if (isSensorSupported(componentName.trim())) {
+ 					try {
+						if (!hasotherActiveSubscription(componentName)) {
+ 							deviceProtocol.Write(address, getEnableSensorProfile(componentName));
+							byte[] period = { 100 };
+							deviceProtocol.Write(address, getFrequencyProfile(componentName, period));
+							deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
+							addNewRecordSignalHandler();
+						}
+						subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
 					} catch (DBusException e) {
 						e.printStackTrace();
 					}
 				} else {
-					logger.info("Sensor not supported: {}", sensorName);
+					logger.info("Sensor not supported: {}", componentName);
 				}
 			} else {
 				logger.info("BLE Device not connected: {}", deviceName);
@@ -145,22 +145,26 @@ public class TISensorTag extends DeviceImp implements Device {
 	}
 
 	@Override
-	public void Unsubscribe(String sensorName) throws DBusException {
+	public void Unsubscribe(String componentName) throws DBusException {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (deviceStatus.equals(CONNECTED)) {
-				if (isSensorSupported(sensorName.trim())) {
+				if (isSensorSupported(componentName.trim())) {
 					try {
-						// disable notification
-						deviceProtocol.Unsubscribe(address, getReadValueProfile(sensorName));
-						// TODO: Sending {0x00} on dbus has an exception
-						// turn off sensor
-						// deviceProtocol.Write(address,
-						// getTurnOffSensorProfile(sensorName));
+						if (!hasotherActiveSubscription(componentName)) {
+							// disable notification
+							deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
+							removeNewRecordSignalHandler();
+							// TODO: Sending {0x00} on dbus has an exception
+							// turn off sensor
+							// deviceProtocol.Write(address,
+							// getTurnOffSensorProfile(sensorName));
+						}
+						subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				} else {
-					logger.debug("Sensor not supported: {}", sensorName);
+					logger.debug("Sensor not supported: {}", componentName);
 				}
 			} else {
 				logger.debug("BLE Device not connected: {}", deviceName);
@@ -192,7 +196,7 @@ public class TISensorTag extends DeviceImp implements Device {
 		SensorUuid s = sensors.get(sensorName);
 		if (s != null) {
 			profile.put(GATT_SERVICE, s.serviceUuid);
-			profile.put(GATT_CHARACTERSTICS, s.charUuid);
+			profile.put(GATT_CHARACTERSTICS, s.charValueUuid);
 		}
 		return profile;
 	}
@@ -217,6 +221,18 @@ public class TISensorTag extends DeviceImp implements Device {
 		}
 		profile.put(PAYLOAD, new String(frequency));
 		return profile;
+	}
+
+	/**
+	 * Checks if there is another active subscription on the given component of
+	 * the device
+	 * 
+	 * @param componentName
+	 * @return
+	 */
+	@Override
+	protected boolean hasotherActiveSubscription(String componentName) {
+		return (subscribedComponents.get(componentName) > 0);
 	}
 
 	/**
