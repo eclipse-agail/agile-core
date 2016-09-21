@@ -15,9 +15,9 @@
  */
 package iot.agile.devicemanager.device;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.freedesktop.dbus.DBusSigHandler;
@@ -40,7 +40,7 @@ import iot.agile.object.RecordObject;
  *         Agile Device implementation
  *
  */
-public class DeviceImp extends AbstractAgileObject implements Device {
+public abstract class DeviceImp extends AbstractAgileObject implements Device {
 
 	protected final Logger logger = LoggerFactory.getLogger(DeviceImp.class);
 
@@ -53,30 +53,20 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 * Bus path for AGILE BLE Device interface
 	 */
 	protected static final String AGILE_DEVICE_BASE_BUS_PATH = "/iot/agile/Device/";
-	/**
-	 * BLE Protocol imp DBus interface id
-	 */
-	private static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
-	/**
-	 * BLE Protocol imp DBus interface path
-	 */
-	private static final String BLE_PROTOCOL_PATH = "/iot/agile/protocol/BLE";
+
 
 	/**
 	 * DBus bus path for for new subscribe record
 	 * 
 	 * 	 */
-	private static final String AGILE_NEW_RECORD_SUBSCRIBE_SIGNAL_PATH = "/iot/agile/NewRecord/Subscribe";
+	protected static final String AGILE_NEW_RECORD_SUBSCRIBE_SIGNAL_PATH = "/iot/agile/NewRecord/Subscribe";
 	/**
 	 * Device status
 	 */
 	protected static final String CONNECTED = "Connected";
 
 	protected static final String DISCONNECTED = "Disconnected";
-	/**
-	 * Protocol
-	 */
-	protected static final String BLUETOOTH_LOW_ENERGY = "iot.agile.protocol.BLE";
+
 	/**
 	 * Device status TODO: Needs implementation Default : Disconnected
 	 */
@@ -115,11 +105,22 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 * Data
 	 */
 	protected RecordObject data;
+	
 
 	/**
 	 * Map to store the last reads of each components of the device
 	 */
-	private  Map<String, RecordObject> lastReadStore = new HashMap<String, RecordObject>();
+	protected  Map<String, RecordObject> lastReadStore = new HashMap<String, RecordObject>();
+	/**
+	 * Tracks the number of active subscriptions for each components of the device
+	 */
+	protected Map<String, Integer> subscribedComponents = new HashMap<String, Integer>();
+
+	
+	@SuppressWarnings("rawtypes")
+	protected DBusSigHandler  newRecordSigHanlder;
+	
+ 	protected boolean hasNewRecordSignalHandler = false;
 	/**
 	 * 
 	 * @param deviceID
@@ -135,23 +136,12 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 		this.deviceName = devicedefinition.name;
 		this.deviceID = devicedefinition.deviceId;
 		this.address = devicedefinition.address;
-		this.protocol = BLUETOOTH_LOW_ENERGY;
+//		this.protocol = BLUETOOTH_LOW_ENERGY;
 		this.profile = devicedefinition.streams;
-		// this.protocol =devicedefinition.protocol;
+//	    this.protocol =devicedefinition.protocol;
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
+ }
 
-		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + "ble" + devicedefinition.address.replace(":", "");
-		;
-
-		dbusConnect(deviceAgileID, devicePath, this);
-
-		// if (protocol.equals(BLUETOOTH_LOW_ENERGY)) {
-		deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, Protocol.class);
-		// }
-
-		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
-
-	}
 
 	/**
 	 * @param args
@@ -228,43 +218,13 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 		return protocol;
 	}
 
-	/*
-	 * @see iot.agile.devicemanager.device.Device#Connect()
-	 */
-	public void Connect() throws DBusException {
-		try {
-			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
-				deviceProtocol.Connect(address);
-				deviceStatus = CONNECTED;
-				logger.info("Device Connected {}", deviceID);
-			} else {
-				logger.debug("Protocol not supported: {}", protocol);
-			}
-		} catch (DBusException e) {
-			logger.error("Failed to connect device {}", deviceID);
-			throw new DBusException("Failed to connect device:"+ deviceID);
-		}
-	}
 
-	/*
-	 * @see iot.agile.devicemanager.device.Device#Disconnect()
-	 */
-	public void Disconnect() throws DBusException {
-		try {
-			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
-				deviceProtocol.Disconnect(address);
-				deviceStatus = DISCONNECTED;
-				logger.info("Device disconnected {}", deviceID);
-			} else {
-				logger.debug("Protocol not supported: {}", protocol);
-			}
+	
+	public abstract void Connect() throws DBusException;
 
-		} catch (DBusException e) {
-			logger.error("Failed to disconnect device {}", deviceID);
-			throw new DBusException("Failed to disconnect device:"+deviceID);
-		}
+	public abstract void Disconnect() throws DBusException ;
 
-	}
+
 
 	/**
 	 *
@@ -312,9 +272,8 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 * @param componentName
 	 * @return
 	 */
-	protected  String DeviceRead(String componentName){
-		return null;
-	}
+	protected abstract String DeviceRead(String componentName);
+	
 	/**
 	 * Get measurement unit method to be implemented by child class
 	 * @param sensor
@@ -329,6 +288,7 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 * @see iot.agile.protocol.ble.device.IDevice#Write()
 	 */
 	public void Write() {
+		logger.debug("Device. Write not implemented");
  	}
 
 	/**
@@ -349,7 +309,12 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	@Override
 	public void Unsubscribe(String component) throws DBusException {
 	}
-
+	
+	
+	/**
+	 * Utility methods
+	 */
+ 
 	/**
 	 *
 	 *
@@ -357,6 +322,61 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	public boolean isRemote() {
 		return false;
+	}
+	
+	
+	/**
+	 * Adds signal handler for a new record value 
+	 */
+	protected void addNewRecordSignalHandler() {
+		logger.info("adding signal handler");
+		try {
+			if (newRecordSigHanlder == null && connection != null) {
+ 				newRecordSigHanlder = new DBusSigHandler<Protocol.NewRecordSignal>() {
+					@Override
+					public void handle(NewRecordSignal sig) {
+						logger.info("signal reivfdfs");
+
+ 							String componentName = getComponentName(sig.profile);
+ 							logger.info("signal reivfdfs"+componentName);
+
+							logger.info(componentName);
+							String readVal = formatReading(componentName, sig.record);
+							if (Float.parseFloat(readVal) != 0.0) {
+								RecordObject recObj = new RecordObject(deviceID, componentName,
+										formatReading(componentName, sig.record), getMeasurementUnit(componentName), "",
+										System.currentTimeMillis());
+								data = recObj;
+								logger.info("Device notification component {} value {}", componentName, recObj.value);
+								lastReadStore.put(componentName, recObj);
+								try {
+									Device.NewSubscribeValueSignal newRecordSignal = new Device.NewSubscribeValueSignal(
+											AGILE_NEW_RECORD_SUBSCRIBE_SIGNAL_PATH, recObj);
+									connection.sendSignal(newRecordSignal);
+								} catch (DBusException e) {
+									e.printStackTrace();
+								}
+ 						}
+					}
+				};
+				connection.addSigHandler(Protocol.NewRecordSignal.class, newRecordSigHanlder);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected void removeNewRecordSignalHandler() {
+		if(connection != null && newRecordSigHanlder != null){
+			try {
+				connection.removeSigHandler(Protocol.NewRecordSignal.class, newRecordSigHanlder);
+				newRecordSigHanlder = null;	
+			} catch (DBusException e) {
+				e.printStackTrace();
+			}
+			
+		}
 	}
 
 	/**
@@ -370,33 +390,6 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 		return true;
 	}
 	
-	protected void signalNewSubscribeValue(String componentName){
-		
-		try {
-			connection.addSigHandler(Protocol.NewRecordSignal.class	, new DBusSigHandler<Protocol.NewRecordSignal>() {
-				@Override
-				public void handle(NewRecordSignal sig) {
-					RecordObject recObj = new RecordObject(deviceID, componentName,
-							formatReading(componentName, sig.record), getMeasurementUnit(componentName), "",
-							System.currentTimeMillis());
-					data = recObj;
-					lastReadStore.put(componentName, recObj);
-					try {
-						Device.NewSubscribeValueSignal newRecordSignal = new Device.NewSubscribeValueSignal(AGILE_NEW_RECORD_SUBSCRIBE_SIGNAL_PATH,
-								recObj);
-						connection.sendSignal(newRecordSignal);
-						logger.info("Device notification component {} value {}",componentName, recObj.value);
-					} catch (DBusException e) {
- 						e.printStackTrace();
-					}
-				}
-			});
-		} catch (DBusException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	/**
 	 * Override by child classes 
 	 * @param sensorName
@@ -406,4 +399,24 @@ public class DeviceImp extends AbstractAgileObject implements Device {
 	protected String formatReading(String sensorName, byte[] readData) {
 		return null;
 	}
+	/**
+	 * Checks if there is another active subscription on the given component of
+	 * the device
+	 * 
+	 * @param componentName
+	 * @return
+	 */
+	protected boolean hasotherActiveSubscription(String componentName) {
+		return false;
+	}
+	/**
+	 * Given the profile of the component returns the name of the sensor
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	protected String getComponentName(Map<String, String> profile) {
+		return null;
+	}
+
 }
