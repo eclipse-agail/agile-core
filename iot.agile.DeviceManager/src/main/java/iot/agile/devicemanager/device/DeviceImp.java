@@ -299,6 +299,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 *
 	 * @see iot.agile.protocol.ble.device.IDevice#Subscribe()
 	 */
+	@Override
 	public void Subscribe(String component) {
  	}
 
