@@ -83,8 +83,10 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			if (Status().equals(StatusType.CONNECTED.toString())) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
-						// turn on sensor
-						deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
+						if (!hasotherActiveSubscription(sensorName)) {
+							// turn on sensor
+							deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
+						}
 						/**
 						 * The default read data period (frequency) of most of
 						 * sensor tag sensors is 1000ms therefore the first data
@@ -94,9 +96,9 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 						Thread.sleep(1010);
 						// read value
 						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
-						// TODO: Sending {0x00} raised error on dbus
-						// deviceProtocol.Write(address,
-						// getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR);
+						if (!hasotherActiveSubscription(sensorName)) {
+							deviceProtocol.Write(address, getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR);
+						}
 						return formatReading(sensorName, readValue);
 					} catch (Exception e) {
 						logger.debug("Error in reading value from Sensor {}", e);
@@ -158,10 +160,9 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 							// disable notification
 							deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
 							removeNewRecordSignalHandler();
-							// TODO: Sending {0x00} on dbus has an exception
+							// TODO: check for notifications
 							// turn off sensor
-							// deviceProtocol.Write(address,
-							// getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR);
+							deviceProtocol.Write(address, getTurnOffSensorProfile(componentName), TURN_OFF_SENSOR);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
