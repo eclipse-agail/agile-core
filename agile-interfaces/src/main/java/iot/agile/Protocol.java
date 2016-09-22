@@ -121,7 +121,7 @@ public interface Protocol extends DBusInterface {
 	 *
 	 * TODO: Detail of this method should be discussed
 	 */
-	public void Write(String deviceAddress, Map<String, String> profile) throws DBusException;
+	public void Write(String deviceAddress, Map<String, String> profile, byte[] payload) throws DBusException;
 
 	/**
 	 * Read data over the Protocol, may be cached in the Data property depending
