@@ -127,11 +127,13 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				if (isSensorSupported(componentName.trim())) {
  					try {
 						if (!hasotherActiveSubscription()) {
+							addNewRecordSignalHandler();
+						}
+						if (!hasotherActiveSubscription(componentName)) {
   							deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
 							byte[] period = { 100 };
 							deviceProtocol.Write(address, getFrequencyProfile(componentName), period);
 							deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
-							addNewRecordSignalHandler();
 						}
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
 					} catch (DBusException e) {
@@ -156,13 +158,14 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				if (isSensorSupported(componentName.trim())) {
 					try {
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
-						if (!hasotherActiveSubscription()) {
+						if (!hasotherActiveSubscription(componentName)) {
 							// disable notification
 							deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
-							removeNewRecordSignalHandler();
-							// TODO: check for notifications
 							// turn off sensor
 							deviceProtocol.Write(address, getTurnOffSensorProfile(componentName), TURN_OFF_SENSOR);
+						}
+						if (!hasotherActiveSubscription()) {
+							removeNewRecordSignalHandler();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
