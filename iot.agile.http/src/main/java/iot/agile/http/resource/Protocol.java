@@ -90,6 +90,7 @@ public class Protocol {
     getProtocol(id).StopDiscovery();
   }
 
+/*
   @POST  
   @Path("/{deviceAddress}")
   public void Write(
@@ -100,6 +101,7 @@ public class Protocol {
   ) throws DBusException {
      getProtocol(id).Write(deviceAddress, profile, payload);
   }
+*/
 
   @GET
   @Path("/{deviceAddress}")
