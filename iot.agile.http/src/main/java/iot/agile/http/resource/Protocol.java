@@ -95,9 +95,10 @@ public class Protocol {
   public void Write(
           @PathParam("id") String id, 
           @PathParam("deviceAddress") String deviceAddress, 
-          Map<String, String> profile
+          Map<String, String> profile,
+          byte[] payload
   ) throws DBusException {
-     getProtocol(id).Write(deviceAddress, profile);
+     getProtocol(id).Write(deviceAddress, profile, payload);
   }
 
   @GET
