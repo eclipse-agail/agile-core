@@ -84,7 +84,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
 						// turn on sensor
-						deviceProtocol.Write(address, getEnableSensorProfile(sensorName));
+						deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
 						/**
 						 * The default read data period (frequency) of most of
 						 * sensor tag sensors is 1000ms therefore the first data
@@ -96,7 +96,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
 						// TODO: Sending {0x00} raised error on dbus
 						// deviceProtocol.Write(address,
-						// getTurnOffSensorProfile(sensorName));
+						// getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR);
 						return formatReading(sensorName, readValue);
 					} catch (Exception e) {
 						logger.debug("Error in reading value from Sensor {}", e);
@@ -125,9 +125,9 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				if (isSensorSupported(componentName.trim())) {
  					try {
 						if (!hasotherActiveSubscription()) {
-  							deviceProtocol.Write(address, getEnableSensorProfile(componentName));
+  							deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
 							byte[] period = { 100 };
-							deviceProtocol.Write(address, getFrequencyProfile(componentName, period));
+							deviceProtocol.Write(address, getFrequencyProfile(componentName), period);
 							deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
 							addNewRecordSignalHandler();
 						}
@@ -161,7 +161,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 							// TODO: Sending {0x00} on dbus has an exception
 							// turn off sensor
 							// deviceProtocol.Write(address,
-							// getTurnOffSensorProfile(sensorName));
+							// getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -190,7 +190,6 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			profile.put(GATT_SERVICE, s.serviceUuid);
 			profile.put(GATT_CHARACTERSTICS, s.charConfigUuid);
 		}
-		profile.put(PAYLOAD, new String(TURN_ON_SENSOR));
 		return profile;
 	}
 
@@ -211,18 +210,16 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			profile.put(GATT_SERVICE, s.serviceUuid);
 			profile.put(GATT_CHARACTERSTICS, s.charConfigUuid);
 		}
-		profile.put(PAYLOAD, new String(TURN_OFF_SENSOR));
 		return profile;
 	}
 
-	private Map<String, String> getFrequencyProfile(String sensorName, byte[] frequency) {
+	private Map<String, String> getFrequencyProfile(String sensorName) {
 		Map<String, String> profile = new HashMap<String, String>();
 		SensorUuid s = sensors.get(sensorName);
 		if (s != null) {
 			profile.put(GATT_SERVICE, s.serviceUuid);
 			profile.put(GATT_CHARACTERSTICS, s.charFreqUuid);
 		}
-		profile.put(PAYLOAD, new String(frequency));
 		return profile;
 	}
 

@@ -30,7 +30,6 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 
 	protected static final String GATT_SERVICE = "GATT_SERVICE";
 	protected static final String GATT_CHARACTERSTICS = "GATT_CHARACTERSTICS";
-	protected static final String PAYLOAD = "PAYLOAD";
 
 	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
 
