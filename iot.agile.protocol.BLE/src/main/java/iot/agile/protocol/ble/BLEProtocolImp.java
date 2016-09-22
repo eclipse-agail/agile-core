@@ -15,6 +15,7 @@
  */
 package iot.agile.protocol.ble;
 
+import java.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -398,7 +399,12 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * it is returning a new object with a new notification callback attibute inside. This can lead to notfication callback objects
 	 * remaining linked even after disabling notifcation, leading later (after enabling notifications again) to multiple callbacks.
 	 */
-	private class AddressProfile extends HashMap<String,Map<String,String>> {}
+	private class AddressProfile extends Vector<Object> {
+		public AddressProfile(String a, Map<String,String> p) {
+			add(a);
+			add(p);
+		}
+	}
 
 	private Map<AddressProfile, BluetoothGattCharacteristic> subscriptions = new HashMap< AddressProfile, BluetoothGattCharacteristic>();
 
@@ -420,10 +426,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 						if (gattChar != null) {
 							if(!gattChar.getNotifying()){
 								gattChar.enableValueNotifications(new NewRecordNotification(deviceAddress,profile));
-								AddressProfile ap = new AddressProfile();
-								ap.put(deviceAddress, profile);
-								subscriptions.put(ap, gattChar);
-								logger.error("subscriptions {}", subscriptions);
+								subscriptions.put(new AddressProfile(deviceAddress, profile), gattChar);
 							}
 						} else {
 							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
@@ -455,9 +458,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 					BluetoothGattService gattService = device.find(profile.get(GATT_SERVICE));
 					if (gattService != null) {
 						//BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
-						AddressProfile ap = new AddressProfile();
-						ap.put(deviceAddress, profile);
-						BluetoothGattCharacteristic gattChar = subscriptions.remove(ap);
+						BluetoothGattCharacteristic gattChar = subscriptions.remove(new AddressProfile(deviceAddress, profile));
 						if (gattChar != null) {
 							if(gattChar.getNotifying()){
 								logger.info("disabled");
