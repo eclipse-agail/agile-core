@@ -20,6 +20,7 @@ import java.util.List;
 import org.freedesktop.dbus.DBusInterface;
 
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 
  /**
  * AGILE Device Manager Interface
@@ -50,6 +51,13 @@ public interface DeviceManager extends DBusInterface {
   public String Find();
 
   /**
+   * search for device types matching a specific device overview
+   *
+   * @return list of possible device types, if any
+   */
+  @org.freedesktop.DBus.Description("Returns all possible device types")
+  public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview);
+
    * Creates devices
    */
   @org.freedesktop.DBus.Description("Returns the registered device definition")
