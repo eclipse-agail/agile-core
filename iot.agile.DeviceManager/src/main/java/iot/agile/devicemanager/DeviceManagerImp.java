@@ -103,6 +103,22 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			logger.error("Can not register device: {}", e.getMessage());
 			e.printStackTrace();
 		}
+
+		// connect device
+		if (device != null) {
+			final Device dev = device;
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						dev.Connect();
+						logger.info("Device connected");
+					} catch (Exception e) {
+						logger.error("Error encountered while attempting to connect: {}", e.getMessage());
+					}
+				}
+			}).start();
+		}
 		return registeredDev;
 	}
 
