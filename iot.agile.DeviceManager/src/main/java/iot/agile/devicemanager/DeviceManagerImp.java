@@ -29,6 +29,7 @@ import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 
 /**
  * @author dagi
@@ -73,6 +74,35 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	public String Find() {
 		// TODO
 		return null;
+	}
+
+	@Override
+	public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview) {
+		List<String> ret = new ArrayList();
+		if(TISensorTag.Matches(deviceOverview)) {
+			ret.add(TISensorTag.deviceTypeName);
+		}
+		return ret;
+	}
+
+
+	@Override
+	public DeviceDefinition Register(DeviceOverview deviceOverview, String deviceType) {
+		Device device = null;
+		DeviceDefinition registeredDev = null;
+		try {
+			if (deviceType.equals(TISensorTag.deviceTypeName)) {
+				logger.info("Creating new {}", TISensorTag.deviceTypeName);
+				device = new TISensorTag(deviceOverview);
+			}
+			if (device != null) {
+				registeredDev = device.Definition();
+			}
+		} catch (Exception e) {
+			logger.error("Can not register device: {}", e.getMessage());
+			e.printStackTrace();
+		}
+		return registeredDev;
 	}
 
 	/**

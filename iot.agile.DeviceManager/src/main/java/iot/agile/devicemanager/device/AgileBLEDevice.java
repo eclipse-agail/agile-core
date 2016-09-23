@@ -9,6 +9,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import iot.agile.Device;
 import iot.agile.Protocol;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 
 public abstract class AgileBLEDevice extends DeviceImp implements Device {
 
@@ -32,6 +33,16 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 	protected static final String GATT_CHARACTERSTICS = "GATT_CHARACTERSTICS";
 
 	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
+
+	public AgileBLEDevice(DeviceOverview deviceOverview) throws DBusException {
+		super(deviceOverview);
+		this.protocol = BLUETOOTH_LOW_ENERGY;
+		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + BLE + deviceOverview.id.replace(":", "");
+
+		dbusConnect(deviceAgileID, devicePath, this);
+		deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, Protocol.class);
+ 		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
+	}
 
 	public AgileBLEDevice(DeviceDefinition devicedefinition) throws DBusException {
 		super(devicedefinition);

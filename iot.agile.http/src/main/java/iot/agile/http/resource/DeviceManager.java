@@ -45,6 +45,10 @@ import iot.agile.http.Util;
 import iot.agile.http.resource.devicemanager.BatchBody;
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  *
@@ -69,6 +73,31 @@ public class DeviceManager {
 	public DeviceDefinition Create(DeviceDefinition body) throws DBusException, IOException {
 		logger.debug("Create new device {} ({}) on {}", body.address, body.name, body.protocol);
 		return client.getDeviceManager().Create(body);
+	}
+
+	@GET
+	@Path("/typeof")
+	public List<String> MatchingDeviceTypes(DeviceOverview overview) throws DBusException, IOException {
+		return client.getDeviceManager().MatchingDeviceTypes(overview);
+	}
+
+	public static class RegisterArgs {
+		@JsonProperty("overview")
+		public DeviceOverview overview;
+		@JsonProperty("type")
+		public String type;
+
+		@JsonCreator
+		public RegisterArgs(@JsonProperty("overview") DeviceOverview overview, @JsonProperty("type") String type){
+			this.overview = overview; this.type = type;
+		}
+	}
+
+	@POST
+	@Path("/register")
+	public DeviceDefinition Register(RegisterArgs args) throws DBusException, IOException {
+		logger.debug("Register new device of type {}: {} ({}) on {}", args.type, args.overview.id, args.overview.name, args.overview.protocol);
+		return client.getDeviceManager().Register(args.overview, args.type);
 	}
 
 	@GET
