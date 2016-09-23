@@ -15,9 +15,11 @@
  */
 package iot.agile.protocol.ble;
 
+import java.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -325,7 +327,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * @see iot.agile.protocol.ble.Protocol#write()
 	 */
 	@Override
-	public synchronized void Write(String deviceAddress, Map<String, String> profile) throws DBusException {
+	public synchronized void Write(String deviceAddress, Map<String, String> profile, byte[] payload) throws DBusException {
 			BluetoothDevice device;
 			try {
 				device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
@@ -335,8 +337,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 						if (gattService != null) {
 							BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
 							if (gattChar != null) {
-								byte[] value = profile.get(PAYLOAD).getBytes();
-								gattChar.writeValue(value);
+								gattChar.writeValue(payload);
 							} else {
 								logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
 							}
@@ -393,6 +394,19 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		return null;
 	}
 
+	/**
+	 * Workaround for a TinyB issue: when TinyB is using BluetoothGattService.find() to get a copy of BluetoothGattCharacteristics,
+	 * it is returning a new object with a new notification callback attibute inside. This can lead to notfication callback objects
+	 * remaining linked even after disabling notifcation, leading later (after enabling notifications again) to multiple callbacks.
+	 */
+	private class AddressProfile extends Vector<Object> {
+		public AddressProfile(String a, Map<String,String> p) {
+			add(a);
+			add(p);
+		}
+	}
+
+	private Map<AddressProfile, BluetoothGattCharacteristic> subscriptions = new HashMap< AddressProfile, BluetoothGattCharacteristic>();
 
 	/**
 	 * @throws DBusException
@@ -412,6 +426,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 						if (gattChar != null) {
 							if(!gattChar.getNotifying()){
 								gattChar.enableValueNotifications(new NewRecordNotification(deviceAddress,profile));
+								subscriptions.put(new AddressProfile(deviceAddress, profile), gattChar);
 							}
 						} else {
 							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
@@ -442,11 +457,12 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 				if (device.getConnected()) {
 					BluetoothGattService gattService = device.find(profile.get(GATT_SERVICE));
 					if (gattService != null) {
-						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
+						//BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
+						BluetoothGattCharacteristic gattChar = subscriptions.remove(new AddressProfile(deviceAddress, profile));
 						if (gattChar != null) {
 							if(gattChar.getNotifying()){
-								// TODO: disableNotification is buggy in TinyB, it is not removing the callback
-								//gattChar.disableValueNotifications();
+								logger.info("disabled");
+								gattChar.disableValueNotifications();
 							}
 						} else {
 							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));

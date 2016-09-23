@@ -32,16 +32,21 @@
     <appender-ref ref="application_file" /> 
   </root>
 
-  <logger name="iot.agile.http" level="DEBUG">
+  <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
     <appender-ref ref="STDOUT" />
+    <neverBlock>true</neverBlock>
+  </appender>
+
+  <logger name="iot.agile.http" level="DEBUG">
+    <appender-ref ref="ASYNC" />
   </logger>
   
   <logger name="iot.agile.http.resource" level="DEBUG">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="ASYNC" />
   </logger>
   
   <logger name="iot.agile.http.service" level="DEBUG">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="ASYNC" />
   </logger>
   
   <logger name="application" level="DEBUG">

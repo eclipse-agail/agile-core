@@ -331,6 +331,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
  				newRecordSigHanlder = new DBusSigHandler<Protocol.NewRecordSignal>() {
 					@Override
 					public void handle(NewRecordSignal sig) {
+						if (address.equals(sig.address)) {
  							String componentName = getComponentName(sig.profile);
 								RecordObject recObj = new RecordObject(deviceID, componentName,
 										formatReading(componentName, sig.record), getMeasurementUnit(componentName), "",
@@ -345,6 +346,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 								} catch (DBusException e) {
 									e.printStackTrace();
 								}
+						}
 					}
 				};
 				connection.addSigHandler(Protocol.NewRecordSignal.class, newRecordSigHanlder);
