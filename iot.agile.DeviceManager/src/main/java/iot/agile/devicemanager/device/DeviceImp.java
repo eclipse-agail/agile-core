@@ -142,6 +142,11 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
  }
 
+	public DeviceDefinition Definition() {
+		return new DeviceDefinition(deviceID, address, deviceName, "", protocol, AGILE_DEVICE_BASE_BUS_PATH + "ble" + address.replace(":", ""),
+					    profile);
+
+	}
 
 	/**
 	 * @param args
