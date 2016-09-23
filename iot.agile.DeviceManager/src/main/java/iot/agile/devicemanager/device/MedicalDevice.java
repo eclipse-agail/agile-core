@@ -26,7 +26,6 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 		subscribedComponents.put(PI, 0);
 	}
 
-	private static final Map<String, String> componentUnits = new HashMap<String, String>();
  	static {
 		componentUnits.put(SpO2, "");
 		componentUnits.put(PULSE, "");

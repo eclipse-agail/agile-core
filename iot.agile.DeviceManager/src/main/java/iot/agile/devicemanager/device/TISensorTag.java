@@ -22,8 +22,6 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	private static final String GYROSCOPE = "Gyroscope";
 	private static final String OPTICAL = "Optical";
 
-	private static final Map<String, String> componentUnits = new HashMap<String, String>();
-
 	{
 		subscribedComponents.put(TEMPERATURE, 0);
 		subscribedComponents.put(ACCELEROMETER, 0);
