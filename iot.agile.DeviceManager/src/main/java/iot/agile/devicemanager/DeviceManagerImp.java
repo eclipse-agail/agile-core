@@ -29,6 +29,7 @@ import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 
 /**
  * @author dagi
@@ -74,6 +75,16 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		// TODO
 		return null;
 	}
+
+	@Override
+	public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview) {
+		List<String> ret = new ArrayList();
+		if(TISensorTag.Matches(deviceOverview)) {
+			ret.add(TISensorTag.deviceTypeName);
+		}
+		return ret;
+	}
+
 
 	/**
 	 *

@@ -7,6 +7,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 import iot.agile.object.StatusType;
 
 public class TISensorTag extends AgileBLEDevice implements Device {
@@ -66,6 +67,17 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 		sensors.put(OPTICAL,
 				new SensorUuid("f000aa70-0451-4000-b000-000000000000", "f000aa71-0451-4000-b000-000000000000",
 						"f000aa72-0451-4000-b000-000000000000", "f000aa73-0451-4000-b000-000000000000"));
+	}
+
+
+	public static boolean Matches(DeviceOverview d) {
+		return d.name.contains("SensorTag");
+	}
+
+	public static String deviceTypeName = "TI SensorTag";
+
+	public TISensorTag(DeviceOverview deviceOverview) throws DBusException {
+		super(deviceOverview);
 	}
 
 	/**
