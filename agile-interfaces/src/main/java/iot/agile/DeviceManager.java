@@ -58,6 +58,13 @@ public interface DeviceManager extends DBusInterface {
   @org.freedesktop.DBus.Description("Returns all possible device types")
   public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview);
 
+  /**
+   * Creates devices
+   */
+  @org.freedesktop.DBus.Description("Returns the registered device definition")
+  public DeviceDefinition Register(DeviceOverview deviceOverview, String deviceType);
+
+  /**
    * Creates devices
    */
   @org.freedesktop.DBus.Description("Returns the registered device definition")
