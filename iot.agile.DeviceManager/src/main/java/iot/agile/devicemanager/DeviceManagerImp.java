@@ -97,6 +97,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			}
 			if (device != null) {
 				registeredDev = device.Definition();
+				devices.add(registeredDev);
 			}
 		} catch (Exception e) {
 			logger.error("Can not register device: {}", e.getMessage());
