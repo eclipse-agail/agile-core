@@ -45,6 +45,7 @@ import iot.agile.http.Util;
 import iot.agile.http.resource.devicemanager.BatchBody;
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 
 /**
  *
@@ -72,6 +73,10 @@ public class DeviceManager {
 	}
 
 	@GET
+	@Path("/typeof")
+	public List<String> MatchingDeviceTypes(DeviceOverview overview) throws DBusException, IOException {
+		return client.getDeviceManager().MatchingDeviceTypes(overview);
+	}
 	public List<DeviceDefinition> Devices() throws DBusException, JsonProcessingException {
 		return client.getDeviceManager().Devices();
 	}
