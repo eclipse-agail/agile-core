@@ -24,20 +24,20 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 
 	{
 		subscribedComponents.put(TEMPERATURE, 0);
-		subscribedComponents.put(ACCELEROMETER, 0);
+		//subscribedComponents.put(ACCELEROMETER, 0);
 		subscribedComponents.put(HUMIDITY, 0);
 		subscribedComponents.put(PRESSURE, 0);
-		subscribedComponents.put(GYROSCOPE, 0);
+		//subscribedComponents.put(GYROSCOPE, 0);
 		subscribedComponents.put(OPTICAL, 0);
 	}
 	
 	static {
 		componentUnits.put(TEMPERATURE, "Degree celsius (°C)");
-		componentUnits.put(ACCELEROMETER, "");
+		//componentUnits.put(ACCELEROMETER, "");
 		componentUnits.put(HUMIDITY, "Relative humidity (%RH)");
-		componentUnits.put(MAGNETOMETER, "");
+		//componentUnits.put(MAGNETOMETER, "");
 		componentUnits.put(PRESSURE, "Hecto pascal (hPa)");
-		componentUnits.put(GYROSCOPE, "");
+		//componentUnits.put(GYROSCOPE, "");
 
 		componentUnits.put(OPTICAL, "Light intensity (W/sr)");
 	}
@@ -46,25 +46,31 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 		sensors.put(TEMPERATURE,
 				new SensorUuid("f000aa00-0451-4000-b000-000000000000", "f000aa01-0451-4000-b000-000000000000",
 						"f000aa02-0451-4000-b000-000000000000", "f000aa03-0451-4000-b000-000000000000"));
-		sensors.put(ACCELEROMETER,
-				new SensorUuid("f000aa10-0451-4000-b000-000000000000", "f000aa11-0451-4000-b000-000000000000",
-						"f000aa12-0451-4000-b000-000000000000", "f000aa13-0451-4000-b000-000000000000"));
 		sensors.put(HUMIDITY,
 				new SensorUuid("f000aa20-0451-4000-b000-000000000000", "f000aa21-0451-4000-b000-000000000000",
 						"f000aa22-0451-4000-b000-000000000000", "f000aa23-0451-4000-b000-000000000000"));
+		/*
 		sensors.put(MAGNETOMETER,
 				new SensorUuid("f000aa30-0451-4000-b000-000000000000", "f000aa31-0451-4000-b000-000000000000",
 						"f000aa32-0451-4000-b000-000000000000", "f000aa33-0451-4000-b000-000000000000"));
+		*/
 		sensors.put(PRESSURE,
 				new SensorUuid("f000aa40-0451-4000-b000-000000000000", "f000aa41-0451-4000-b000-000000000000",
 						"f000aa42-0451-4000-b000-000000000000", "f000aa43-0451-4000-b000-000000000000"));
+		/*
 		sensors.put(GYROSCOPE,
 				new SensorUuid("f000aa50-0451-4000-b000-000000000000", "f000aa51-0451-4000-b000-000000000000",
 						"f000aa52-0451-4000-b000-000000000000", "f000aa53-0451-4000-b000-000000000000"));
+		*/
 
 		sensors.put(OPTICAL,
 				new SensorUuid("f000aa70-0451-4000-b000-000000000000", "f000aa71-0451-4000-b000-000000000000",
 						"f000aa72-0451-4000-b000-000000000000", "f000aa73-0451-4000-b000-000000000000"));
+		/*
+		sensors.put(ACCELEROMETER,
+				new SensorUuid("f000aa80-0451-4000-b000-000000000000", "f000aa81-0451-4000-b000-000000000000",
+						"f000aa82-0451-4000-b000-000000000000", "f000aa83-0451-4000-b000-000000000000"));
+		*/
 	}
 
 
