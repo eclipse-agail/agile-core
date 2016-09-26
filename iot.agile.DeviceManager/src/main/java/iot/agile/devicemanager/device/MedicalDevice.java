@@ -233,5 +233,10 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 		}
 		return ret;
 	}
+ 	
+ 	@Override
+	protected String getMeasurementUnit(String sensor) {
+ 		return "Percentile(%)";
+ 	}
 
 }
