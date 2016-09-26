@@ -195,7 +195,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	public String Configuration() {
 		logger.debug("Device. Subscribe not implemented");
-		return null;
+		return "";
 	}
 
 	/**
@@ -295,7 +295,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * @return
 	 */
 	protected String getMeasurementUnit(String sensor) {
-		return null;
+		return "";
 	}
 	/**
 	 * Writes data into the given sensor
@@ -406,7 +406,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * @return
 	 */
 	protected String formatReading(String sensorName, byte[] readData) {
-		return null;
+		return "";
 	}
 	/**
 	 * Checks if there is another active subscription on the given component of
