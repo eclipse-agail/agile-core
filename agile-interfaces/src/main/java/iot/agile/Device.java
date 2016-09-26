@@ -23,6 +23,7 @@ import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.RecordObject;
 
@@ -71,6 +72,14 @@ public interface Device extends DBusInterface {
    */
   @org.freedesktop.DBus.Description("returns the profile of the device")
   public List<DeviceComponent> Profile();
+
+  /**
+   *
+   * @return Attributes of an object in as a DeviceDefinition
+   *
+   */
+  @org.freedesktop.DBus.Description("returns the definition of the device")
+  public DeviceDefinition Definition();
 
   /**
    *

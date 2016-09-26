@@ -32,6 +32,7 @@ import iot.agile.Protocol.NewRecordSignal;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 import iot.agile.object.RecordObject;
 
 /**
@@ -95,7 +96,9 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	protected String address;
 
-	protected List<DeviceComponent> profile;
+	protected static final Map<String, String> componentUnits = new HashMap<String, String>();
+	protected List<DeviceComponent> profile = new ArrayList<DeviceComponent>();
+
 	/**
 	 * The device protocol interface
 	 */
@@ -121,6 +124,17 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	protected DBusSigHandler  newRecordSigHanlder;
 	
  	protected boolean hasNewRecordSignalHandler = false;
+
+	public DeviceImp(DeviceOverview deviceOverview) throws DBusException {
+		this.deviceName = deviceOverview.name;
+		this.deviceID = "ble" + deviceOverview.id.replace(":", "");
+		this.address = deviceOverview.id;
+		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
+		for (java.util.Map.Entry<String, String> e : componentUnits.entrySet()) {
+			profile.add(new DeviceComponent(e.getKey(), e.getValue()));
+		}
+	}
+
 	/**
 	 * 
 	 * @param deviceID
@@ -142,6 +156,11 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
  }
 
+	public DeviceDefinition Definition() {
+		return new DeviceDefinition(deviceID, address, deviceName, "", protocol, AGILE_DEVICE_BASE_BUS_PATH + "ble" + address.replace(":", ""),
+					    profile);
+
+	}
 
 	/**
 	 * @param args
