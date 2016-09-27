@@ -26,6 +26,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.RecordObject;
+import iot.agile.object.StatusType;
 
 /**
  * @author dagi
@@ -56,7 +57,7 @@ public interface Device extends DBusInterface {
    * @return Current Device status
    */
   @org.freedesktop.DBus.Description("Current Device status")
-  public String Status();
+  public StatusType Status();
 
   /**
    *

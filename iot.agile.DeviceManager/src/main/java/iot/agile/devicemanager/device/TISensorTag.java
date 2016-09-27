@@ -8,7 +8,6 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
-import iot.agile.object.StatusType;
 
 public class TISensorTag extends AgileBLEDevice implements Device {
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
@@ -90,7 +89,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	@Override
 	public String DeviceRead(String sensorName) {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (Status().equals(StatusType.CONNECTED.toString())) {
+			if (isConnected()) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
 						if (!hasotherActiveSubscription(sensorName)) {
@@ -133,7 +132,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	public void Subscribe(String componentName) {
 		logger.info("Subscribe to {}", componentName);
  		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (Status().equals(StatusType.CONNECTED.toString())) {
+			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
  					try {
 						if (!hasotherActiveSubscription()) {
@@ -164,7 +163,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	public void Unsubscribe(String componentName) throws DBusException {
 		logger.info("Unsubscribe from {}", componentName);
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (Status().equals(StatusType.CONNECTED.toString())) {
+			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
 					try {
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);

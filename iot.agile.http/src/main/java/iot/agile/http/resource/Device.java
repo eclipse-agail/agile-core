@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.RecordObject;
+import iot.agile.object.StatusType;
 
 /**
  *
@@ -69,7 +70,7 @@ public class Device {
   
   @GET
   @Path("/status")
-  public String Status(@PathParam("id") String id) throws DBusException {
+  public StatusType Status(@PathParam("id") String id) throws DBusException {
     return getDevice(id).Status();
   }
 

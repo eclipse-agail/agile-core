@@ -23,6 +23,7 @@ import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.object.DeviceOverview;
+import iot.agile.object.StatusType;
 
 /**
  * Agile BLE Protocol interface
@@ -149,7 +150,7 @@ public interface Protocol extends DBusInterface {
 	 *
 	 * @param deviceAddress
 	 */
-	public String DeviceStatus(String deviceAddress);
+	public StatusType DeviceStatus(String deviceAddress);
 	/**
 	 * New data reading signal for subscribe methods
 	 * 
