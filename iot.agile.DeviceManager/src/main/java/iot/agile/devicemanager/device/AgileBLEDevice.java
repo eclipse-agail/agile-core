@@ -10,6 +10,7 @@ import iot.agile.Device;
 import iot.agile.Protocol;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
+import iot.agile.object.DeviceStatusType;
 
 public abstract class AgileBLEDevice extends DeviceImp implements Device {
 
@@ -41,7 +42,7 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 
 		dbusConnect(deviceAgileID, devicePath, this);
 		deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, Protocol.class);
- 		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
+		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
 	}
 
 	public AgileBLEDevice(DeviceDefinition devicedefinition) throws DBusException {
@@ -52,7 +53,7 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 
 		dbusConnect(deviceAgileID, devicePath, this);
 		deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, Protocol.class);
- 		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
+		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
 	}
 
 	@Override
@@ -60,7 +61,6 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 		try {
 			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
 				deviceProtocol.Connect(address);
-				deviceStatus = CONNECTED;
 				logger.info("Device connect {}", deviceID);
 			} else {
 				logger.debug("Protocol not supported: {}", protocol);
@@ -76,7 +76,6 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 		try {
 			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
 				deviceProtocol.Disconnect(address);
-				deviceStatus = DISCONNECTED;
 				logger.info("Device disconnected {}", deviceID);
 			} else {
 				logger.debug("Protocol not supported: {}", protocol);
@@ -108,6 +107,14 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 		return null;
 	}
 
+	@Override
+	protected boolean isConnected() {
+		if (Status().getStatus().equals(DeviceStatusType.CONNECTED.toString())) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Given the profile of the component returns the name of the sensor
 	 * 
@@ -126,4 +133,4 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 		return null;
 	}
 
- }
+}
