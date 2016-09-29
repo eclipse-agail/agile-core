@@ -13,6 +13,7 @@ import iot.agile.Device;
 import iot.agile.Protocol;
 import iot.agile.Protocol.NewRecordSignal;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 import iot.agile.object.RecordObject;
 
 public class MedicalDevice extends AgileBLEDevice implements Device {
@@ -41,6 +42,17 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 		sensors.put(SpO2,
 				new SensorUuid("cdeacb80-5235-4c07-8846-93a37ee6b86d", "cdeacb81-5235-4c07-8846-93a37ee6b86d","", ""));
 	}
+
+	public static boolean Matches(DeviceOverview d) {
+		return d.name.contains("Medical");
+	}
+
+	public static String deviceTypeName = "Oximeter";
+
+	public MedicalDevice(DeviceOverview deviceOverview) throws DBusException {
+		super(deviceOverview);
+	}
+
 
 	public MedicalDevice(DeviceDefinition devicedefinition) throws DBusException {
 		super(devicedefinition);

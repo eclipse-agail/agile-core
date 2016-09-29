@@ -82,6 +82,9 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		if(TISensorTag.Matches(deviceOverview)) {
 			ret.add(TISensorTag.deviceTypeName);
 		}
+		if(MedicalDevice.Matches(deviceOverview)) {
+			ret.add(MedicalDevice.deviceTypeName);
+		}
 		return ret;
 	}
 
@@ -94,6 +97,9 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			if (deviceType.equals(TISensorTag.deviceTypeName)) {
 				logger.info("Creating new {}", TISensorTag.deviceTypeName);
 				device = new TISensorTag(deviceOverview);
+			} else if (deviceType.equals(MedicalDevice.deviceTypeName)) {
+				logger.info("Creating new {}", MedicalDevice.deviceTypeName);
+				device = new MedicalDevice(deviceOverview);
 			}
 			if (device != null) {
 				registeredDev = device.Definition();
