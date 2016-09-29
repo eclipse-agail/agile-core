@@ -10,7 +10,6 @@
 
   <groupId>iot.agile.protocol</groupId>
   <artifactId>ble</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Agile BLE Protocol</name>
