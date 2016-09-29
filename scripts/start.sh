@@ -76,40 +76,43 @@ mvn="mvn"
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "protocolmanager"
-  cd iot.agile.ProtocolManager
-  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocolmanager" $mvn exec:java &
+  #cd iot.agile.ProtocolManager
+  #MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocolmanager" $mvn exec:java &
+  java -jar -Djava.library.path=deps iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Protocol Manager"
-  cd ..
+  #cd ..
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "devicemanager"
-  cd iot.agile.DeviceManager
-  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.devicemanager" $mvn exec:java &
+  #cd iot.agile.DeviceManager
+  #MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.devicemanager" $mvn exec:java &
+  java -jar -Djava.library.path=deps iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Device Manager"
-  cd ..
+  #cd ..
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
   ./scripts/stop.sh "http"
-  cd iot.agile.http
-  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.http" $mvn exec:java &
+  #cd iot.agile.http
+  #MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.http" $mvn exec:java &
+  java -jar -Djava.library.path=deps iot.agile.http/target/http-1.0-jar-with-dependencies.jar &
   echo "Started AGILE HTTP API"
-  cd ..
+  #cd ..
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
-  cd iot.agile.protocol.BLE
-
   # wait for ProtocolManager to initialize
   while `! qdbus iot.agile.ProtocolManager > /dev/null`; do
     echo "waiting for ProtocolManager to initialize";
     sleep 1;
   done
 
+  cd iot.agile.protocol.BLE
   # in what follows we need an ugly workaround to pass the classpath correctly, otherwise TinyB JNI will throw a class not found exception
   #MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE" $mvn exec:java &
+  #java -jar -Djava.library.path=deps:deps/lib iot.agile.protocol.BLE/target/ble-1.0-jar-with-dependencies.jar &
   java \
     $MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE \
     -classpath /usr/share/maven/boot/plexus-classworlds-2.x.jar:../deps/tinyb.jar \
@@ -117,7 +120,7 @@ if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
     org.codehaus.plexus.classworlds.launcher.Launcher \
     exec:java &
   echo "Started AGILE BLE protocol"
-  cd ../
+  cd ..
 fi
 
 
