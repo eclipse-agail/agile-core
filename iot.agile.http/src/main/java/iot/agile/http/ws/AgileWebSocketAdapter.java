@@ -100,6 +100,10 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
         };
         connection.addSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
       }
+    } catch (org.freedesktop.DBus.Error.ServiceUnknown e) {
+      sess.close(404, "Device not found");
+    } catch (org.freedesktop.DBus.Error.UnknownObject e) {
+      sess.close(404, "Device not found");
     } catch (DBusException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
