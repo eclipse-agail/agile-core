@@ -76,48 +76,32 @@ mvn="mvn"
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "protocolmanager"
-  cd iot.agile.ProtocolManager
-  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocolmanager" $mvn exec:java &
+  java -jar -Djava.library.path=deps iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Protocol Manager"
-  cd ..
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "devicemanager"
-  cd iot.agile.DeviceManager
-  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.devicemanager" $mvn exec:java &
+  java -jar -Djava.library.path=deps iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Device Manager"
-  cd ..
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
   ./scripts/stop.sh "http"
-  cd iot.agile.http
-  MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.http" $mvn exec:java &
+  java -jar -Djava.library.path=deps iot.agile.http/target/http-1.0-jar-with-dependencies.jar &
   echo "Started AGILE HTTP API"
-  cd ..
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
-  cd iot.agile.protocol.BLE
-
   # wait for ProtocolManager to initialize
   while `! qdbus iot.agile.ProtocolManager > /dev/null`; do
     echo "waiting for ProtocolManager to initialize";
     sleep 1;
   done
 
-  # in what follows we need an ugly workaround to pass the classpath correctly, otherwise TinyB JNI will throw a class not found exception
-  #MAVEN_OPTS="$MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE" $mvn exec:java &
-  java \
-    $MAVEN_OPTS_BASE -DAGILENAME=iot.agile.protocol.BLE \
-    -classpath /usr/share/maven/boot/plexus-classworlds-2.x.jar:../deps/tinyb.jar \
-    -Dclassworlds.conf=/usr/share/maven/bin/m2.conf -Dmaven.home=/usr/share/maven -Dmaven.multiModuleProjectDirectory=$PWD \
-    org.codehaus.plexus.classworlds.launcher.Launcher \
-    exec:java &
+  java -cp deps/tinyb.jar:iot.agile.protocol.BLE/target/ble-1.0-jar-with-dependencies.jar -Djava.library.path=deps:deps/lib iot.agile.protocol.ble.BLEProtocolImp &
   echo "Started AGILE BLE protocol"
-  cd ../
 fi
 
 

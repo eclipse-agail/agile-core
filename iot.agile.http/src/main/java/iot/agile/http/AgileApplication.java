@@ -20,6 +20,7 @@ import iot.agile.http.service.DbusClient;
 import javax.inject.Singleton;
 import javax.ws.rs.ApplicationPath;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 /**
@@ -39,11 +40,15 @@ public class AgileApplication extends ResourceConfig {
   }
 
   public AgileApplication() {
+
+    register(JacksonFeature.class);
     
     register(new AgileBinder());
     register(new AgileExceptionMapper());
     
     packages("iot.agile.http.resource;");
+    
 
+    
   }
 }
