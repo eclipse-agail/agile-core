@@ -8,6 +8,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
+import iot.agile.object.DeviceComponent;
 
 public class TISensorTag extends AgileBLEDevice implements Device {
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
@@ -30,15 +31,14 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 		subscribedComponents.put(OPTICAL, 0);
 	}
 	
-	static {
-		componentUnits.put(TEMPERATURE, "Degree celsius (°C)");
-		//componentUnits.put(ACCELEROMETER, "");
-		componentUnits.put(HUMIDITY, "Relative humidity (%RH)");
-		//componentUnits.put(MAGNETOMETER, "");
-		componentUnits.put(PRESSURE, "Hecto pascal (hPa)");
-		//componentUnits.put(GYROSCOPE, "");
-
-		componentUnits.put(OPTICAL, "Light intensity (W/sr)");
+	{
+		profile.add(new DeviceComponent(TEMPERATURE, "Degree celsius (°C)"));
+		//profile.add(new DeviceComponent(ACCELEROMETER, ""));
+		profile.add(new DeviceComponent(HUMIDITY, "Relative humidity (%RH)"));
+		//profile.add(new DeviceComponent(MAGNETOMETER, ""));
+		profile.add(new DeviceComponent(PRESSURE, "Hecto pascal (hPa)"));
+		//profile.add(new DeviceComponent(GYROSCOPE, ""));
+		profile.add(new DeviceComponent(OPTICAL, "Light intensity (W/sr)"));
 	}
 
 	static {
@@ -319,12 +319,6 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			return readData.toString();
 		}
 		return Float.toString(result);
-	}
-
-	@Override
-	protected String getMeasurementUnit(String sensorName) {
-		String ret = componentUnits.get(sensorName);
-		return ret;
 	}
 
 	/**

@@ -85,7 +85,6 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	protected String address;
 
-	protected static final Map<String, String> componentUnits = new HashMap<String, String>();
 	protected List<DeviceComponent> profile = new ArrayList<DeviceComponent>();
 
 	/**
@@ -118,9 +117,6 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 		this.deviceID = "ble" + deviceOverview.id.replace(":", "");
 		this.address = deviceOverview.id;
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
-		for (java.util.Map.Entry<String, String> e : componentUnits.entrySet()) {
-			profile.add(new DeviceComponent(e.getKey(), e.getValue()));
-		}
 	}
 
 	/**
@@ -283,7 +279,12 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * @return
 	 */
 	protected String getMeasurementUnit(String sensor) {
-		return "";
+		for (DeviceComponent component : profile) {
+			if (component.id.equals(sensor)) {
+				return component.unit;
+			}
+		}
+		return null;
 	}
 
 	/**

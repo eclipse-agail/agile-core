@@ -15,6 +15,7 @@ import iot.agile.Protocol.NewRecordSignal;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.RecordObject;
+import iot.agile.object.DeviceComponent;
 
 public class MedicalDevice extends AgileBLEDevice implements Device {
 	private static final String SpO2 = "SpO2";
@@ -27,10 +28,10 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 		subscribedComponents.put(PI, 0);
 	}
 
- 	static {
-		componentUnits.put(SpO2, "");
-		componentUnits.put(PULSE, "");
-		componentUnits.put(PI, "");
+ 	{
+		profile.add(new DeviceComponent(SpO2, ""));
+		profile.add(new DeviceComponent(PULSE, ""));
+		profile.add(new DeviceComponent(PI, ""));
 
 	}
  
