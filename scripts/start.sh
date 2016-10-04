@@ -75,13 +75,13 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib:/usr/lib:/usr/lib/jvm/jd
 mvn="mvn"
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
-  ./scripts/stop.sh "protocolmanager"
+  ./scripts/stop.sh "ProtocolManager"
   java -jar -Djava.library.path=deps iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Protocol Manager"
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
-  ./scripts/stop.sh "devicemanager"
+  ./scripts/stop.sh "DeviceManager"
   java -jar -Djava.library.path=deps iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Device Manager"
 fi
