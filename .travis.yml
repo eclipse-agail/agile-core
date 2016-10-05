@@ -6,15 +6,11 @@ services:
 
 addons:
   apt:
-    sources:
-      - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
     packages:
       - cmake
       - cmake-data
       - libglib2.0-0
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y glib2.0
+      -  glib2.0
 install:
       - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
 
