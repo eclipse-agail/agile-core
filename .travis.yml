@@ -6,4 +6,5 @@ addons:
     packages:
       - cmake
       - cmake-data
-install: scripts/install-deps.sh
+install:
+      - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
