@@ -11,6 +11,9 @@ addons:
       - cmake-data
       - libglib2.0-0
       -  glib2.0
+
+before_install:
+  - docker build -t agileiot/agile-core .
 install:
       - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
 
