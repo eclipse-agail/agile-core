@@ -10,7 +10,7 @@ addons:
       - cmake
       - cmake-data
       - libglib2.0-0
-      -  glib2.0
+      - libglib2.0-dev
 
 before_install:
   - docker build -f Dockerfile.amd64 -t agileiot/agile-core-x86_64 .
