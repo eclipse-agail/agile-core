@@ -13,7 +13,7 @@ addons:
       -  glib2.0
 
 before_install:
-  - docker build -t agileiot/agile-core .
+  - docker build -f Dockerfile.amd64 -t agileiot/agile-core-x86_64 .
 install:
       - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
 
