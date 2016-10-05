@@ -7,5 +7,6 @@ addons:
       - cmake
       - cmake-data
       - glib2.0
+      - libglib2.0-0
 install:
       - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
