@@ -6,7 +6,7 @@ device=$(curl -X GET --header 'Accept: application/json' 'http://localhost:8080/
 
 echo $device
 
-types=$(curl -X GET --header 'Content-Type: application/json'  --header 'Accept: application/json' 'http://localhost:8080/api/devices/typeof' -d "$device" | jq -r '@csv' )
+types=$(curl -X POST --header 'Content-Type: application/json'  --header 'Accept: application/json' 'http://localhost:8080/api/devices/typeof' -d "$device" | jq -r '@csv' )
 echo "Types: $types"
 echo ${#types[@]}
 
