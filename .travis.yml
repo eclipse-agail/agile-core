@@ -21,8 +21,10 @@ before_install:
 install:
       - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
 after_success:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - docker push agileiot/agile-core-x86_64:$TRAVIS_BRANCH;
+  - docker push agileiot/agile-core-armv7l:$TRAVIS_BRANCH;
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-      docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push agileiot/agile-core-x86_64;
       docker push agileiot/agile-core-armv7l;
     fi
