@@ -1,0 +1,27 @@
+language: java
+
+sudo: required
+services:
+  - docker
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - cmake-data
+      - libglib2.0-0
+      - libglib2.0-dev
+
+before_install:
+  - docker pull agileiot/agile-core-x86_64
+  - docker pull agileiot/agile-core-x86_64:$TRAVIS_BRANCH || true
+  - docker build -f Dockerfile.amd64 -t agileiot/agile-core-x86_64:$TRAVIS_BRANCH .
+install:
+      - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
+after_success:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - docker push agileiot/agile-core-x86_64:$TRAVIS_BRANCH;
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+      docker tag agileiot/agile-core-x86_64:$TRAVIS_BRANCH agileiot/agile-core-x86_64;
+      docker push agileiot/agile-core-x86_64;
+    fi
