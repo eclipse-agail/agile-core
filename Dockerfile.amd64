@@ -60,8 +60,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     clang \
     gcc-4.9 \
     g++-4.9 \
-    glib2.0 \
     libglib2.0-0 \
+    libglib2.0-dev \
     qdbus
 
 
