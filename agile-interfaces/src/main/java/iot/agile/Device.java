@@ -94,7 +94,7 @@ public interface Device extends DBusInterface {
    * @return A list of RecordObjects with the last read value of all components
    */
   @org.freedesktop.DBus.Description("returns the last data updates received by the device")
-  public List<RecordObject> LastUpdate();
+  public List<RecordObject> LastUpdateAll();
 
   /**
    *
@@ -143,7 +143,7 @@ public interface Device extends DBusInterface {
    * Read data from all components
    */
   @org.freedesktop.DBus.Description("Read data from all components")
-  public List<RecordObject> Read();
+  public List<RecordObject> ReadAll();
 
   /**
    * Read data from the device

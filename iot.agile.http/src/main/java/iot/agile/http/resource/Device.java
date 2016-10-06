@@ -76,13 +76,13 @@ public class Device {
 
   @GET
   public List<RecordObject> Read(@PathParam("id") String id) throws DBusException {
-    return getDevice(id).Read();
+    return getDevice(id).ReadAll();
   }
 
   @GET
   @Path("/lastUpdate")
   public List<RecordObject> LastUpdate(@PathParam("id") String id) throws DBusException {
-    return getDevice(id).LastUpdate();
+    return getDevice(id).LastUpdateAll();
   }
 
   @POST

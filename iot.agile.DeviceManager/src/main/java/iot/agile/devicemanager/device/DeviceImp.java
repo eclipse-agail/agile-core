@@ -199,7 +199,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	/**
 	 * Returns the last update of value
 	 */
-	public List<RecordObject> LastUpdate() {
+	public List<RecordObject> LastUpdateAll() {
 		return new ArrayList<RecordObject>(lastReadStore.values());
 	}
 
@@ -241,7 +241,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 *
 	 */
 	@Override
-	public List<RecordObject> Read() {
+	public List<RecordObject> ReadAll() {
 		List<RecordObject> recObjs = new ArrayList<RecordObject>();
 		for (DeviceComponent component : profile) {
 			recObjs.add(Read(component.id));
