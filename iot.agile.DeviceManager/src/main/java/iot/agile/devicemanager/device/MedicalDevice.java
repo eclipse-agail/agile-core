@@ -67,7 +67,7 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 	}
 	
 	@Override
-	public void Subscribe(String componentName) {
+	public synchronized void Subscribe(String componentName) {
  		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
@@ -92,7 +92,7 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 	}
 
 	@Override
-	public void Unsubscribe(String componentName) throws DBusException {
+	public synchronized void Unsubscribe(String componentName) throws DBusException {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
