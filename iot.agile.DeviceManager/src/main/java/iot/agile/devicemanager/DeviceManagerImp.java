@@ -29,6 +29,7 @@ import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceComponent;
 import iot.agile.object.DeviceOverview;
 
 /**
@@ -63,6 +64,15 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
 		dbusConnect(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 		logger.debug("Started Device Manager");
+
+		//for demo only
+		String address = "00:00:00:00:00:00:FF:FF";
+		DeviceDefinition registeredDev = new DeviceDefinition("ZB_" + address.replace(":", ""),
+			address, "GE Lamp", "",
+			"iot.agile.protcol.ZB", "/iot/agile/Device/ZB/" + address.replace(":", ""),
+			new ArrayList<DeviceComponent>());
+		devices.add(registeredDev);
+
 	}
 
 	/**
@@ -85,6 +95,9 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		if(MedicalDevice.Matches(deviceOverview)) {
 			ret.add(MedicalDevice.deviceTypeName);
 		}
+		if(deviceOverview.name.equals("GE Lamp")) {
+			ret.add("GE Lamp");
+		}
 		return ret;
 	}
 
@@ -100,6 +113,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			} else if (deviceType.equals(MedicalDevice.deviceTypeName)) {
 				logger.info("Creating new {}", MedicalDevice.deviceTypeName);
 				device = new MedicalDevice(deviceOverview);
+			} else if (deviceType.equals("GE Lamp")) {
 			}
 			if (device != null) {
 				registeredDev = device.Definition();

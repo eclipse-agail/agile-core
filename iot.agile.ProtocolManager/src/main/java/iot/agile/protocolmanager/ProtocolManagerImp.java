@@ -58,6 +58,11 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	public static final String BLE_PROTOCOL_ID = "iot.agile.protocol.BLE";
 
 	/**
+	 * ZB Protocol Agile ID
+	 */
+	public static final String ZB_PROTOCOL_ID = "iot.agile.protocol.ZB";
+
+	/**
 	 * List of supported protocols
 	 */
 	final private List<ProtocolOverview> protocols = new ArrayList<ProtocolOverview>();
@@ -72,10 +77,14 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 		// for demo purposes
 		protocolManager.Add(BLE_PROTOCOL_ID);
+
 	}
 
 	public ProtocolManagerImp() throws DBusException {
 		dbusConnect(AGILE_PROTOCOL_MANAGER_BUS_NAME, AGILE_PROTOCOL_MANAGER_BUS_PATH, this);
+
+		// for demo purposes
+		devices.add(new DeviceOverview("0A:03:11:0A:01:00", ZB_PROTOCOL_ID, "GE Lamp", "AVAILABLE"));
 
 		connection.addSigHandler(ProtocolManager.FoundNewDeviceSignal.class,
 				new DBusSigHandler<ProtocolManager.FoundNewDeviceSignal>() {
@@ -193,7 +202,14 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 	protected void addProtocol(String protocolId) {
 		if (!protocols.contains(protocolId)) {
-			protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolId, "Avaliable"));
+			switch (protocolId) {
+				case BLE_PROTOCOL_ID:
+					protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolId, "Avaliable"));
+					break;
+				case ZB_PROTOCOL_ID:
+					protocols.add(new ProtocolOverview("ZB", "ZigBee", protocolId, "Avaliable"));
+					break;
+			}
 		}
 	}
 
