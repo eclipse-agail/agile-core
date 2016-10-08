@@ -5,6 +5,7 @@ services:
   - docker
 
 env:
+  - IMAGE=agileiot/agile-core-x86_64
 
 cache:
   directories:
@@ -22,7 +23,7 @@ before_install:
   - if [ -f /home/travis/docker-cache/cache.tar.gz ]; then
       gunzip -c /home/travis/docker-cache/cache.tar.gz | docker load || true;
     fi
-  - docker build -f Dockerfile.amd64 -t agileiot/agile-core-x86_64:$TRAVIS_BRANCH .
+  - docker build -f Dockerfile.amd64 -t $IMAGE:$TRAVIS_BRANCH .
   - if [[ ${TRAVIS_PULL_REQUEST} == "false" ]]; then
       mkdir -p $(dirname /home/travis/docker-cache/cache.tar.gz);
       docker save $(docker history -q $IMAGE:$TRAVIS_BRANCH | grep -v '<missing>') | gzip > /home/travis/docker-cache/cache.tar.gz;
@@ -31,8 +32,8 @@ install:
       - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
 after_success:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-  - docker push agileiot/agile-core-x86_64:$TRAVIS_BRANCH;
+  - docker push $IMAGE:$TRAVIS_BRANCH;
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-      docker tag agileiot/agile-core-x86_64:$TRAVIS_BRANCH agileiot/agile-core-x86_64;
-      docker push agileiot/agile-core-x86_64;
+      docker tag $IMAGE:$TRAVIS_BRANCH $IMAGE;
+      docker push $IMAGE;
     fi
