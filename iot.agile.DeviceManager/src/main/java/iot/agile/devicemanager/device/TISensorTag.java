@@ -55,7 +55,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 		*/
 		sensors.put(PRESSURE,
 				new SensorUuid("f000aa40-0451-4000-b000-000000000000", "f000aa41-0451-4000-b000-000000000000",
-						"f000aa42-0451-4000-b000-000000000000", "f000aa43-0451-4000-b000-000000000000"));
+						"f000aa42-0451-4000-b000-000000000000", "f000aa44-0451-4000-b000-000000000000"));
 		/*
 		sensors.put(GYROSCOPE,
 				new SensorUuid("f000aa50-0451-4000-b000-000000000000", "f000aa51-0451-4000-b000-000000000000",
