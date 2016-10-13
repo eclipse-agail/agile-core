@@ -1,6 +1,4 @@
-#FROM resin/rpi-raspbian:jessie
-#FROM resin/raspberrypi2-debian:jessie
-FROM resin/amd64-debian:jessie
+FROM resin/amd64-debian:jessie-20161010
 
 # Install wget and curl
 RUN apt-get clean && apt-get update && apt-get install -y \
