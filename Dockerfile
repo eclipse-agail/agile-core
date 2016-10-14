@@ -121,7 +121,7 @@ COPY iot.agile.protocol.BLE iot.agile.protocol.BLE
 COPY test test
 COPY pom.xml pom.xml
 
-RUN mvn clean install -U
+RUN mvn package
 
 
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
