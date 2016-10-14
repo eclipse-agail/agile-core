@@ -26,6 +26,8 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 import iot.agile.Device;
 import iot.agile.Device.NewSubscribeValueSignal;
+import iot.agile.object.StatusType;
+import iot.agile.object.DeviceStatusType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -66,25 +68,32 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
       if (m.matches()) {
         deviceID = m.group(1);
         sensorName = m.group(2);
-        sigHandler = new DBusSigHandler<Device.NewSubscribeValueSignal>() {
-          @Override
-          public void handle(NewSubscribeValueSignal sig) {
-            if (sig.record.getDeviceID().equals(deviceID) && sig.record.getComponentID().equals(sensorName)) {
-              logger.debug("http: New value {}%n", sig.record);
-              try {
-                session.getRemote().sendString(mapper.writeValueAsString(sig.record));
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
-            }
-          }
-        };
-        connection.addSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
 
         String busname = Device.AGILE_INTERFACE;
         String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + deviceID;
         Device device = connection.getRemoteObject(busname, path, Device.class);
-        device.Subscribe(sensorName);
+
+        if (device.Status().getStatus().equals(DeviceStatusType.CONNECTED.toString())) {
+          device.Subscribe(sensorName);
+
+          sigHandler = new DBusSigHandler<Device.NewSubscribeValueSignal>() {
+            @Override
+            public void handle(NewSubscribeValueSignal sig) {
+              if (sig.record.getDeviceID().equals(deviceID) && sig.record.getComponentID().equals(sensorName)) {
+                logger.debug("http: New value {}%n", sig.record);
+                try {
+                  session.getRemote().sendString(mapper.writeValueAsString(sig.record));
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
+              }
+            }
+          };
+          connection.addSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
+        } else {
+          logger.info("Device {} not connected", deviceID);
+          sess.close(404, "Device not connected");
+        }
 
       } else {
 
@@ -115,6 +124,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
       connection.removeSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
+      sigHandler = null;
 
       if (deviceID != null) {
         logger.info("closing {}/{} reason:{}/{}", deviceID, sensorName, statusCode, reason);
