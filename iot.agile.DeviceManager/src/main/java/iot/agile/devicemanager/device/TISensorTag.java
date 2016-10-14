@@ -135,6 +135,18 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	}
 
 	@Override
+	public void Connect() throws DBusException {
+		super.Connect();
+		for (String componentName : subscribedComponents.keySet()) {
+			if (subscribedComponents.get(componentName) > 0) {
+				logger.info("Resubscribing to {}", componentName);
+				deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
+				deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
+			}
+		}
+	}
+
+	@Override
 	public synchronized void Subscribe(String componentName) {
 		logger.info("Subscribe to {}", componentName);
  		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
