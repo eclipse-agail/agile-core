@@ -146,8 +146,10 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 						}
 						if (!hasotherActiveSubscription(componentName)) {
   							deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
+							/* Setting the period on the Pressure sensor was not working. Since we are anyway using the default value, keep this disabled. TODO: verify pressure senosr.
 							byte[] period = { 100 };
 							deviceProtocol.Write(address, getFrequencyProfile(componentName), period);
+							*/
 							deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
 						}
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
