@@ -123,8 +123,11 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
   public void onWebSocketClose(int statusCode, String reason) {
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-      connection.removeSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
-      sigHandler = null;
+
+      if (sigHandler != null) {
+        connection.removeSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
+        sigHandler = null;
+      }
 
       if (deviceID != null) {
         logger.info("closing {}/{} reason:{}/{}", deviceID, sensorName, statusCode, reason);
