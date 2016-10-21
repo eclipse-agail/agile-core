@@ -527,16 +527,19 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 */
 	@Override
 	public StatusType DeviceStatus(String deviceAddress){
+		StatusType ret;
 		try {
 			if(((BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null)).getConnected()){
-				return new StatusType(DeviceStatusType.CONNECTED.toString());
-						}else{
-				return new StatusType(DeviceStatusType.DISCONNECTED.toString());
+				ret = new StatusType(DeviceStatusType.CONNECTED.toString());
+			}else{
+				ret = new StatusType(DeviceStatusType.DISCONNECTED.toString());
 			}
 		} catch (Exception e) {
 			logger.error("Error on checking device status {}", e.getMessage());
-			}
-		return new StatusType(DeviceStatusType.ERROR.toString());
+			ret = new StatusType(DeviceStatusType.ERROR.toString());
+		}
+
+		return ret;
 	}
 	
 
