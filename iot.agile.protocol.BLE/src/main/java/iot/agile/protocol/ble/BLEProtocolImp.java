@@ -216,7 +216,12 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 			if (bleDevice != null) {
 				if (!bleDevice.getConnected()) {
 					bleDevice.connect();
+					logger.info("Connected BLE device {}", deviceAddress);
+				} else {
+					logger.info("BLE device already connected {}", deviceAddress);
 				}
+			} else {
+				logger.warn("Cannot find BLE device {}", deviceAddress);
 			}
 		} catch (Exception e) {
 			logger.error("Failed to connect: {}", deviceAddress, e);
@@ -507,7 +512,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
  			try {
 				Protocol.NewRecordSignal newRecordSignal = new Protocol.NewRecordSignal(AGILE_NEW_RECORD_SIGNAL_PATH,
 						lastRecord, address, profile);
-				logger.info("Notifiying {}", this);
+				logger.debug("Notifying {}", this);
 				connection.sendSignal(newRecordSignal);
 			} catch (DBusException e) {
 				e.printStackTrace();
