@@ -49,7 +49,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     binutils \
     maven \
     gettext \
-    Xvfb \
     libc6-dev \
     make \
     cmake \
