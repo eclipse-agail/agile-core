@@ -67,8 +67,8 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 			}
 
 		} catch (DBusException e) {
-			logger.error("Failed to disconnect device {}", deviceID);
-			throw new DBusException("Failed to disconnect device:" + deviceID);
+			logger.error("Failed to connect device {}", deviceID);
+			throw new DBusException("Failed to connect device:" + deviceID);
 		}
 	}
 
