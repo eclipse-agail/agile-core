@@ -62,6 +62,15 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 
 	@Override
 	protected String DeviceRead(String componentName) {
+		try {
+			byte[] result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
+			while (result.length != 4) {
+				result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
+			}
+			return formatReading(componentName, result);
+		} catch (DBusException e) {
+			e.printStackTrace();
+		}
 		logger.info("Read not supported");
 		return null;
 	}
