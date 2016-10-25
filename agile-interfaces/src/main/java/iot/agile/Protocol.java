@@ -131,6 +131,14 @@ public interface Protocol extends DBusInterface {
 	public byte[] Read(String deviceAddress, Map<String, String> profile) throws DBusException;
 
 	/**
+	 * Notification based read using dbus signaling
+	 * test method
+	 * @param deviceAddress
+	 * @param profile
+	 * @throws DBusException
+	 */
+	public byte[] NotificationRead(String deviceAddress, Map<String, String> profile) throws DBusException;
+	
 	 * Subscribe to data update over the protocol
 	 *
 	 * @param subscribeParams
