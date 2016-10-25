@@ -16,12 +16,10 @@
 package iot.agile.devicemanager.examples;
 
 import org.freedesktop.dbus.DBusConnection;
-import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
-import iot.agile.object.RecordObject;
 
 /**
  * @author dagi
@@ -36,7 +34,7 @@ import iot.agile.object.RecordObject;
  *
  */
 public class ReadData {
-  	protected final static Logger logger = LoggerFactory.getLogger(ReadData.class);
+	protected final static Logger logger = LoggerFactory.getLogger(ReadData.class);
 
 	/**
 	 * Bus name for AGILE BLE Device interface
@@ -46,63 +44,81 @@ public class ReadData {
 	/**
 	 * Bus path for AGILE BLE Device interface
 	 */
-	private static String agileDeviceObjectPath = "/iot/agile/Device/ble_";
+	private static String agileDeviceObjectPath = "/iot/agile/Device/ble";
 	/**
 	 * Sensor name
 	 */
-	private static String service = "Temperature";
-	
-	private static String address ="C4:BE:84:70:69:09";
+	private static String serviceO = "Optical";
+	private static String serviceH = "Humidity";
+	private static String serviceT = "Temperature";
+	private static String serviceP = "Pressure";
+
+	private static String address = "A0:E6:F8:B6:23:04";
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-	  checkInput(args);
+		String devicePath = agileDeviceObjectPath + address.replace(":", "");
+		try {
+			final DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+			final Device sensorTag = (Device) connection.getRemoteObject(agileDeviceObjName, devicePath, Device.class);
 
-	  String devicePath = agileDeviceObjectPath + address.replace(":", "");
-	  logger.info("Reading {}", service);
-	
-	  while(true){
-	    try {
-	      DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-	      Device sensorTag = (Device) connection.getRemoteObject(agileDeviceObjName, devicePath, Device.class);
-	      RecordObject currentTemp = sensorTag.Read(service);
-	      logger.info("Temperature: {}", currentTemp.getValue());
-	    } catch (DBusException e) {
-	      e.printStackTrace();
-	    }  
-	  }
-	  
+			// Single read every one second
+			while (true) {
+				long startT = System.currentTimeMillis();
+				try {
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							logger.info("{}: {}", serviceO, sensorTag.Read(serviceO).getValue());
+							logger.info("Read after: {} milliseconds", (System.currentTimeMillis() - startT));
+						}
+					}).start();
 
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							logger.info("{}: {}", serviceO, sensorTag.Read(serviceO).getValue());
+							logger.info("Read after: {} milliseconds", (System.currentTimeMillis() - startT));
+						}
+					}).start();
+					Thread.sleep(100);
+				} catch (Exception e) {
+					logger.info("Failed after: {} seconds", (System.currentTimeMillis() - startT) / 1000);
+				}
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
- 
- private static void checkInput(String[] input){
-   if(input.length ==2){
-     service = input[0];
-     if(isValidMACAddress(input[1])){
-       address = input[1];
-     }else{
-       logger.error("invalid device address, using default sensor tag address: {}",address);
-     }
-   }else{
-     logger.error("Invalid input reading from default service {}", service);
-      
-   }
- }
- 
- /**
-  * 
-  * @param address
-  * @return
-  */
- private static boolean isValidMACAddress(String address) {
-   if (address.trim().toCharArray().length == 17) {
-     if (address.split(":").length == 6) {
-       return true;
-     }
-   }
-   return false;
- }
+	private static void checkInput(String[] input) {
+		if (input.length == 2) {
+			serviceP = input[0];
+			if (isValidMACAddress(input[1])) {
+				address = input[1];
+			} else {
+				logger.error("invalid device address, using default sensor tag address: {}", address);
+			}
+		} else {
+			logger.error("Invalid input reading from default service {}", serviceP);
+
+		}
+	}
+
+	/**
+	 * 
+	 * @param address
+	 * @return
+	 */
+	private static boolean isValidMACAddress(String address) {
+		if (address.trim().toCharArray().length == 17) {
+			if (address.split(":").length == 6) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
