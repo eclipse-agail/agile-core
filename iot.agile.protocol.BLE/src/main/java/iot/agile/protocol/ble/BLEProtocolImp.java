@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -95,8 +96,6 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	private static final String GATT_SERVICE = "GATT_SERVICE";
 
 	private static final String GATT_CHARACTERSTICS = "GATT_CHARACTERSTICS";
-
-	private static final String PAYLOAD = "PAYLOAD";
 
 	/**
 	 * Device list
@@ -401,6 +400,57 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * Workaround for a TinyB issue: when TinyB is using BluetoothGattService.find() to get a copy of BluetoothGattCharacteristics,
 	 * it is returning a new object with a new notification callback attibute inside. This can lead to notfication callback objects
 	 * remaining linked even after disabling notifcation, leading later (after enabling notifications again) to multiple callbacks.
+	 * Notification based read
+	 */
+	@Override
+	public byte[] NotificationRead(String deviceAddress, Map<String, String> profile) throws DBusException {
+		final CountDownLatch latch = new CountDownLatch(1);
+		final byte[][] result = new byte[1][];
+		BluetoothDevice device;
+		try {
+			device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
+			if (device != null) {
+				if (device.getConnected()) {
+					BluetoothGattService gattService = device.find(profile.get(GATT_SERVICE));
+					if (gattService != null) {
+						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
+						synchronized (gattChar) {
+							if (gattChar != null) {
+								if (!gattChar.getNotifying()) {
+									gattChar.enableValueNotifications(new BluetoothNotification<byte[]>() {
+										@Override
+										public void run(byte[] data) {
+											result[0] = data;
+											latch.countDown();
+										}
+									});
+									latch.await();
+									gattChar.disableValueNotifications();
+									return result[0];
+								} else {
+									return gattChar.readValue();
+								}
+							} else {
+								logger.error("The device does not have {} gatt characterstics",
+										profile.get(GATT_SERVICE));
+							}
+						}
+					} else {
+						logger.error("The device does not {} have gatt service", profile.get(GATT_CHARACTERSTICS));
+					}
+				} else {
+					logger.error("Device not connected: {}", deviceAddress);
+				}
+			} else {
+				logger.error("Device not found: {}", deviceAddress);
+			}
+		} catch (Exception e) {
+			logger.error("Failed to read data ", e);
+			throw new DBusException("Failed to read data");
+		}
+		return null;
+	}
+
 	 */
 	private class AddressProfile extends Vector<Object> {
 		public AddressProfile(String a, Map<String,String> p) {
