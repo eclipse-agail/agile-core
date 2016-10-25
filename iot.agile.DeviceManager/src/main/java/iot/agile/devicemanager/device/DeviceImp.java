@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.Variant;
@@ -106,6 +107,8 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * device
 	 */
 	protected Map<String, Integer> subscribedComponents = new HashMap<String, Integer>();
+
+	private Map<String, CountDownLatch> ongoingReads = new HashMap<String, CountDownLatch>();
 
 	@SuppressWarnings("rawtypes")
 	protected DBusSigHandler newRecordSigHanlder;
@@ -257,11 +260,68 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	@Override
 	public RecordObject Read(String componentName) {
-		RecordObject recObj = new RecordObject(deviceID, componentName, DeviceRead(componentName),
-				getMeasurementUnit(componentName), "", System.currentTimeMillis());
-		data = recObj;
-		lastReadStore.put(componentName, recObj);
-		return recObj;
+		RecordObject lastRead = lastReadStore.get(componentName);
+		if (isRecentRead(lastRead)) {
+			logger.info("Cached read....{}", lastRead);
+			return lastRead;
+		} else {
+			if (isReadOngoing(componentName)) {
+				try {
+					ongoingReads.get(componentName).await();
+					logger.info("Read from ongoing read {}", lastReadStore.get(componentName));
+					return lastReadStore.get(componentName);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else {
+				synchronized (this) {
+					ongoingReads.put(componentName, new CountDownLatch(1));
+					try {
+						data = new RecordObject(deviceID, componentName, DeviceRead(componentName),
+								getMeasurementUnit(componentName), "", System.currentTimeMillis());
+						lastReadStore.put(componentName, data);
+						ongoingReads.get(componentName).countDown();
+						synchronized (ongoingReads) {
+							ongoingReads.remove(componentName);
+						}
+						logger.info("New read....{}", data);
+						return data;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Check if the last component read was made recently
+	 * 
+	 * @param record
+	 * @return
+	 */
+	private boolean isRecentRead(RecordObject record) {
+		if (record != null) {
+			long currentTime = System.currentTimeMillis();
+			long recordTime = record.getLastUpdate();
+			if (((currentTime - recordTime) / 1000) < 2) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check if there is an ongoing read on this component
+	 * 
+	 * @param component
+	 * @return
+	 */
+	private boolean isReadOngoing(String component) {
+		synchronized (ongoingReads) {
+			return ongoingReads.containsKey(component);
+		}
 	}
 
 	/**
