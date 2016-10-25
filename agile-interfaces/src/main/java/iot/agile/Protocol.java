@@ -139,7 +139,7 @@ public interface Protocol extends DBusInterface {
 	 */
 	public byte[] NotificationRead(String deviceAddress, Map<String, String> profile) throws DBusException;
 	
-	 * Subscribe to data update over the protocol
+	/* Subscribe to data update over the protocol
 	 *
 	 * @param subscribeParams
 	 * @throws DBusException 

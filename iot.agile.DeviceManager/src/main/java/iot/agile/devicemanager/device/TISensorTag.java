@@ -133,58 +133,33 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			 */
 		return NotificationRead(sensorName);
 	}
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (isConnected()) {
-				if (isSensorSupported(sensorName.trim())) {
+	
+	public String NotificationRead(String componentName){
+ 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+		if (isConnected()) {
+			if (isSensorSupported(componentName.trim())) {
 					try {
-						if (!hasotherActiveSubscription(sensorName)) {
-							// turn on sensor
-							deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
-						}
-						/**
-						 * The default read data period (frequency) of most of
-						 * sensor tag sensors is 1000ms therefore the first data
-						 * will be available to read after 1000ms for these we
-						 * call Read method after 1 second
-						 */
-						Thread.sleep(1010);
-						// read value
-						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
-						if (!hasotherActiveSubscription(sensorName)) {
-							deviceProtocol.Write(address, getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR);
-						}
-						return formatReading(sensorName, readValue);
-					} catch (Exception e) {
-						logger.debug("Error in reading value from Sensor {}", e);
-						e.printStackTrace();
-					}
-				} else {
-					logger.debug("Sensor not supported: {}", sensorName);
-					return null;
+						deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
+						byte[] period = { 100 };
+						deviceProtocol.Write(address, getFrequencyProfile(componentName), period);
+						byte[] result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
+						return formatReading(componentName, result);
+					} catch (DBusException e) {
+					e.printStackTrace();
 				}
 			} else {
-				logger.debug("BLE Device not connected: {}", deviceName);
-				return null;
+				logger.info("Sensor not supported: {}", componentName);
 			}
 		} else {
-			logger.debug("Protocol not supported:: {}", protocol);
-			return null;
+			logger.info("BLE Device not connected: {}", deviceName);
 		}
+	} else {
+		logger.info("Protocol not supported:: {}", protocol);
+	}
 		return null;
-	}
 
-	@Override
-	public void Connect() throws DBusException {
-		super.Connect();
-		for (String componentName : subscribedComponents.keySet()) {
-			if (subscribedComponents.get(componentName) > 0) {
-				logger.info("Resubscribing to {}", componentName);
-				deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
-				deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
-			}
-		}
 	}
-
+	
 	@Override
 	public synchronized void Subscribe(String componentName) {
 		logger.info("Subscribe to {}", componentName);

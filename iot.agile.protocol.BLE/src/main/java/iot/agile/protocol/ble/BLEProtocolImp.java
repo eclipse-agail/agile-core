@@ -451,7 +451,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 		return null;
 	}
 
-	 */
+	 
 	private class AddressProfile extends Vector<Object> {
 		public AddressProfile(String a, Map<String,String> p) {
 			add(a);
