@@ -18,15 +18,19 @@ addons:
       - cmake-data
       - libglib2.0-0
       - libglib2.0-dev
+      - curl
 
 before_install:
   - if [ -f /home/travis/docker-cache/cache.tar.gz ]; then
       gunzip -c /home/travis/docker-cache/cache.tar.gz | docker load || true;
     fi
-  - docker build -f Dockerfile.amd64 -t $IMAGE:$TRAVIS_BRANCH .
+  - curl -SL https://github.com/grammarly/rocker/releases/download/1.3.0/rocker-1.3.0-linux_amd64.tar.gz | tar -xzC /usr/local/bin && chmod +x /usr/local/bin/rocker
+  - rocker build -f Rockerfile.amd64
+  - docker tag agile-core-x86_64 $IMAGE:$TRAVIS_BRANCH .
+  - docker tag agile-core-x86_64-builder $IMAGE-builder:$TRAVIS_BRANCH .
   - if [[ ${TRAVIS_PULL_REQUEST} == "false" ]]; then
       mkdir -p $(dirname /home/travis/docker-cache/cache.tar.gz);
-      docker save $(docker history -q $IMAGE:$TRAVIS_BRANCH | grep -v '<missing>') | gzip > /home/travis/docker-cache/cache.tar.gz;
+      docker save $(docker history -q $IMAGE:$TRAVIS_BRANCH $IMAGE-builder:$TRAVIS_BRANCH | grep -v '<missing>') | gzip > /home/travis/docker-cache/cache.tar.gz;
     fi
 install:
       - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
