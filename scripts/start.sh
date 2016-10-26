@@ -18,14 +18,10 @@ fi
 
 TOEXPORT=""
 
-if [ `xdpyinfo -display :0 >/dev/null 2>&1 && echo 1 || echo 0 ` -eq 1 ]; then
-  export DISPLAY=:0
-  echo ">> Using current DISPLAY at $DISPLAY"
-  TOEXPORT="\n$TOEXPORT\nexport DISPLAY=$DISPLAY"
+if [ ! -z "$DISPLAY" ]; then
+  echo ">> DISPLAY available, reusing current display"
 else
-  Xvfb :0 -screen 0 1x1x8 &
   export DISPLAY=:0
-  echo "++ Created new DISPLAY"
   TOEXPORT="\n$TOEXPORT\nexport DISPLAY=$DISPLAY"
 fi
 
@@ -48,8 +44,6 @@ else
       echo ">> Source: $SESSFILEPATH"
       . "$SESSFILEPATH"
     else
-      # echo "!! Killing current session bus instance"
-      # kill `ps aux | grep dbus-daemon | grep session | awk '{print $2}'`
       echo "Cannot get Dbus session address. Panic!"
     fi
 
@@ -94,11 +88,18 @@ fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'BLE' ]; then
   ./scripts/stop.sh "protocol.BLE"
+  # wait for Bluez to initialize
+  while `! qdbus --system org.bluez > /dev/null`; do
+    echo "waiting for Bluez to initialize";
+    sleep 1;
+  done
+
   # wait for ProtocolManager to initialize
   while `! qdbus iot.agile.ProtocolManager > /dev/null`; do
     echo "waiting for ProtocolManager to initialize";
     sleep 1;
   done
+
 
   java -cp deps/tinyb.jar:iot.agile.protocol.BLE/target/ble-1.0-jar-with-dependencies.jar -Djava.library.path=deps:deps/lib iot.agile.protocol.ble.BLEProtocolImp &
   echo "Started AGILE BLE protocol"

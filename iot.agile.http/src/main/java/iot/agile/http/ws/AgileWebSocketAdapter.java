@@ -48,6 +48,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
   private String deviceID = null;
   private String sensorName = null;
   private DBusSigHandler sigHandler;
+  private boolean subscribed = false;
 
   private ObjectMapper mapper = new ObjectMapper();
 
@@ -75,6 +76,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
 
         if (device.Status().getStatus().equals(DeviceStatusType.CONNECTED.toString())) {
           device.Subscribe(sensorName);
+          subscribed = true;
 
           sigHandler = new DBusSigHandler<Device.NewSubscribeValueSignal>() {
             @Override
@@ -123,16 +125,22 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
   public void onWebSocketClose(int statusCode, String reason) {
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
-      connection.removeSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
-      sigHandler = null;
+
+      if (sigHandler != null) {
+        connection.removeSigHandler(Device.NewSubscribeValueSignal.class, sigHandler);
+        sigHandler = null;
+      }
 
       if (deviceID != null) {
         logger.info("closing {}/{} reason:{}/{}", deviceID, sensorName, statusCode, reason);
 
-        String busname = Device.AGILE_INTERFACE;
-        String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + deviceID;
-        Device device = connection.getRemoteObject(busname, path, Device.class);
-        device.Unsubscribe(sensorName);
+        if (subscribed) {
+          String busname = Device.AGILE_INTERFACE;
+          String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + deviceID;
+          Device device = connection.getRemoteObject(busname, path, Device.class);
+          device.Unsubscribe(sensorName);
+          subscribed = false;
+        }
       } else {
         logger.info("closing reason:{}/{}", deviceID, sensorName, statusCode, reason);
       }
