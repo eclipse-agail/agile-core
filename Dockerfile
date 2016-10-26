@@ -3,7 +3,8 @@ FROM resin/raspberrypi2-debian:jessie-20161010
 # Install wget and curl
 RUN apt-get clean && apt-get update && apt-get install -y \
   wget \
-  curl
+  curl \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # prevent httpredir from doing nasty things
 #RUN sed -i "s/httpredir.debian.org/`curl -s -D - http://httpredir.debian.org/demo/debian/ | awk '/^Link:/ { print $2 }' | sed -e 's@<http://\(.*\)/debian/>;@\1@g'`/" /etc/apt/sources.list
@@ -27,6 +28,7 @@ RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | te
     apt-get install -y oracle-java8-installer --no-install-recommends && \
     apt-get clean && \
     apt-get purge && \
+    rm -rf /var/cache/oracle-jdk8-installer/ && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Java on Raspbian
@@ -59,14 +61,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     g++-4.9 \
     libglib2.0-0 \
     libglib2.0-dev \
-    qdbus
+    qdbus \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     libbluetooth-dev \
-    libudev-dev
-
-
+    libudev-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # These env vars enable sync_mode on all devices.
 #ENV SYNC_MODE=on
@@ -86,11 +88,13 @@ scripts/install-tinyb.sh $APATH/deps
 
 # we need dbus-launch
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    dbus-x11
+    dbus-x11 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # required by tinyb JNI
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    libxrender1
+    libxrender1 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # required by bluez
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -98,7 +102,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libdbus-1-dev \
     libudev-dev \
     libical-dev \
-    libreadline-dev
+    libreadline-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # isntall bluez
 RUN wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.39.tar.xz \
