@@ -87,21 +87,21 @@ public class DeviceManager {
 		return client.getDeviceManager().MatchingDeviceTypes(overview);
 	}
 
-	public static class RegisterArgs {
+	public static class RegisterPayload {
 		@JsonProperty("overview")
 		public DeviceOverview overview;
 		@JsonProperty("type")
 		public String type;
 
 		@JsonCreator
-		public RegisterArgs(@JsonProperty("overview") DeviceOverview overview, @JsonProperty("type") String type){
+		public RegisterPayload(@JsonProperty("overview") DeviceOverview overview, @JsonProperty("type") String type){
 			this.overview = overview; this.type = type;
 		}
 	}
 
 	@POST
 	@Path("/register")
-	public DeviceDefinition Register(RegisterArgs args) throws DBusException, IOException {
+	public DeviceDefinition Register(RegisterPayload args) throws DBusException, IOException {
 		logger.debug("Register new device of type {}: {} ({}) on {}", args.type, args.overview.id, args.overview.name, args.overview.protocol);
 		return client.getDeviceManager().Register(args.overview, args.type);
 	}
