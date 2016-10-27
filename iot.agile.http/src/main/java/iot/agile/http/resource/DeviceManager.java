@@ -70,12 +70,6 @@ public class DeviceManager {
 	private HttpServletResponse response;
 
 	@POST
-	public DeviceDefinition Create(DeviceDefinition body) throws DBusException, IOException {
-		logger.debug("Create new device {} ({}) on {}", body.address, body.name, body.protocol);
-		return client.getDeviceManager().Create(body);
-	}
-
-	@POST
 	@Path("/typeof")
 	public List<String> MatchingDeviceTypes(DeviceOverview overview) throws DBusException, IOException {
 		return client.getDeviceManager().MatchingDeviceTypes(overview);
@@ -94,7 +88,6 @@ public class DeviceManager {
 	}
 
 	@POST
-	@Path("/register")
 	public DeviceDefinition Register(RegisterPayload args) throws DBusException, IOException {
 		logger.debug("Register new device of type {}: {} ({}) on {}", args.type, args.overview.id, args.overview.name, args.overview.protocol);
 		return client.getDeviceManager().Register(args.overview, args.type);
