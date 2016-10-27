@@ -11,3 +11,4 @@ deps
 */*.log
 *.log
 /agile-main/target/
+/bluez-5.39/
