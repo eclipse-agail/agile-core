@@ -75,12 +75,6 @@ public class DeviceManager {
 		return client.getDeviceManager().Create(body);
 	}
 
-	@GET
-	@Path("/typeof")
-	public List<String> MatchingDeviceTypesToDeprecate(DeviceOverview overview) throws DBusException, IOException {
-		return client.getDeviceManager().MatchingDeviceTypes(overview);
-	}
-
 	@POST
 	@Path("/typeof")
 	public List<String> MatchingDeviceTypes(DeviceOverview overview) throws DBusException, IOException {
