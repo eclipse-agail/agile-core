@@ -142,63 +142,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		return registeredDev;
 	}
 
-	/**
-	 *
-	 *
-	 * @see iot.agile.protocol.ble.devicemanager.DeviceManager#Create()
-	 */
-	@Override
-	public DeviceDefinition Create(DeviceDefinition deviceDefinition) {
-		logger.debug("Creating new device id: {} name: {} protocol: {}", deviceDefinition.address,
-				deviceDefinition.name, deviceDefinition.protocol);
-		boolean registered = false;
-		DeviceDefinition registeredDev = null;
-
-		// For demo purpose we create only sensor tag device
-		Device device = getDevice(deviceDefinition);
-
-		// Register device
-		try {
-			if (device == null) {
-				registeredDev = new DeviceDefinition("ble" + deviceDefinition.address.replace(":", ""),
-						deviceDefinition.address, deviceDefinition.name, deviceDefinition.description,
-						deviceDefinition.protocol, "/iot/agile/Device/ble" + deviceDefinition.address.replace(":", ""),
-						deviceDefinition.streams);
-				devices.add(registeredDev);
-				if(deviceDefinition.name.contains("SensorTag")){
-					device = new TISensorTag(registeredDev);
-				}else if(deviceDefinition.name.contains("Medical")){
-					logger.info("Medical device registered");
-					device = new MedicalDevice(registeredDev);
- 				} 
-				logger.info("Device registered: {}", device.Id());
-			} else {
-				registeredDev = deviceDefinition;
-				logger.info("Device already registered:  {}", device.Id());
-			}
-			registered = true;
-		} catch (Exception e) {
-			logger.error("Can not register device: {}", e.getMessage());
-		}
-
-		// connect device
-		if (registered) {
-			final Device dev = device;
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						dev.Connect();
-						logger.info("Device connected: {}", deviceDefinition.address);
-					} catch (Exception e) {
-						logger.error("Error encountered while attempting to connect: {}", e.getMessage());
-					}
-				}
-			}).start();
-
-		}
-		return registeredDev;
-	}
 
 	/**
 	 *

@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import iot.agile.DeviceManager;
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.DeviceDefinition;
+import iot.agile.object.DeviceOverview;
 
 /**
  * @author dagi
@@ -60,7 +61,7 @@ public class RegisterDevice {
 
       // Register device
       DeviceDefinition dev = (deviceManager
-          .Create(new DeviceDefinition("",deviceAddress, deviceName, "",PROTOCOL_ID,  "", getDeviceStreams())));
+          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, ""), "Sensor Tag"));
       logger.info("Device ID: {}", dev.deviceId);
     } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
       logger.debug("Unkown method");
