@@ -62,16 +62,14 @@ public class ProtocolManager {
 
 	@POST
 	@Path("/{id}")
-	public String Add(@PathParam("id") String protocol) throws DBusException {
+	public void Add(@PathParam("id") String protocol) throws DBusException {
 		getProtocolManager().Add(protocol);
-		return "";
 	}
 
 	@DELETE
 	@Path("/{id}")
-	public String Remove(@PathParam("id") String protocol) throws DBusException {
+	public void Remove(@PathParam("id") String protocol) throws DBusException {
 		getProtocolManager().Remove(protocol);
-		return "";
 	}
 
 	@GET
@@ -87,16 +85,14 @@ public class ProtocolManager {
 
 	@POST
 	@Path("/discovery")
-	public String StartDiscovery() throws DBusException {
+	public void StartDiscovery() throws DBusException {
 		getProtocolManager().StartDiscovery();
-		return "";
 	}
 
 	@DELETE
 	@Path("/discovery")
-	public String StopDiscovery() throws DBusException {
+	public void StopDiscovery() throws DBusException {
 		getProtocolManager().StopDiscovery();
-		return "";
 	}
 
 }
