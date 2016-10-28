@@ -87,26 +87,23 @@ public class Device {
 
   @POST
   @Path("/connection")
-  public String Connect(@PathParam("id") String id) throws DBusException {
+  public void Connect(@PathParam("id") String id) throws DBusException {
     getDevice(id).Connect();
-    return "";
   }
 
   @DELETE
   @Path("/connection")
-  public String Disconnect(@PathParam("id") String id) throws DBusException {
+  public void Disconnect(@PathParam("id") String id) throws DBusException {
     getDevice(id).Disconnect();
-    return "";    
   }
 
   @POST
   @Path("/execute/{command}")
-  public String Execute(@PathParam("id") String id, @PathParam("command") String command, Map<String,Variant> args) throws DBusException {
+  public void Execute(@PathParam("id") String id, @PathParam("command") String command, Map<String,Variant> args) throws DBusException {
     if (args == null) {
       args = new HashMap<String,Variant>();
     }
     getDevice(id).Execute(command, args);
-    return "";
   }
 
   @GET
@@ -125,23 +122,20 @@ public class Device {
 
   @POST
   @Path("/{sensorName}")
-  public String Write(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
+  public void Write(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     getDevice(id).Write();
-    return "";
   }
 
   @POST
   @Path("/{sensorName}/subscribe")
-  public String Subscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
+  public void Subscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
 	  getDevice(id).Subscribe(sensorName);
-	  return "";
   }
   
   @DELETE
   @Path("/{sensorName}/subscribe")
-  public String Unsubscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
+  public void Unsubscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
 	  getDevice(id).Unsubscribe(sensorName);
-	  return "";
   }
   
 }
