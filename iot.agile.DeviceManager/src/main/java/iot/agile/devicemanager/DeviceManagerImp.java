@@ -104,24 +104,29 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
 	@Override
 	public DeviceDefinition Register(DeviceOverview deviceOverview, String deviceType) {
-		Device device = null;
+		Device device = getDevice(deviceOverview);
 		DeviceDefinition registeredDev = null;
-		try {
-			if (deviceType.equals(TISensorTag.deviceTypeName)) {
-				logger.info("Creating new {}", TISensorTag.deviceTypeName);
-				device = new TISensorTag(deviceOverview);
-			} else if (deviceType.equals(MedicalDevice.deviceTypeName)) {
-				logger.info("Creating new {}", MedicalDevice.deviceTypeName);
-				device = new MedicalDevice(deviceOverview);
-			} else if (deviceType.equals("GE Lamp")) {
+		if (device != null) {
+			registeredDev = device.Definition();
+			logger.info("Device already registered:  {}", device.Id());
+		} else {
+			try {
+				if (deviceType.equals(TISensorTag.deviceTypeName)) {
+					logger.info("Creating new {}", TISensorTag.deviceTypeName);
+					device = new TISensorTag(deviceOverview);
+				} else if (deviceType.equals(MedicalDevice.deviceTypeName)) {
+					logger.info("Creating new {}", MedicalDevice.deviceTypeName);
+					device = new MedicalDevice(deviceOverview);
+				} else if (deviceType.equals("GE Lamp")) {
+				}
+				if (device != null) {
+					registeredDev = device.Definition();
+					devices.add(registeredDev);
+				}
+			} catch (Exception e) {
+				logger.error("Can not register device: {}", e.getMessage());
+				e.printStackTrace();
 			}
-			if (device != null) {
-				registeredDev = device.Definition();
-				devices.add(registeredDev);
-			}
-		} catch (Exception e) {
-			logger.error("Can not register device: {}", e.getMessage());
-			e.printStackTrace();
 		}
 
 		// connect device
@@ -165,12 +170,12 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 						deviceDefinition.protocol, "/iot/agile/Device/ble" + deviceDefinition.address.replace(":", ""),
 						deviceDefinition.streams);
 				devices.add(registeredDev);
-				if(deviceDefinition.name.contains("SensorTag")){
+				if (deviceDefinition.name.contains("SensorTag")) {
 					device = new TISensorTag(registeredDev);
-				}else if(deviceDefinition.name.contains("Medical")){
+				} else if (deviceDefinition.name.contains("Medical")) {
 					logger.info("Medical device registered");
 					device = new MedicalDevice(registeredDev);
- 				} 
+				}
 				logger.info("Device registered: {}", device.Id());
 			} else {
 				registeredDev = deviceDefinition;
@@ -300,4 +305,26 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		}
 
 	}
+
+	/**
+	 * Get device based on {@code DeviceDefinition}
+	 * 
+	 * @param devDef
+	 *            Device definition
+	 * @return
+	 */
+	private Device getDevice(DeviceOverview devOverivew) {
+		String objectName = "iot.agile.Device";
+		String objectPath = "/iot/agile/Device/ble" + devOverivew.id.replace(":", "");
+		logger.info(objectPath);
+		try {
+			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+			Device device = (Device) connection.getRemoteObject(objectName, objectPath);
+			return device;
+		} catch (Exception e) {
+			return null;
+		}
+
+	}
+
 }
