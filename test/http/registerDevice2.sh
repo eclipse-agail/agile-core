@@ -15,7 +15,7 @@ if [ ${#types[@]} -ne 1 ]; then
 else
   #Register devices
   echo '{"overview": '"$device"' , "type": '"${types[0]}"'}'
-  curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"overview": '"$device"' , "type": '"${types[0]}"'}' 'http://localhost:8080/api/devices/register'
+  curl  -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"overview": '"$device"' , "type": '"${types[0]}"'}' 'http://localhost:8080/api/devices'
 fi
 
 
