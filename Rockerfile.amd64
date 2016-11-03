@@ -1,4 +1,4 @@
-FROM resin/raspberrypi2-debian:jessie-20161010
+FROM resin/amd64-debian:jessie-20161010
 
 # Install wget and curl
 RUN apt-get clean && apt-get update && apt-get install -y \
@@ -7,7 +7,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # prevent httpredir from doing nasty things
-#RUN sed -i "s/httpredir.debian.org/`curl -s -D - http://httpredir.debian.org/demo/debian/ | awk '/^Link:/ { print $2 }' | sed -e 's@<http://\(.*\)/debian/>;@\1@g'`/" /etc/apt/sources.list
+RUN sed -i "s/httpredir.debian.org/`curl -s -D - http://httpredir.debian.org/demo/debian/ | awk '/^Link:/ { print $2 }' | sed -e 's@<http://\(.*\)/debian/>;@\1@g'`/" /etc/apt/sources.list
 
 # Add the key for foundation repository
 # RUN wget http://archive.raspberrypi.org/debian/raspberrypi.gpg.key -O - | sudo apt-key add -
@@ -106,14 +106,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # isntall bluez
+MOUNT /usr/src/app/bluez-5.39/
 RUN wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.39.tar.xz \
     && tar xf bluez-5.39.tar.xz \
     && rm bluez-5.39.tar.xz \
     && cd bluez-5.39 \
     && ./configure \
     && make -j 4 \
-    && sudo make install \
-    && cd .. && rm -rf bluez-5.39
+    && sudo make install
 
 # copy directories into WORKDIR
 COPY agile-interfaces agile-interfaces
@@ -127,5 +127,43 @@ COPY pom.xml pom.xml
 
 RUN mvn package
 
-
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
+
+TAG agile-core-x86_64-builder
+
+EXPORT iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar
+EXPORT iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar
+EXPORT iot.agile.http/target/http-1.0-jar-with-dependencies.jar
+EXPORT iot.agile.protocol.BLE/target/ble-1.0-jar-with-dependencies.jar
+EXPORT deps
+
+#FROM resin/amd64-debian:jessie-20161010
+#FROM java:openjdk-8-jre-alpine
+FROM java:openjdk-8-jre
+WORKDIR /usr/src/app
+ENV APATH /usr/src/app
+#RUN apk --update add bash qt icu-libs icu-dev #for qdbus
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    qdbus
+COPY scripts scripts
+RUN mkdir -p iot.agile.ProtocolManager/target iot.agile.DeviceManager/target iot.agile.http/target iot.agile.protocol.BLE/target
+IMPORT protocol-manager-1.0-jar-with-dependencies.jar iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar
+IMPORT device-manager-1.0-jar-with-dependencies.jar iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar
+IMPORT http-1.0-jar-with-dependencies.jar iot.agile.http/target/http-1.0-jar-with-dependencies.jar
+IMPORT ble-1.0-jar-with-dependencies.jar iot.agile.protocol.BLE/target/ble-1.0-jar-with-dependencies.jar
+IMPORT deps .
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    make \
+    gcc \
+    libc-dev \
+    libglib2.0-dev \
+    libdbus-1-dev \
+    libreadline-dev \
+    libudev-dev \
+    libical-dev \
+    sudo
+MOUNT /usr/src/app/bluez-5.39/
+RUN cd bluez-5.39 \
+    && sudo make install
+CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
+TAG agile-core-x86_64
