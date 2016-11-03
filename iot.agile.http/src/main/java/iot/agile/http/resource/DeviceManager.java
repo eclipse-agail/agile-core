@@ -69,6 +69,13 @@ public class DeviceManager {
 	@Context
 	private HttpServletResponse response;
 
+	@GET
+	@Path("/typeof")
+	public List<String> MatchingDeviceTypesDEPRECATED(DeviceOverview overview) throws DBusException, IOException {
+		logger.warn("DEPRECATED GET /typeof called");
+		return MatchingDeviceTypes(overview);
+	}
+
 	@POST
 	@Path("/typeof")
 	public List<String> MatchingDeviceTypes(DeviceOverview overview) throws DBusException, IOException {
@@ -85,6 +92,13 @@ public class DeviceManager {
 		public RegisterPayload(@JsonProperty("overview") DeviceOverview overview, @JsonProperty("type") String type){
 			this.overview = overview; this.type = type;
 		}
+	}
+
+	@POST
+	@Path("/register")
+	public DeviceDefinition RegisterDEPRECATED(RegisterPayload args) throws DBusException, IOException {
+		logger.warn("DEPRECATED POST /register called");
+		return Register(args);
 	}
 
 	@POST
