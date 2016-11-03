@@ -334,7 +334,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * @see iot.agile.protocol.ble.Protocol#write()
 	 */
 	@Override
-	public synchronized void Write(String deviceAddress, Map<String, String> profile, byte[] payload) throws DBusException {
+	public void Write(String deviceAddress, Map<String, String> profile, byte[] payload) throws DBusException {
 			BluetoothDevice device;
 			try {
 				device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
@@ -344,12 +344,11 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 						if (gattService != null) {
 							BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
 							if (gattChar != null) {
+								synchronized (gattChar) {
 								gattChar.writeValue(payload);
-							} else {
-								logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
 							}
 						} else {
-							logger.error("The device does not {} have gatt service", profile.get(GATT_CHARACTERSTICS));
+							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
 						}
 					} else {
 						logger.error("Device not connected: {}", deviceAddress);
@@ -357,12 +356,13 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 				} else {
 					logger.error("Device not found: {}", deviceAddress);
 				}
-
+				}
 			} catch (Exception e) {
 				logger.error("Failed to write value: {}", deviceAddress, e);
 					throw new DBusException("Failed to write value:" + deviceAddress);
 			}
-		}
+			}
+	
 
 	/**
 	 *
@@ -370,7 +370,7 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 	 * @param profile
 	 * @see iot.agile.protocol.ble.Protocol#read()
 	 */
-	public synchronized byte[] Read(String deviceAddress, Map<String, String> profile) throws DBusException {
+	public byte[] Read(String deviceAddress, Map<String, String> profile) throws DBusException {
 		BluetoothDevice device;
 		try {
 			device = (BluetoothDevice) bleManager.find(BluetoothType.DEVICE, null, deviceAddress, null);
@@ -380,8 +380,10 @@ public class BLEProtocolImp extends AbstractAgileObject implements Protocol {
 					if (gattService != null) {
 						BluetoothGattCharacteristic gattChar = gattService.find(profile.get(GATT_CHARACTERSTICS));
 						if (gattChar != null) {
+						synchronized (gattChar) {
 							lastRecord = gattChar.readValue();
-							return lastRecord;
+						}
+						return lastRecord;
 						} else {
 							logger.error("The device does not have {} gatt characterstics", profile.get(GATT_SERVICE));
 						}

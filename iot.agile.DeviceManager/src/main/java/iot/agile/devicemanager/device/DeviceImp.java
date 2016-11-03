@@ -181,7 +181,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * Returns the configuration of the devices
 	 */
 	public String Configuration() {
-		logger.debug("Device. Subscribe not implemented");
+		logger.debug("Device. Configuration not implemented");
 		return "";
 	}
 
@@ -246,8 +246,19 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	@Override
 	public List<RecordObject> ReadAll() {
 		List<RecordObject> recObjs = new ArrayList<RecordObject>();
+		final CountDownLatch latch = new CountDownLatch(profile.size());
 		for (DeviceComponent component : profile) {
-			recObjs.add(Read(component.id));
+			if(isSensorSupported(component.id)){
+			new Thread(()->{
+					recObjs.add(Read(component.id));
+					latch.countDown();
+				}).start();				
+			}
+		}
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+ 			e.printStackTrace();
 		}
 		return recObjs;
 	}
@@ -274,7 +285,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 					e.printStackTrace();
 				}
 			} else {
-				synchronized (this) {
+				synchronized (componentName) {
 					ongoingReads.put(componentName, new CountDownLatch(1));
 					try {
 						data = new RecordObject(deviceID, componentName, DeviceRead(componentName),

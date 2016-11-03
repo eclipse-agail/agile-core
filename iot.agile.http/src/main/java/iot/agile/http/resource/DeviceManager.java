@@ -69,16 +69,11 @@ public class DeviceManager {
 	@Context
 	private HttpServletResponse response;
 
-	@POST
-	public DeviceDefinition Create(DeviceDefinition body) throws DBusException, IOException {
-		logger.debug("Create new device {} ({}) on {}", body.address, body.name, body.protocol);
-		return client.getDeviceManager().Create(body);
-	}
-
 	@GET
 	@Path("/typeof")
-	public List<String> MatchingDeviceTypesToDeprecate(DeviceOverview overview) throws DBusException, IOException {
-		return client.getDeviceManager().MatchingDeviceTypes(overview);
+	public List<String> MatchingDeviceTypesDEPRECATED(DeviceOverview overview) throws DBusException, IOException {
+		logger.warn("DEPRECATED GET /typeof called");
+		return MatchingDeviceTypes(overview);
 	}
 
 	@POST
@@ -87,21 +82,27 @@ public class DeviceManager {
 		return client.getDeviceManager().MatchingDeviceTypes(overview);
 	}
 
-	public static class RegisterArgs {
+	public static class RegisterPayload {
 		@JsonProperty("overview")
 		public DeviceOverview overview;
 		@JsonProperty("type")
 		public String type;
 
 		@JsonCreator
-		public RegisterArgs(@JsonProperty("overview") DeviceOverview overview, @JsonProperty("type") String type){
+		public RegisterPayload(@JsonProperty("overview") DeviceOverview overview, @JsonProperty("type") String type){
 			this.overview = overview; this.type = type;
 		}
 	}
 
 	@POST
 	@Path("/register")
-	public DeviceDefinition Register(RegisterArgs args) throws DBusException, IOException {
+	public DeviceDefinition RegisterDEPRECATED(RegisterPayload args) throws DBusException, IOException {
+		logger.warn("DEPRECATED POST /register called");
+		return Register(args);
+	}
+
+	@POST
+	public DeviceDefinition Register(RegisterPayload args) throws DBusException, IOException {
 		logger.debug("Register new device of type {}: {} ({}) on {}", args.type, args.overview.id, args.overview.name, args.overview.protocol);
 		return client.getDeviceManager().Register(args.overview, args.type);
 	}
