@@ -15,11 +15,9 @@
  */
 package iot.agile.http.resource;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -28,13 +26,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import iot.agile.exception.AgileNoResultException;
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceComponent;
 import iot.agile.object.RecordObject;
@@ -74,16 +73,38 @@ public class Device {
     return getDevice(id).Status();
   }
 
-  @GET
-  public List<RecordObject> Read(@PathParam("id") String id) throws DBusException {
-    return getDevice(id).ReadAll();
-  }
+	@GET
+	public List<RecordObject> Read(@PathParam("id") String id) throws DBusException {
+		List<RecordObject> result = null;
+		try {
+			result = getDevice(id).ReadAll();
+		}catch(AgileNoResultException e){
+			return null;
+		}catch (Exception ex) {
+			throw new WebApplicationException("Error on reading data", ex);
+		}
+		if (result.size() == 0) {
+			return null;
+		}
+		return result;
+	}
 
-  @GET
-  @Path("/lastUpdate")
-  public List<RecordObject> LastUpdate(@PathParam("id") String id) throws DBusException {
-    return getDevice(id).LastUpdateAll();
-  }
+	@GET
+	@Path("/lastUpdate")
+	public List<RecordObject> LastUpdate(@PathParam("id") String id) throws DBusException {
+		List<RecordObject> result = null;
+		try {
+			result = getDevice(id).LastUpdateAll();
+		}catch(AgileNoResultException e){
+			return null;
+		} catch (Exception ex) {
+			throw new WebApplicationException("Error on reading data", ex);
+		}
+		if (result.size() == 0) {
+			return null;
+		}
+		return result;
+	}
 
   @POST
   @Path("/connection")
@@ -106,18 +127,36 @@ public class Device {
     getDevice(id).Execute(command, args);
   }
 
-  @GET
-  @Path("/{sensorName}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public RecordObject Read(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
-    return getDevice(id).Read(sensorName);
-  }
+	@GET
+	@Path("/{sensorName}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public RecordObject Read(@PathParam("id") String id, @PathParam("sensorName") String sensorName)
+			throws DBusException {
+		RecordObject result = null;
+		try {
+			result = getDevice(id).Read(sensorName);
+		}catch(AgileNoResultException e){
+   		return null;
+		 } catch (Exception ex) {
+ 			 throw new WebApplicationException("Error on reading data", ex);
+		}
+ 		return result;
+	}
 
-  @GET
-  @Path("/{componentID}/lastUpdate")
-  public RecordObject LastUpdate(@PathParam("id") String id, @PathParam("componentID") String componentID) throws DBusException {
-    return getDevice(id).LastUpdate(componentID);
-  }
+	@GET
+	@Path("/{componentID}/lastUpdate")
+	public RecordObject LastUpdate(@PathParam("id") String id, @PathParam("componentID") String componentID)
+			throws DBusException {
+		RecordObject result = null;
+		try {
+			result = getDevice(id).LastUpdate(componentID);
+		} catch(AgileNoResultException e){
+			return null;
+		} catch (Exception ex) {
+ 			 throw new WebApplicationException("Error on reading data", ex);
+		}
+ 		return result;
+	}
 
 
   @POST

@@ -15,57 +15,58 @@
  */
 package iot.agile.http.exception;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import iot.agile.exception.AgileNoResultException;
 
 /**
  *
  * @author Luca Capra <lcapra@create-net.org>
  */
 public class AgileExceptionMapper implements ExceptionMapper<Throwable> {
-  
-  Logger logger = LoggerFactory.getLogger(AgileExceptionMapper.class);
-    
-  protected class ErrorMessage {
 
-    public Response.Status code = Response.Status.INTERNAL_SERVER_ERROR;
-    public String message;
+	Logger logger = LoggerFactory.getLogger(AgileExceptionMapper.class);
 
-    public ErrorMessage(Throwable ex) {
-      this.message = ex.getMessage();
-    }
-    
-    public ErrorMessage(String message) {
-      this.message = message;
-    }
-    
-    public ErrorMessage(String message, Response.Status code) {
-      this.code = code;
-      this.message = message;
-    }
+	protected class ErrorMessage {
 
-  }
+		public Response.Status code = Response.Status.INTERNAL_SERVER_ERROR;
+		public String message;
 
-  @Override
-  public Response toResponse(Throwable ex) {
-    
-    logger.error("Error occured", ex);
-    
-    if(ex instanceof DBusExecutionException) {
-      return Response.status(500)
-            .entity(new ErrorMessage(ex))
-            .type(MediaType.APPLICATION_JSON)
-            .build();
-    }
-    
-    return Response.status(500)
-            .entity(new ErrorMessage(ex))
-            .type(MediaType.APPLICATION_JSON)
-            .build();
-  }
+		public ErrorMessage(Throwable ex) {
+			this.message = ex.getMessage();
+		}
+
+		public ErrorMessage(String message) {
+			this.message = message;
+		}
+
+		public ErrorMessage(String message, Response.Status code) {
+			this.code = code;
+			this.message = message;
+		}
+
+	}
+
+	@Override
+	public Response toResponse(Throwable ex) {
+		logger.error("Error occured", ex);
+		if (ex instanceof WebApplicationException) {
+			Response r = ((WebApplicationException) ex).getResponse();
+			  return Response.status(r.getStatus()).type(MediaType.APPLICATION_JSON)
+		                .entity(ex.getMessage()).build();
+		}else if(ex instanceof AgileNoResultException){
+      return Response.status(202).entity(new ErrorMessage(ex)).type(MediaType.APPLICATION_JSON).build();
+		}else if (ex instanceof DBusExecutionException) {
+			return Response.status(500).entity(new ErrorMessage(ex)).type(MediaType.APPLICATION_JSON).build();
+		}
+		return Response.status(500).entity(new ErrorMessage(ex)).type(MediaType.APPLICATION_JSON).build();
+	}
 
 }

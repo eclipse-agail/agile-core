@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import iot.agile.Device;
+import iot.agile.exception.AgileNoResultException;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceComponent;
@@ -13,8 +17,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	protected Logger logger = LoggerFactory.getLogger(TISensorTag.class);
 	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();	
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
- 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
-	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
+ 	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
 	private static final String TEMPERATURE = "Temperature";
 	private static final String ACCELEROMETER = "Accelerometer";
 	private static final String HUMIDITY = "Humidity";
