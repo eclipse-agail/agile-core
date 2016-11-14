@@ -109,7 +109,8 @@ public class DeviceManager {
 
 	@GET
 	public List<DeviceDefinition> Devices() throws DBusException, JsonProcessingException {
-		return client.getDeviceManager().Devices();
+		List<DeviceDefinition> devices = client.getDeviceManager().Devices();
+		return (devices==null ||devices.size()==0)? null: devices;
 	}
 
 	@POST
