@@ -11,9 +11,11 @@ import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceComponent;
 
 public class TISensorTag extends AgileBLEDevice implements Device {
+	protected Logger logger = LoggerFactory.getLogger(TISensorTag.class);
+	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();	
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
+ 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
 	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
-
 	private static final String TEMPERATURE = "Temperature";
 	private static final String ACCELEROMETER = "Accelerometer";
 	private static final String HUMIDITY = "Humidity";
@@ -392,4 +394,21 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 		return (float) (m * (0.01 * Math.pow(2.0, e)));
 	}
 
+	/**
+   * Given the profile of the component returns the name of the sensor
+   * 
+   * @param uuid
+   * @return
+   */
+  @Override
+  protected String getComponentName(Map<String, String> profile) {
+    String serviceUUID = profile.get(GATT_SERVICE);
+    String charValueUuid = profile.get(GATT_CHARACTERSTICS);
+    for (Entry<String, SensorUuid> su : sensors.entrySet()) {
+      if (su.getValue().serviceUuid.equals(serviceUUID) && su.getValue().charValueUuid.equals(charValueUuid)) {
+        return su.getKey();
+      }
+    }
+    return null;
+  }
 }

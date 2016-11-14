@@ -1,11 +1,7 @@
 package iot.agile.devicemanager.device;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import org.freedesktop.dbus.exceptions.DBusException;
-
 import iot.agile.Device;
 import iot.agile.Protocol;
 import iot.agile.object.DeviceDefinition;
@@ -29,11 +25,9 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 	 * Protocol
 	 */
 	protected static final String BLUETOOTH_LOW_ENERGY = "iot.agile.protocol.BLE";
-
 	protected static final String GATT_SERVICE = "GATT_SERVICE";
 	protected static final String GATT_CHARACTERSTICS = "GATT_CHARACTERSTICS";
 
-	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
 
 	public AgileBLEDevice(DeviceOverview deviceOverview) throws DBusException {
 		super(deviceOverview);
@@ -113,24 +107,6 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Given the profile of the component returns the name of the sensor
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	@Override
-	protected String getComponentName(Map<String, String> profile) {
-		String serviceUUID = profile.get(GATT_SERVICE);
-		String charValueUuid = profile.get(GATT_CHARACTERSTICS);
-		for (Entry<String, SensorUuid> su : sensors.entrySet()) {
-			if (su.getValue().serviceUuid.equals(serviceUUID) && su.getValue().charValueUuid.equals(charValueUuid)) {
-				return su.getKey();
-			}
-		}
-		return null;
 	}
 
 }

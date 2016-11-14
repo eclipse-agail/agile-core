@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.exceptions.DBusException;
-
 import iot.agile.Device;
 import iot.agile.Protocol;
 import iot.agile.Protocol.NewRecordSignal;
@@ -18,6 +18,8 @@ import iot.agile.object.RecordObject;
 import iot.agile.object.DeviceComponent;
 
 public class MedicalDevice extends AgileBLEDevice implements Device {
+  protected Logger logger = LoggerFactory.getLogger(MedicalDevice.class);
+  protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
 	private static final String SpO2 = "SpO2";
 	private static final String PULSE = "PULSE";
 	private static final String PI = "PI";
@@ -244,7 +246,6 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 	 */
  	protected List<String> getComponentNames(Map<String, String> profile) {
 		List<String> ret = new ArrayList<String>();
-		
 		String serviceUUID = profile.get(GATT_SERVICE);
 		String charValueUuid = profile.get(GATT_CHARACTERSTICS);
 		for (Entry<String, SensorUuid> su : sensors.entrySet()) {
@@ -260,4 +261,21 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
  		return "Percentile(%)";
  	}
 
+  /**
+   * Given the profile of the component returns the name of the sensor
+   * 
+   * @param uuid
+   * @return
+   */
+  @Override
+  protected String getComponentName(Map<String, String> profile) {
+    String serviceUUID = profile.get(GATT_SERVICE);
+    String charValueUuid = profile.get(GATT_CHARACTERSTICS);
+    for (Entry<String, SensorUuid> su : sensors.entrySet()) {
+      if (su.getValue().serviceUuid.equals(serviceUUID) && su.getValue().charValueUuid.equals(charValueUuid)) {
+        return su.getKey();
+      }
+    }
+    return null;
+  }
 }
