@@ -16,6 +16,7 @@ import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.RecordObject;
 import iot.agile.object.DeviceComponent;
+import iot.agile.exception.AgileNoResultException;
 
 public class MedicalDevice extends AgileBLEDevice implements Device {
   protected Logger logger = LoggerFactory.getLogger(MedicalDevice.class);
@@ -62,70 +63,81 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 	}
 
 
-	@Override
-	protected String DeviceRead(String componentName) {
-		try {
-			byte[] result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
-			while (result.length != 4) {
-				result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
-			}
-			return formatReading(componentName, result);
-		} catch (DBusException e) {
-			e.printStackTrace();
-		}
-		logger.info("Read not supported");
-		return null;
-	}
+  @Override
+  protected String DeviceRead(String componentName) {
+    if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+      if (isConnected()) {
+        if (isSensorSupported(componentName.trim())) {
+          try {
+            byte[] result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
+            while (result.length != 4) {
+              result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
+            }
+            return formatReading(componentName, result);
+          } catch (DBusException e) {
+            e.printStackTrace();
+          }
+        } else {
+          throw new AgileNoResultException("Sensor not supported:" + componentName);
+        }
+      } else {
+        throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+      }
+    } else {
+      throw new AgileNoResultException("Protocol not supported: " + protocol);
+    }
+    throw new AgileNoResultException("Unable to read "+componentName);
+  }
 	
-	@Override
-	public synchronized void Subscribe(String componentName) {
- 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (isConnected()) {
-				if (isSensorSupported(componentName.trim())) {
-					try {
-						if (!hasotherActiveSubscription(componentName)) {
-							deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
-							addNewRecordSignalHandler();
-						}
-						subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				} else {
-					logger.debug("Sensor not supported: {}", componentName);
-				}
-			} else {
-				logger.debug("BLE Device not connected: {}", deviceName);
-			}
-		} else {
-			logger.debug("Protocol not supported:: {}", protocol);
-		}
-	}
+ @Override
+  public synchronized void Subscribe(String componentName) {
+    if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+      if (isConnected()) {
+        if (isSensorSupported(componentName.trim())) {
+          try {
+            if (!hasotherActiveSubscription(componentName)) {
+              deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
+              addNewRecordSignalHandler();
+            }
+            subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        } else {
+          throw new AgileNoResultException("Sensor not supported:" + componentName);
+        }
+      } else {
+        throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+      }
+    } else {
+      throw new AgileNoResultException("Protocol not supported: " + protocol);
+    }
+  }
 
-	@Override
-	public synchronized void Unsubscribe(String componentName) throws DBusException {
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (isConnected()) {
-				if (isSensorSupported(componentName.trim())) {
-					try {
-						subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
-						if (!hasotherActiveSubscription(componentName)) {
-							deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
-							removeNewRecordSignalHandler();
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				} else {
-					logger.debug("Sensor not supported: {}", componentName);
-				}
-			} else {
-				logger.debug("BLE Device not connected: {}", deviceName);
-			}
-		} else {
-			logger.debug("Protocol not supported:: {}", protocol);
-		}
-	}
+ @Override
+  public synchronized void Unsubscribe(String componentName) throws DBusException {
+    if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+      if (isConnected()) {
+        if (isSensorSupported(componentName.trim())) {
+          try {
+            subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
+            if (!hasotherActiveSubscription(componentName)) {
+              deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
+              removeNewRecordSignalHandler();
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        } else {
+          throw new AgileNoResultException("Sensor not supported:" + componentName);
+        }
+      } else {
+        throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+      }
+    } else {
+      throw new AgileNoResultException("Protocol not supported: " + protocol);
+    }
+  }
 
 	// =======================Utility methods===========================
 

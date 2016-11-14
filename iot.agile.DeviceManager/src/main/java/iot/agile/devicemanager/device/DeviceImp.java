@@ -20,13 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import iot.agile.exception.AgileNoResultException;
 import iot.agile.Device;
 import iot.agile.Protocol;
 import iot.agile.Protocol.NewRecordSignal;
@@ -196,7 +195,11 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * Returns the last update of value
 	 */
 	public RecordObject LastUpdate(String componentID) {
-		return lastReadStore.get(componentID);
+		RecordObject lastUpdate = lastReadStore.get(componentID);
+		if(lastUpdate == null){
+			throw new AgileNoResultException("No lastUpdate value found");
+		}
+		return lastUpdate;
 	}
 
 	/**
@@ -250,8 +253,12 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 		for (DeviceComponent component : profile) {
 			if(isSensorSupported(component.id)){
 			new Thread(()->{
+				try {
 					recObjs.add(Read(component.id));
-					latch.countDown();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				latch.countDown();
 				}).start();				
 			}
 		}
@@ -272,7 +279,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	@Override
 	public RecordObject Read(String componentName) {
 		RecordObject lastRead = lastReadStore.get(componentName);
-		if (isRecentRead(lastRead)) {
+    if (isRecentRead(lastRead)) {
 			logger.info("Cached read....{}", lastRead);
 			return lastRead;
 		} else {
@@ -294,8 +301,8 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 						ongoingReads.get(componentName).countDown();
 						synchronized (ongoingReads) {
 							ongoingReads.remove(componentName);
-						}
-						logger.info("New read....{}", data);
+            }
+            logger.info("New read....{}", data);
 						return data;
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -303,7 +310,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 				}
 			}
 		}
-		return null;
+ 			throw new AgileNoResultException("Unable to read value "+componentName );
 	}
 
 	/**

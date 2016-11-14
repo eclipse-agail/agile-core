@@ -2,9 +2,8 @@ package iot.agile.devicemanager.device;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Map.Entry;
 import org.freedesktop.dbus.exceptions.DBusException;
-
 import iot.agile.Device;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
@@ -139,7 +138,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	public String NotificationRead(String componentName){
  		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 		if (isConnected()) {
-			if (isSensorSupported(componentName.trim())) {
+      if (isSensorSupported(componentName.trim())) {
 					try {
 						deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
 						byte[] period = { 100 };
@@ -150,16 +149,15 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 					e.printStackTrace();
 				}
 			} else {
-				logger.info("Sensor not supported: {}", componentName);
+        throw new AgileNoResultException("Sensor not supported:" + componentName);
 			}
-		} else {
-			logger.info("BLE Device not connected: {}", deviceName);
-		}
+    } else {
+      throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+    }
 	} else {
-		logger.info("Protocol not supported:: {}", protocol);
+    throw new AgileNoResultException("Protocol not supported: " + protocol);
 	}
-		return null;
-
+ 		throw new AgileNoResultException("Unable to read "+componentName);
 	}
 	
 	@Override
@@ -185,17 +183,17 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 						e.printStackTrace();
 					}
 				} else {
-					logger.info("Sensor not supported: {}", componentName);
+          throw new AgileNoResultException("Sensor not supported:" + componentName);
 				}
 			} else {
-				logger.info("BLE Device not connected: {}", deviceName);
+        throw new AgileNoResultException("BLE Device not connected: " + deviceName);
 			}
 		} else {
-			logger.info("Protocol not supported:: {}", protocol);
+      throw new AgileNoResultException("Protocol not supported: " + protocol);
 		}
 	}
 
-	@Override
+@Override
 	public synchronized void Unsubscribe(String componentName) throws DBusException {
 		logger.info("Unsubscribe from {}", componentName);
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
@@ -216,13 +214,13 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 						e.printStackTrace();
 					}
 				} else {
-					logger.debug("Sensor not supported: {}", componentName);
+          throw new AgileNoResultException("Sensor not supported:" + componentName);
 				}
 			} else {
-				logger.debug("BLE Device not connected: {}", deviceName);
+        throw new AgileNoResultException("BLE Device not connected: " + deviceName);
 			}
 		} else {
-			logger.debug("Protocol not supported:: {}", protocol);
+      throw new AgileNoResultException("Protocol not supported: " + protocol);
 		}
 	}
 
