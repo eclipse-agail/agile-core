@@ -89,6 +89,7 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
    }
    Disconnect();
   }
+  
 	/**
 	 * Checks if there is another active subscription on the given component of
 	 * the device

@@ -27,6 +27,7 @@ import iot.agile.Device;
 import iot.agile.DeviceManager;
 import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
+import iot.agile.devicemanager.device.factory.DeviceFactory;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceComponent;
@@ -190,11 +191,13 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			Device device = getDevice(devDefn);
 			if (device != null) {
 				try {
-					device.Disconnect();
+					device.Stop();
 					connection.unExportObject(devDefn.path);
 					devices.remove(devDefn);
-				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info("Device deleted: {}", id);
+					} catch (Exception e) {
+				    logger.error("Unable to delete device: {}", id);
+				    e.printStackTrace();
 				}
 			}
 		}
