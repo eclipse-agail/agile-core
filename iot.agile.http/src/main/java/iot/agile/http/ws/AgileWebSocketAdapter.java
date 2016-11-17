@@ -19,6 +19,7 @@ import java.io.IOException;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WebSocketException;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSigHandler;
@@ -87,6 +88,8 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
                   session.getRemote().sendString(mapper.writeValueAsString(sig.record));
                 } catch (IOException e) {
                   e.printStackTrace();
+                } catch (WebSocketException e) { //undeclared in Jetty getRemote, and kills the DBus signal handler if not catched here
+                  e.printStackTrace();
                 }
               }
             }
@@ -106,6 +109,8 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
               session.getRemote().sendString(mapper.writeValueAsString(sig.record));
             } catch (IOException e) {
               e.printStackTrace();
+              } catch (WebSocketException e) { //undeclared in Jetty getRemote, and kills the DBus signal handler if not catched here
+                e.printStackTrace();
             }
           }
         };
