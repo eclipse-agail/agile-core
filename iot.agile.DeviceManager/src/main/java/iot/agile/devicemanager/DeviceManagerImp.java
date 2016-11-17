@@ -110,41 +110,34 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			registeredDev = device.Definition();
 			logger.info("Device already registered:  {}", device.Id());
 		} else {
-			try {
-				if (deviceType.equals(TISensorTag.deviceTypeName)) {
-					logger.info("Creating new {}", TISensorTag.deviceTypeName);
-					device = new TISensorTag(deviceOverview);
-				} else if (deviceType.equals(MedicalDevice.deviceTypeName)) {
-					logger.info("Creating new {}", MedicalDevice.deviceTypeName);
-					device = new MedicalDevice(deviceOverview);
-				} else if (deviceType.equals("GE Lamp")) {
-				}
-				if (device != null) {
-					registeredDev = device.Definition();
-					devices.add(registeredDev);
-				}
-			} catch (Exception e) {
-				logger.error("Can not register device: {}", e.getMessage());
-				e.printStackTrace();
-			}
-		}
-
-		// connect device
-		if (device != null) {
-			final Device dev = device;
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						dev.Connect();
-						logger.info("Device connected");
-					} catch (Exception e) {
-						logger.error("Error encountered while attempting to connect: {}", e.getMessage());
-					}
-				}
-			}).start();
-		}
-		return registeredDev;
+		  try {
+        device = DeviceFactory.getDevice(deviceType, deviceOverview);
+        logger.info("Creating new device: {}", deviceType);
+        if (device != null) {
+          registeredDev = device.Definition();
+          devices.add(registeredDev);
+        }
+      } catch (Exception e) {
+        logger.error("Can not register device: {}", e.getMessage());
+        e.printStackTrace();
+        }
+		}	  
+    // connect device
+    if (device != null) {
+      final Device dev = device;
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            dev.Connect();
+            logger.info("Device connected");
+          } catch (Exception e) {
+            logger.error("Error encountered while attempting to connect: {}", e.getMessage());
+          }
+        }
+      }).start();
+    }
+    return registeredDev;
 	}
 
 	/**
