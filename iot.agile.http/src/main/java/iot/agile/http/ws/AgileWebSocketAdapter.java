@@ -105,12 +105,14 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
         sigHandler = new DBusSigHandler<Device.NewSubscribeValueSignal>() {
           @Override
           public void handle(NewSubscribeValueSignal sig) {
-            try {
-              session.getRemote().sendString(mapper.writeValueAsString(sig.record));
-            } catch (IOException e) {
-              e.printStackTrace();
+            synchronized(AgileWebSocketAdapter.this) {
+              try {
+                session.getRemote().sendString(mapper.writeValueAsString(sig.record));
+              } catch (IOException e) {
+                e.printStackTrace();
               } catch (WebSocketException e) { //undeclared in Jetty getRemote, and kills the DBus signal handler if not catched here
                 e.printStackTrace();
+              }
             }
           }
         };
@@ -127,7 +129,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
   }
 
   @Override
-  public void onWebSocketClose(int statusCode, String reason) {
+  public synchronized void onWebSocketClose(int statusCode, String reason) {
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 
