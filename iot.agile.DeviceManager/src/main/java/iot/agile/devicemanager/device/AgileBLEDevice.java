@@ -79,7 +79,16 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 			throw new DBusException("Failed to disconnect device:" + deviceID);
 		}
 	}
-
+	
+  @Override
+  public void Stop() throws DBusException {
+   for(String component : subscribedComponents.keySet()){
+     if(subscribedComponents.get(component) >0){
+       Unsubscribe(component);     
+     }
+   }
+   Disconnect();
+  }
 	/**
 	 * Checks if there is another active subscription on the given component of
 	 * the device

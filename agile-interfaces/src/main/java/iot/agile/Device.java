@@ -163,12 +163,17 @@ public interface Device extends DBusInterface {
   @org.freedesktop.DBus.Description("Enable subscription")
   public void Subscribe(String component) throws DBusException;
   
-  /**
+   /**
    * disable subscription
    */
-  @org.freedesktop.DBus.Description("Enable subscription")
+  @org.freedesktop.DBus.Description("disable subscription")
   public void Unsubscribe(String component) throws DBusException;
   
+  /**
+   * Stop device gracefully
+   */
+ @org.freedesktop.DBus.Description("Stop device")
+ public void Stop() throws DBusException;
 	/**
 	 * New data reading signal for subscribe methods
 	 * 
