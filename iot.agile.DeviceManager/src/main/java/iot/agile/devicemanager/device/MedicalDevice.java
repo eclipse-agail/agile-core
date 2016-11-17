@@ -62,6 +62,17 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 		super(devicedefinition);
 	}
 
+	@Override
+	public void Connect() throws DBusException {
+		super.Connect();
+		for (String componentName : subscribedComponents.keySet()) {
+			if (subscribedComponents.get(componentName) > 0) {
+				logger.info("Resubscribing to {}", componentName);
+				deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
+			}
+		}
+	}
+
 
   @Override
   protected String DeviceRead(String componentName) {
