@@ -31,24 +31,23 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import iot.agile.exception.AgileDeviceNotFoundException;
+import iot.agile.exception.AgileNoResultException;
 import iot.agile.http.Util;
 import iot.agile.http.resource.devicemanager.BatchBody;
 import iot.agile.http.service.DbusClient;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  *
@@ -122,20 +121,14 @@ public class DeviceManager {
 	@GET
 	@Path("/{id}")
 	public DeviceDefinition Read(@PathParam("id") String id) throws DBusException {
-		try {
-			DeviceDefinition result = client.getDeviceManager().Read(id);
-			return result;
-		} catch (Exception e) {
-			logger.debug("device not found");
-			ResponseBuilder builder = Response.status(Response.Status.NOT_FOUND);
-			builder.entity("404: Device not found");
-			Response response = builder.build();
-			throw new WebApplicationException(response);
-		}
+    try {
+      return client.getDeviceManager().Read(id);
+    } catch (AgileNoResultException e) {
+      return null;
+    } catch (Exception ex) {
+      throw new WebApplicationException("Error on reading device", ex);
+    }
 	}
-	
-	
-	
 
 	@PUT
 	@Path("/{id}")
@@ -147,12 +140,15 @@ public class DeviceManager {
 	@DELETE
 	@Path("/{id}")
 	public void Delete(@PathParam("id") String id) throws DBusException {
-		try {
-			client.getDeviceManager().Delete(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    try {
+      client.getDeviceManager().Delete(id);
+    } catch (AgileDeviceNotFoundException e) {
+      logger.debug("Device not found ex");
+      throw e;
+    } catch (Exception e) {
+      throw new WebApplicationException("Error on deleting device", e);
+    }
+  }
 
 	@POST
 	@Path("/batch")

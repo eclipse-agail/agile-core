@@ -28,6 +28,7 @@ import iot.agile.DeviceManager;
 import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.devicemanager.device.factory.DeviceFactory;
+import iot.agile.exception.AgileDeviceNotFoundException;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceComponent;
@@ -154,7 +155,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 				return dd;
 			}
 		}
-		return null;
+		throw new AgileDeviceNotFoundException("Device not found");
 	}
 
 	/**

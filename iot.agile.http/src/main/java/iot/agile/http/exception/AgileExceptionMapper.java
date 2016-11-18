@@ -24,6 +24,7 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import iot.agile.exception.AgileDeviceNotFoundException;
 import iot.agile.exception.AgileNoResultException;
 
 /**
@@ -57,16 +58,20 @@ public class AgileExceptionMapper implements ExceptionMapper<Throwable> {
 	@Override
 	public Response toResponse(Throwable ex) {
 		logger.error("Error occured", ex);
-		if (ex instanceof WebApplicationException) {
-			Response r = ((WebApplicationException) ex).getResponse();
-			  return Response.status(r.getStatus()).type(MediaType.APPLICATION_JSON)
-		                .entity(ex.getMessage()).build();
-		}else if(ex instanceof AgileNoResultException){
-      return Response.status(202).entity(new ErrorMessage(ex)).type(MediaType.APPLICATION_JSON).build();
-		}else if (ex instanceof DBusExecutionException) {
-			return Response.status(500).entity(new ErrorMessage(ex)).type(MediaType.APPLICATION_JSON).build();
-		}
-		return Response.status(500).entity(new ErrorMessage(ex)).type(MediaType.APPLICATION_JSON).build();
-	}
+    if (ex instanceof AgileNoResultException) {
+      return Response.status(202).entity(new ErrorMessage(ex.getMessage(), Response.Status.NO_CONTENT))
+          .type(MediaType.APPLICATION_JSON).build();
+    } else if (ex instanceof AgileDeviceNotFoundException) {
+      return Response.status(404).entity(new ErrorMessage(ex.getMessage(), Response.Status.NOT_FOUND))
+          .type(MediaType.APPLICATION_JSON).build();
+    } else if (ex instanceof DBusExecutionException) {
+      return Response.status(500).entity(new ErrorMessage(ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR))
+          .type(MediaType.APPLICATION_JSON).build();
+    } else if (ex instanceof WebApplicationException) {
+      Response r = ((WebApplicationException) ex).getResponse();
+      return Response.status(r.getStatus()).type(MediaType.APPLICATION_JSON).entity(ex.getMessage()).build();
+    }
+    return Response.status(500).entity(new ErrorMessage(ex)).type(MediaType.APPLICATION_JSON).build();
+  }
 
 }

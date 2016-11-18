@@ -188,7 +188,8 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * Returns the profile of the device
 	 */
 	public List<DeviceComponent> Profile() {
-		return null;
+	  logger.debug("Device Profile is not implemented");
+		throw new AgileNoResultException("Device Profile is not implemented");
 	}
 
 	/**
