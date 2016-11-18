@@ -84,7 +84,13 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * Protocol specific address
 	 */
 	protected String address;
-
+	/**
+	 * Last seen 
+	 */
+	protected long lastSeen;
+	/**
+	 * 	
+	 */
 	protected List<DeviceComponent> profile = new ArrayList<DeviceComponent>();
 
 	/**
@@ -216,9 +222,18 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * @see iot.agile.protocol.ble.device.IDevice#Data()
 	 */
 	public RecordObject Data() {
-		return data;
-	}
+	  if(data == null){
+      throw new AgileNoResultException("No data avaliable");
+    }
+	  return data;
+		}
 
+  public long LastSeen() {
+    if(data == null){
+      throw new AgileNoResultException("Device not seen yet");
+    }
+    return data.lastUpdate;
+  }
 	/**
 	 *
 	 *

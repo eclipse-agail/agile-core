@@ -90,6 +90,20 @@ public class Device {
     }
   }
 
+  @GET
+  @Path("/lastSeen")
+  public long LastSeen(@PathParam("id") String id) throws DBusException {
+     try {
+      return getDevice(id).LastSeen();
+    } catch (UnknownObject ex) {
+      throw new AgileDeviceNotFoundException("Device not found");
+    }  catch (AgileNoResultException e) {
+      throw e;
+    }catch (Exception ex) {
+      throw new WebApplicationException("Error on reading data", ex);
+    }
+  }
+
 	@GET
 	public List<RecordObject> Read(@PathParam("id") String id) throws DBusException {
     List<RecordObject> result = null;

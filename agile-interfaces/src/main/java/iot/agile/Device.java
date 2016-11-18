@@ -60,6 +60,14 @@ public interface Device extends DBusInterface {
   public StatusType Status();
 
   /**
+  *
+  * @return
+  *  LastSeen
+  */
+ @org.freedesktop.DBus.Description("Last seen time")
+ public long LastSeen();
+
+  /**
    *
    * @return return User configuration storage (in terms of KeyValue)
    */
