@@ -11,7 +11,6 @@
   <modules>
     <module>iot.agile.DeviceManager</module>
     <module>iot.agile.ProtocolManager</module>
-    <module>iot.agile.protocol.BLE</module>
     <module>agile-interfaces</module>
     <module>iot.agile.http</module>
     <module>agile-main</module>
