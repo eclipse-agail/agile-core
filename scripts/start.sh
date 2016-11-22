@@ -12,7 +12,7 @@ echo "DEPS dir $DEPS"
 
 if [ "${MODULE}" = 'all' ]; then
   echo ""
-  echo "To start a single module use:\n $0 DeviceManager|ProtocolManager|BLE|http"
+  echo "To start a single module use:\n $0 DeviceManager|ProtocolManager|http"
   echo ""
 fi
 
