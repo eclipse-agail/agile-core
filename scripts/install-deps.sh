@@ -14,6 +14,5 @@ fi
 cd $CURRDIR
 
 sh ./scripts/install-dbus-java.sh $DEPS
-sh ./scripts/install-tinyb.sh $DEPS
 
 mvn clean install -U
