@@ -83,37 +83,10 @@ COPY scripts scripts
 RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 scripts/install-dbus-java.sh $APATH/deps
 
-RUN PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
-scripts/install-tinyb.sh $APATH/deps
-
 # we need dbus-launch
 RUN apt-get update && apt-get install --no-install-recommends -y \
     dbus-x11 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# required by tinyb JNI
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    libxrender1 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# required by bluez
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    libglib2.0-dev \
-    libdbus-1-dev \
-    libudev-dev \
-    libical-dev \
-    libreadline-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# isntall bluez
-RUN wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.39.tar.xz \
-    && tar xf bluez-5.39.tar.xz \
-    && rm bluez-5.39.tar.xz \
-    && cd bluez-5.39 \
-    && ./configure \
-    && make -j 4 \
-    && sudo make install \
-    && cd .. && rm -rf bluez-5.39
 
 # copy directories into WORKDIR
 COPY agile-interfaces agile-interfaces
@@ -121,7 +94,6 @@ COPY agile-main agile-main
 COPY iot.agile.DeviceManager iot.agile.DeviceManager
 COPY iot.agile.ProtocolManager iot.agile.ProtocolManager
 COPY iot.agile.http iot.agile.http
-COPY iot.agile.protocol.BLE iot.agile.protocol.BLE
 COPY test test
 COPY pom.xml pom.xml
 

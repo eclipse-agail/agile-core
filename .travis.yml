@@ -6,7 +6,6 @@ services:
 
 env:
   - IMAGE=agileiot/agile-core-x86_64
-  - IMAGE=agileiot/agile-ble-x86_64
 
 cache:
   directories:

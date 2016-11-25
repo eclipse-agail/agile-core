@@ -83,37 +83,10 @@ COPY scripts scripts
 RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 scripts/install-dbus-java.sh $APATH/deps
 
-RUN PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
-scripts/install-tinyb.sh $APATH/deps
-
 # we need dbus-launch
 RUN apt-get update && apt-get install --no-install-recommends -y \
     dbus-x11 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# required by tinyb JNI
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    libxrender1 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# required by bluez
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    libglib2.0-dev \
-    libdbus-1-dev \
-    libudev-dev \
-    libical-dev \
-    libreadline-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# isntall bluez
-MOUNT bluez-5.39:/usr/src/app/bluez-5.39/
-RUN wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.39.tar.xz \
-    && tar xf bluez-5.39.tar.xz \
-    && rm bluez-5.39.tar.xz \
-    && cd bluez-5.39 \
-    && ./configure \
-    && make -j 4 \
-    && sudo make install
 
 # copy directories into WORKDIR
 COPY agile-interfaces agile-interfaces
@@ -121,7 +94,6 @@ COPY agile-main agile-main
 COPY iot.agile.DeviceManager iot.agile.DeviceManager
 COPY iot.agile.ProtocolManager iot.agile.ProtocolManager
 COPY iot.agile.http iot.agile.http
-COPY iot.agile.protocol.BLE iot.agile.protocol.BLE
 COPY test test
 COPY pom.xml pom.xml
 
@@ -135,7 +107,6 @@ TAG agile-core-armv7l-builder
 EXPORT iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar
 EXPORT iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar
 EXPORT iot.agile.http/target/http-1.0-jar-with-dependencies.jar
-EXPORT iot.agile.protocol.BLE/target/ble-1.0-jar-with-dependencies.jar
 EXPORT deps
 
 FROM resin/raspberrypi2-debian:jessie-20161010
@@ -183,31 +154,10 @@ ENV APATH /usr/src/app
 RUN apt-get update && apt-get install --no-install-recommends -y \
     qdbus
 COPY scripts scripts
-RUN mkdir -p iot.agile.ProtocolManager/target iot.agile.DeviceManager/target iot.agile.http/target iot.agile.protocol.BLE/target
+RUN mkdir -p iot.agile.ProtocolManager/target iot.agile.DeviceManager/target iot.agile.http/target
 IMPORT protocol-manager-1.0-jar-with-dependencies.jar iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar
 IMPORT device-manager-1.0-jar-with-dependencies.jar iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar
 IMPORT http-1.0-jar-with-dependencies.jar iot.agile.http/target/http-1.0-jar-with-dependencies.jar
-IMPORT ble-1.0-jar-with-dependencies.jar iot.agile.protocol.BLE/target/ble-1.0-jar-with-dependencies.jar
 IMPORT deps .
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    make \
-    gcc \
-    libc-dev \
-    libglib2.0-dev \
-    libdbus-1-dev \
-    libreadline-dev \
-    libudev-dev \
-    libical-dev \
-    sudo \
-    dbus \
-    libxrender1 \
-    libxext6 \
-    libxtst6 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-MOUNT bluez-5.39:/usr/src/app/bluez-5.39/
-RUN cd bluez-5.39 \
-    && sudo make install
-
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
 TAG agile-core-armv7l
