@@ -16,6 +16,7 @@
 package iot.agile.http;
 
 import iot.agile.http.exception.AgileExceptionMapper;
+import iot.agile.http.filter.CORSResponseFilter;
 import iot.agile.http.service.DbusClient;
 import javax.inject.Singleton;
 import javax.ws.rs.ApplicationPath;
@@ -45,7 +46,8 @@ public class AgileApplication extends ResourceConfig {
     
     register(new AgileBinder());
     register(new AgileExceptionMapper());
-    
+    register(CORSResponseFilter.class);
+
     packages("iot.agile.http.resource;");
     
 
