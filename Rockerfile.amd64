@@ -84,7 +84,7 @@ RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 scripts/install-dbus-java.sh $APATH/deps
 
 RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
-scripts/install-agile-scripts.sh $APATH/deps
+scripts/install-agile-interfaces.sh $APATH/deps
 
 # we need dbus-launch
 RUN apt-get update && apt-get install --no-install-recommends -y \
