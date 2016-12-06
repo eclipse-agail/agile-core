@@ -22,7 +22,7 @@ if [ ! -e "$BUILD/agile-interfaces" ] ; then
   cd $BUILD
   git clone https://github.com/Agile-IoT/agile-api-spec.git
    cd agile-api-spec/agile-dbus-java-interface
-   chmod 755 ./scripts/install-dependencies.sh
+   chmod +x ./scripts/install-dependencies.sh
    ./scripts/install-dependencies.sh
    mvn package
    cp target/agile-interfaces-1.0.jar $DEPS

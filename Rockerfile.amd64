@@ -83,6 +83,8 @@ COPY scripts scripts
 RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 scripts/install-dbus-java.sh $APATH/deps
 
+RUN chmod +x scripts/install-agile-interfaces.sh
+
 RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 scripts/install-agile-interfaces.sh $APATH/deps
 
