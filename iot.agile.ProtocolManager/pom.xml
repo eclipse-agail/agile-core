@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <groupId>iot.agile</groupId>
     <artifactId>dbus-api</artifactId>
     <version>1.0</version>
   </parent>
-  
-  <name>Protocol Manager</name>  
+
+  <name>Protocol Manager</name>
   <artifactId>protocol-manager</artifactId>
   <packaging>jar</packaging>
 
@@ -35,7 +35,7 @@
         <configuration>
           <mainClass>iot.agile.protocolmanager.ProtocolManagerImp</mainClass>
         </configuration>
-        
+
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -58,17 +58,9 @@
               <goal>single</goal>
             </goals>
           </execution>
-        </executions>        
-      </plugin>        
+        </executions>
+      </plugin>
     </plugins>
   </build>
-  
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>agile-interfaces</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
 
 </project>

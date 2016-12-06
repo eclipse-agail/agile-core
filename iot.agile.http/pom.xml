@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  
+
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <groupId>iot.agile</groupId>
     <artifactId>dbus-api</artifactId>
     <version>1.0</version>
   </parent>
-  
+
   <artifactId>http</artifactId>
   <packaging>jar</packaging>
   <name>HTTP API</name>
@@ -17,17 +17,10 @@
     <jersey.config.test.container.port>8080</jersey.config.test.container.port>
     <jersey.version>2.23.1</jersey.version>
     <jetty.version>9.3.10.v20160621</jetty.version>
-  </properties>    
-    
+  </properties>
+
   <dependencies>
 
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>agile-interfaces</artifactId>
-      <version>${project.version}</version>
-    </dependency>    
-    
-    
     <!--Jersey deps-->
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
@@ -115,9 +108,9 @@
               <goal>single</goal>
             </goals>
           </execution>
-        </executions>        
-      </plugin>          
+        </executions>
+      </plugin>
     </plugins>
-  </build>            
-                                    
+  </build>
+
 </project>

@@ -7,11 +7,10 @@
   <version>1.0</version>
   <packaging>pom</packaging>
   <name>Agile DBus API</name>
-  
+
   <modules>
-    <module>iot.agile.DeviceManager</module>
     <module>iot.agile.ProtocolManager</module>
-    <module>agile-interfaces</module>
+    <module>iot.agile.DeviceManager</module>
     <module>iot.agile.http</module>
     <module>agile-main</module>
   </modules>
@@ -33,12 +32,11 @@
   </repositories>
 
   <dependencies>
-
-<!--    <dependency>
-      <groupId>org.freedesktop.dbus</groupId>
-      <artifactId>dbus-java</artifactId>
-      <version>2.9</version>
-    </dependency>-->
+    <dependency>
+       <groupId>iot.agile</groupId>
+       <artifactId>agile-interfaces</artifactId>
+       <version>1.0</version>
+     </dependency>
     <dependency>
       <groupId>org.freedesktop.dbus</groupId>
       <artifactId>libdbus-java</artifactId>
@@ -81,5 +79,4 @@
       <version>${logback.version}</version>
     </dependency>
   </dependencies>
-
 </project>

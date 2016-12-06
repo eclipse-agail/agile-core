@@ -13,13 +13,6 @@
 
   <name>Device Manager</name>
   <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>agile-interfaces</artifactId>
-      <version>1.0</version>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>
@@ -59,10 +52,10 @@
               <goal>single</goal>
             </goals>
           </execution>
-        </executions>        
-      </plugin>      
-    </plugins>   
-    
+        </executions>
+      </plugin>
+    </plugins>
+
   </build>
 
 </project>

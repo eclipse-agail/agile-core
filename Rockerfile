@@ -83,13 +83,15 @@ COPY scripts scripts
 RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 scripts/install-dbus-java.sh $APATH/deps
 
+RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
+scripts/install-agile-interfaces.sh $APATH/deps
+
 # we need dbus-launch
 RUN apt-get update && apt-get install --no-install-recommends -y \
     dbus-x11 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # copy directories into WORKDIR
-COPY agile-interfaces agile-interfaces
 COPY agile-main agile-main
 COPY iot.agile.DeviceManager iot.agile.DeviceManager
 COPY iot.agile.ProtocolManager iot.agile.ProtocolManager

@@ -14,5 +14,6 @@ fi
 cd $CURRDIR
 
 sh ./scripts/install-dbus-java.sh $DEPS
+sh ./scripts/install-agile-interfaces.sh $DEPS
 
 mvn clean install -U
