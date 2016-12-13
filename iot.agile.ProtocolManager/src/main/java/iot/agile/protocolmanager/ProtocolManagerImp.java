@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.freedesktop.DBus.Error.ServiceUnknown;
 import org.freedesktop.DBus.Properties;
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.Variant;
@@ -63,6 +64,11 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	public static final String ZB_PROTOCOL_ID = "iot.agile.protocol.ZB";
 
 	/**
+	 * Dummy Protocol Agile ID 
+	 */
+	public static final String DUMMY_PROTOCOL_ID = "iot.agile.protocol.Dummy";
+	
+	/**
 	 * List of supported protocols
 	 */
 	final private List<ProtocolOverview> protocols = new ArrayList<ProtocolOverview>();
@@ -77,8 +83,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 		// for demo purposes
 		protocolManager.Add(BLE_PROTOCOL_ID);
-
-	}
+		protocolManager.Add(DUMMY_PROTOCOL_ID);
+ 	}
 
 	public ProtocolManagerImp() throws DBusException {
 		dbusConnect(AGILE_PROTOCOL_MANAGER_BUS_NAME, AGILE_PROTOCOL_MANAGER_BUS_PATH, this);
@@ -154,10 +160,11 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 			Protocol protocolInstance;
 			try {
-
 				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
-				protocolInstance.StartDiscovery();
-			} catch (DBusException ex) {
+ 	      protocolInstance.StartDiscovery();
+ 			}catch(ServiceUnknown ex){
+        logger.info("{} protocol is not supported", protocol.name); 
+ 			}catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
 			}
 
@@ -176,7 +183,9 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			try {
 				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
 				protocolInstance.StopDiscovery();
-			} catch (DBusException ex) {
+			}catch(ServiceUnknown ex){
+	       logger.info("{} protocol is not supported", protocol.name); 
+	    } catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
 			}
 		}
@@ -209,6 +218,9 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 				case ZB_PROTOCOL_ID:
 					protocols.add(new ProtocolOverview("ZB", "ZigBee", protocolId, "Avaliable"));
 					break;
+				case DUMMY_PROTOCOL_ID:
+          protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolId, "Avaliable"));
+          break;
 			}
 		}
 	}
