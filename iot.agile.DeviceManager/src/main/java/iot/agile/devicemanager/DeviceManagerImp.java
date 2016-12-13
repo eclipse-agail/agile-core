@@ -25,13 +25,14 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
+import iot.agile.devicemanager.device.DummyDevice;
 import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.devicemanager.device.factory.DeviceFactory;
 import iot.agile.exception.AgileDeviceNotFoundException;
 import iot.agile.object.AbstractAgileObject;
-import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceComponent;
+import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
 
 /**
@@ -96,6 +97,9 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		}
 		if(MedicalDevice.Matches(deviceOverview)) {
 			ret.add(MedicalDevice.deviceTypeName);
+		}
+		if(DummyDevice.Matches(deviceOverview)){
+ 		  ret.add(DummyDevice.deviceTypeName);
 		}
 		if(deviceOverview.name.equals("GE Lamp")) {
 			ret.add("GE Lamp");
@@ -234,8 +238,8 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 */
 	private Device getDevice(DeviceDefinition devDef) {
 		String objectName = "iot.agile.Device";
-		String objectPath = "/iot/agile/Device/ble" + devDef.address.replace(":", "");
-		try {
+    String objectPath = "/iot/agile/Device/"+devDef.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + devDef.address.replace(":", "");
+     try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 			Device device = (Device) connection.getRemoteObject(objectName, objectPath);
 			return device;
@@ -254,9 +258,8 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 */
 	private Device getDevice(DeviceOverview devOverivew) {
 		String objectName = "iot.agile.Device";
-		String objectPath = "/iot/agile/Device/ble" + devOverivew.id.replace(":", "");
-		logger.info(objectPath);
-		try {
+		String objectPath = "/iot/agile/Device/"+devOverivew.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + devOverivew.id.replace(":", "");
+ 		try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 			Device device = (Device) connection.getRemoteObject(objectName, objectPath);
 			return device;

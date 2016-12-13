@@ -1,6 +1,7 @@
 package iot.agile.devicemanager.device.factory;
 
 import iot.agile.Device;
+import iot.agile.devicemanager.device.DummyDevice;
 import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.object.DeviceOverview;
@@ -31,6 +32,9 @@ public class DeviceFactory {
       break;
     case "Oximeter":
       device = new MedicalDevice(deviceOverview);
+      break;
+    case "Dummy":
+      device = new DummyDevice(deviceOverview);
       break;
     default:
       throw new Exception("Device: " + deviceType + " does not have a matching type ");

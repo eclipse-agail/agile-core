@@ -122,7 +122,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 
 	public DeviceImp(DeviceOverview deviceOverview) throws DBusException {
 		this.deviceName = deviceOverview.name;
-		this.deviceID = "ble" + deviceOverview.id.replace(":", "");
+		this.deviceID = deviceOverview.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + deviceOverview.id.replace(":", "");
 		this.address = deviceOverview.id;
 		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
 	}
@@ -142,15 +142,13 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 		this.deviceName = devicedefinition.name;
 		this.deviceID = devicedefinition.deviceId;
 		this.address = devicedefinition.address;
-		// this.protocol = BLUETOOTH_LOW_ENERGY;
-		this.profile = devicedefinition.streams;
-		// this.protocol =devicedefinition.protocol;
-		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
+ 		this.profile = devicedefinition.streams;
+ 		this.deviceAgileID = AGILE_DEVICE_BASE_ID;
 	}
 
 	public DeviceDefinition Definition() {
-		return new DeviceDefinition(deviceID, address, deviceName, "", protocol,
-				AGILE_DEVICE_BASE_BUS_PATH + "ble" + address.replace(":", ""), profile);
+ 		return new DeviceDefinition(deviceID, address, deviceName, "", protocol,
+				AGILE_DEVICE_BASE_BUS_PATH + protocol.replace("iot.agile.protocol.", "").toLowerCase() + address.replace(":", ""), profile);
 
 	}
 
