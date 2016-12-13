@@ -6,6 +6,7 @@ services:
 
 env:
   - IMAGE=agileiot/agile-core-armv7l
+    DOCKER_CACHE_FILE=/home/travis/docker-cache/cache.tar.gz
 
 cache:
   directories:
@@ -24,12 +25,13 @@ before_install:
   - if [ -f /home/travis/docker-cache/cache.tar.gz ]; then
       gunzip -c /home/travis/docker-cache/cache.tar.gz | docker load || true;
     fi
-  - docker build -t agile-core-armv7l .
-  - docker tag agile-core-armv7l $IMAGE:$TRAVIS_BRANCH
+  - docker run --rm --privileged multiarch/qemu-user-static:register
+  - docker build -t $IMAGE:$TRAVIS_BRANCH .
   - if [[ ${TRAVIS_PULL_REQUEST} == "false" ]]; then
-      mkdir -p $(dirname /home/travis/docker-cache/cache.tar.gz);
-      docker save $(docker history -q $IMAGE:$TRAVIS_BRANCH | grep -v '<missing>') $(docker history -q agile-core-armv7l | grep -v '<missing>') | gzip > /home/travis/docker-cache/cache.tar.gz;
+      mkdir -p $(dirname ${DOCKER_CACHE_FILE});
+      docker save $(docker history -q $IMAGE:$TRAVIS_BRANCH | grep -v '<missing>') | gzip > ${DOCKER_CACHE_FILE};
     fi
+
 install:
       - CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ scripts/install-deps.sh
 after_success:
