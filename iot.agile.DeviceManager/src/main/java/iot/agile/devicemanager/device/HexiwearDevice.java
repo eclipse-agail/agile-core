@@ -21,20 +21,64 @@ import iot.agile.exception.AgileNoResultException;
 public class HexiwearDevice extends AgileBLEDevice implements Device {
   protected Logger logger = LoggerFactory.getLogger(HexiwearDevice.class);
   protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
-	private static final String Acc = "Acc";
+  private static final String Acc = "Accelerometer";
+  private static final String Gyro = "Gyroscope";
+  private static final String Magnetometer = "Magnetometer";
+
+  private static final String AmbientLight = "Ambient Light";
+  private static final String Temperature = "Temperature";
+  private static final String Humidity = "Humidity";
+  private static final String Pressure = "Atmospheric Pressure";
+
+  private static final String Heartrate = "Heart Rate";
+  private static final String Steps = "Steps";
+  private static final String Calories = "Calories";
+
 
 	{
 		subscribedComponents.put(Acc, 0);
+		subscribedComponents.put(Gyro, 0);
+		subscribedComponents.put(Magnetometer, 0);
+
+		subscribedComponents.put(AmbientLight, 0);
+		subscribedComponents.put(Temperature, 0);
+		subscribedComponents.put(Humidity, 0);
+		subscribedComponents.put(Pressure, 0);
+
+		subscribedComponents.put(Heartrate, 0);
+		subscribedComponents.put(Steps, 0);
+		subscribedComponents.put(Calories, 0);
 	}
 
  	{
 		profile.add(new DeviceComponent(Acc, ""));
+		profile.add(new DeviceComponent(Gyro, ""));
+		profile.add(new DeviceComponent(Magnetometer, ""));
 
+		profile.add(new DeviceComponent(AmbientLight, ""));
+		profile.add(new DeviceComponent(Temperature, ""));
+		profile.add(new DeviceComponent(Humidity, ""));
+		profile.add(new DeviceComponent(Pressure, ""));
+
+		profile.add(new DeviceComponent(Heartrate, ""));
+		profile.add(new DeviceComponent(Steps, ""));
+		profile.add(new DeviceComponent(Calories, ""));
 	}
  
 
  	static {
 		sensors.put(Acc, new SensorUuid("00002000-0000-1000-8000-00805f9b34fb", "00002001-0000-1000-8000-00805f9b34fb", "", ""));
+		sensors.put(Gyro, new SensorUuid("00002000-0000-1000-8000-00805f9b34fb", "00002002-0000-1000-8000-00805f9b34fb", "", ""));
+		sensors.put(Magnetometer, new SensorUuid("00002000-0000-1000-8000-00805f9b34fb", "00002003-0000-1000-8000-00805f9b34fb", "", ""));
+
+		sensors.put(AmbientLight, new SensorUuid("00002010-0000-1000-8000-00805f9b34fb", "00002011-0000-1000-8000-00805f9b34fb", "", ""));
+		sensors.put(Temperature, new SensorUuid("00002010-0000-1000-8000-00805f9b34fb", "00002012-0000-1000-8000-00805f9b34fb", "", ""));
+		sensors.put(Humidity, new SensorUuid("00002010-0000-1000-8000-00805f9b34fb", "00002013-0000-1000-8000-00805f9b34fb", "", ""));
+		sensors.put(Pressure, new SensorUuid("00002010-0000-1000-8000-00805f9b34fb", "00002014-0000-1000-8000-00805f9b34fb", "", ""));
+
+		sensors.put(Heartrate, new SensorUuid("00002020-0000-1000-8000-00805f9b34fb", "00002021-0000-1000-8000-00805f9b34fb", "", ""));
+		sensors.put(Steps, new SensorUuid("00002020-0000-1000-8000-00805f9b34fb", "00002022-0000-1000-8000-00805f9b34fb", "", ""));
+		sensors.put(Calories, new SensorUuid("00002020-0000-1000-8000-00805f9b34fb", "00002023-0000-1000-8000-00805f9b34fb", "", ""));
 	}
 
 	public static boolean Matches(DeviceOverview d) {
@@ -56,7 +100,7 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
 	public void Connect() throws DBusException {
 		super.Connect();
 		for (String componentName : subscribedComponents.keySet()) {
-			logger.info("DENNIS 2 Connect: " + componentName);
+			logger.info("Hexiwear Connect: " + componentName);
 			//DeviceRead(componentName);
 			if (subscribedComponents.get(componentName) > 0) {
 				logger.info("Resubscribing to {}", componentName);
@@ -68,20 +112,7 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
 
   @Override
   protected String DeviceRead(String componentName) {
-	logger.info("DENNIS DeviceRead: "+ componentName);
-/*
-	String resultStr1="";
-	try {
-            byte[] result1 = deviceProtocol.Read(address, getReadValueProfile(componentName));
-	    resultStr1=new String(result1);	
-	} catch (DBusException e) {
-	    logger.error("Dennis error in DeviceRead from DBUS");
-	    e.printStackTrace();	
-	}
-	logger.info ("Dennis result: "+ resultStr1);
-	return resultStr1;	
-*/
-	//TODO handle all exception cases -> check other devices
+	logger.info("Hexiwear DeviceRead: "+ componentName);
     if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
       if (isConnected()) {
         if (isSensorSupported(componentName.trim())) {
@@ -114,7 +145,7 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
               deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
               addNewRecordSignalHandler();
             }
-	    logger.info("Dennis Subscribe Hexiwear");
+	    logger.info("Hexiwear Subscribe");
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
           } catch (Exception e) {
             e.printStackTrace();
@@ -163,8 +194,8 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
 		if (s != null) {
 			profile.put(GATT_SERVICE, s.serviceUuid);
 			profile.put(GATT_CHARACTERSTICS, s.charValueUuid);
-			logger.info("DENNIS Gatt Service: "+s.serviceUuid);
-			logger.info("DENNIS Gatt Characteristic: "+s.charValueUuid);
+			logger.info("Hexiwear Gatt Service: "+s.serviceUuid);
+			logger.info("Hexiwear Gatt Characteristic: "+s.charValueUuid);
 		}
 		return profile;
 	}
@@ -195,30 +226,53 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
 
 	@Override
 	protected String formatReading(String componentName, byte[] readData) {
-		switch (componentName) {
-   		   case Acc:
 			int resultX = 0;
 			int resultY = 0;
 			int resultZ = 0;
+			String value = "";
+		switch (componentName) {
+   		   case Acc:
 			resultX =   (readData[1] << 8) | readData[0];
 			resultY =   (readData[3] << 8) | readData[2];
 			resultZ =   (readData[5] << 8) | readData[4];
-			String arr = "["+Integer.toString(resultX)+","+Integer.toString(resultY)+","+Integer.toString(resultZ)+"]";
-			return arr;
+			value = "["+Integer.toString(resultX)+","+Integer.toString(resultY)+","+Integer.toString(resultZ)+"]";
+			return value;
+		   case Gyro:
+			resultX =   (readData[1] << 8) | readData[0];
+			resultY =   (readData[3] << 8) | readData[2];
+			resultZ =   (readData[5] << 8) | readData[4];
+			value = "["+Integer.toString(resultX)+","+Integer.toString(resultY)+","+Integer.toString(resultZ)+"]";
+			return value;
+		   case Magnetometer:
+			resultX =  (readData[1] << 8) | readData[0];
+			resultY =  (readData[3] << 8) | readData[2];
+			resultZ =  (readData[5] << 8) | readData[4];
+			value = "["+Integer.toString(resultX)+","+Integer.toString(resultY)+","+Integer.toString(resultZ)+"]";
+			return value;
+		   case AmbientLight:
+			value = Integer.toString(readData[0]);
+			return value;
+		   case Temperature:
+		   case Humidity:
+		   case Pressure:	
+			value = Integer.toString((readData[1] << 8 | readData[0]) /100);
+			return value;
+		   case Heartrate:
+		   case Steps: 
+		   case Calories:
+			value = Integer.toString(readData[0]);
+			return value;	
 		}
 		return "0";
 	}
 
 	/**
-	 * The read operation on this device returns 4 zero's after a single
-	 * non-zero read value. Therefore, in order to avoid signaling of the zero
-	 * values (w/h are not the actual read) we override this method and put this
-	 * condition to check the value
+
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void addNewRecordSignalHandler() {
-		logger.info("Dennis addNewRecordSignalHandler");	
+		logger.info("Hexiwear addNewRecordSignalHandler");	
 		try {
 			if (newRecordSigHanlder == null && connection != null) {
  				newRecordSigHanlder = new DBusSigHandler<Protocol.NewRecordSignal>() {
