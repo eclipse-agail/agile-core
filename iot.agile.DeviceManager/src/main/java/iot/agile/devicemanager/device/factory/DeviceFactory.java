@@ -4,6 +4,7 @@ import iot.agile.Device;
 import iot.agile.devicemanager.device.DummyDevice;
 import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.TISensorTag;
+import iot.agile.devicemanager.device.HexiwearDevice;
 import iot.agile.object.DeviceOverview;
 
 /**
@@ -32,6 +33,9 @@ public class DeviceFactory {
       break;
     case "Oximeter":
       device = new MedicalDevice(deviceOverview);
+      break;
+    case "HEXIWEAR":
+      device = new HexiwearDevice(deviceOverview);
       break;
     case "Dummy":
       device = new DummyDevice(deviceOverview);
