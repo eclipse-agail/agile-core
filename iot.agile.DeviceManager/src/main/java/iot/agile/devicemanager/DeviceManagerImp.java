@@ -27,6 +27,7 @@ import iot.agile.Device;
 import iot.agile.DeviceManager;
 import iot.agile.devicemanager.device.DummyDevice;
 import iot.agile.devicemanager.device.MedicalDevice;
+import iot.agile.devicemanager.device.HexiwearDevice;
 import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.devicemanager.device.factory.DeviceFactory;
 import iot.agile.exception.AgileDeviceNotFoundException;
@@ -67,6 +68,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
 		dbusConnect(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 		logger.debug("Started Device Manager");
+		logger.debug("HEXIWEAR TEST");
 
 		//for demo only
 		String address = "00:00:00:00:00:00:FF:FF";
@@ -104,6 +106,10 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		if(deviceOverview.name.equals("GE Lamp")) {
 			ret.add("GE Lamp");
 		}
+		if(HexiwearDevice.Matches(deviceOverview)) {
+			ret.add(HexiwearDevice.deviceTypeName);
+		}
+
 		return ret;
 	}
 
@@ -117,6 +123,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			logger.info("Device already registered:  {}", device.Id());
 		} else {
 		  try {
+	logger.info("HEXIWEAR - Checking device type: "+deviceType);  
         device = DeviceFactory.getDevice(deviceType, deviceOverview);
         logger.info("Creating new device: {}", deviceType);
         if (device != null) {
