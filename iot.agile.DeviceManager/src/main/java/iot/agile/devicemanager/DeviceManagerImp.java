@@ -68,7 +68,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
 		dbusConnect(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 		logger.debug("Started Device Manager");
-		logger.debug("HEXIWEAR TEST");
 	}
 
 	/**
