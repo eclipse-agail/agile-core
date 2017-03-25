@@ -30,6 +30,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import org.freedesktop.DBus.Error.UnknownObject;
+import org.freedesktop.DBus.Error.ServiceUnknown;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public class Device {
       return getDevice(id).Profile();
     } catch (AgileNoResultException e) {
       return null;
-    }catch (UnknownObject ex) {
+    }catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
       throw new WebApplicationException("Error on reading profile", ex);
@@ -83,7 +84,7 @@ public class Device {
   public StatusType Status(@PathParam("id") String id) throws DBusException {
     try {
       return getDevice(id).Status();
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
       throw new WebApplicationException("Error on reading status", ex);
@@ -95,7 +96,7 @@ public class Device {
   public long LastSeen(@PathParam("id") String id) throws DBusException {
      try {
       return getDevice(id).LastSeen();
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     }  catch (AgileNoResultException e) {
       throw e;
@@ -111,7 +112,7 @@ public class Device {
       result = getDevice(id).ReadAll();
     } catch (AgileNoResultException e) {
       return null;
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
       throw new WebApplicationException("Error on reading data", ex);
@@ -128,7 +129,7 @@ public class Device {
     List<RecordObject> result = null;
     try {
       result = getDevice(id).LastUpdateAll();
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (AgileNoResultException e) {
       return null;
@@ -146,7 +147,7 @@ public class Device {
   public void Connect(@PathParam("id") String id) throws DBusException {
     try {
       getDevice(id).Connect();
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception e) {
       throw new WebApplicationException("Error on connecting device", e);
@@ -158,7 +159,7 @@ public class Device {
   public void Disconnect(@PathParam("id") String id) throws DBusException {
     try {
       getDevice(id).Disconnect();
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception e) {
       throw new WebApplicationException("Error on disconnecting device", e);
@@ -174,7 +175,7 @@ public class Device {
     }
     try {
       getDevice(id).Execute(command, args);
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception e) {
       throw new WebApplicationException("Error on executing command", e);
@@ -190,7 +191,7 @@ public class Device {
       return getDevice(id).Read(sensorName);
     } catch (AgileNoResultException e) {
       return null;
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
       throw new WebApplicationException("Error on reading data", ex);
@@ -205,7 +206,7 @@ public class Device {
       return getDevice(id).LastUpdate(componentID);
     } catch (AgileNoResultException e) {
       return null;
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
       throw new WebApplicationException("Error on reading data", ex);
@@ -217,7 +218,7 @@ public class Device {
   public void Write(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     try {
       getDevice(id).Write();
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
       throw new WebApplicationException("Error on writing data", ex);
@@ -229,7 +230,7 @@ public class Device {
   public void Subscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     try {
       getDevice(id).Subscribe(sensorName);
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
       throw new WebApplicationException("Error on subscribing for data", ex);
@@ -241,7 +242,7 @@ public class Device {
   public void Unsubscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     try {
       getDevice(id).Unsubscribe(sensorName);
-    } catch (UnknownObject ex) {
+    } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
       throw new WebApplicationException("Error on unsubscribing for data", ex);
