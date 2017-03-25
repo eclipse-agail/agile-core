@@ -79,15 +79,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		dbusConnect(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 		logger.debug("Started Device Manager");
 		logger.debug("HEXIWEAR TEST");
-
-		//for demo only
-		String address = "00:00:00:00:00:00:FF:FF";
-		DeviceDefinition registeredDev = new DeviceDefinition("ZB_" + address.replace(":", ""),
-			address, "GE Lamp", "",
-			"iot.agile.protcol.ZB", "/iot/agile/Device/ZB/" + address.replace(":", ""),
-			new ArrayList<DeviceComponent>());
-		devices.add(registeredDev);
-
 	}
 
 	/**
