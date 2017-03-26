@@ -56,6 +56,8 @@ Under the `scripts` directory you can find different scripts to setup and start 
 
 *Note* A `java` 8 compatible JDK and maven (`mvn`) must be already available in the system.
 
+*Note* JAVA_HOME must be set for compilation to work.
+
 - `./scripts/start.sh` will install (if not available) all the dependencies required to run and start the modules.
 
   To control which component to start:
@@ -71,6 +73,3 @@ Under the `scripts` directory you can find different scripts to setup and start 
   - `./scripts/stop.sh http` stop only the HTTP API module
 
 -  `./scripts/install-deps.sh` is used to setup all the java and native dependencies to a local directory (placed in the `./deps` folder)
-
-Development environment setup
----
