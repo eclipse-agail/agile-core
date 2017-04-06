@@ -12,3 +12,5 @@ deps
 *.log
 /agile-main/target/
 /bluez-5.39/
+/DeviceFactory/target/
+/iot.agile.DeviceFactory/target/

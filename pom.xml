@@ -13,7 +13,7 @@
     <module>iot.agile.DeviceManager</module>
     <module>iot.agile.http</module>
     <module>agile-main</module>
-    <module>DeviceFactory</module>
+    <module>iot.agile.DeviceFactory</module>
   </modules>
 
   <properties>
