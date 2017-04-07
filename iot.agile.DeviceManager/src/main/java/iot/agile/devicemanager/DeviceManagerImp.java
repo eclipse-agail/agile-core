@@ -29,7 +29,7 @@ import iot.agile.devicemanager.device.DummyDevice;
 import iot.agile.devicemanager.device.MedicalDevice;
 import iot.agile.devicemanager.device.HexiwearDevice;
 import iot.agile.devicemanager.device.TISensorTag;
-import iot.agile.devicemanager.device.factory.DeviceFactory;
+import iot.agile.DeviceFactory;
 import iot.agile.exception.AgileDeviceNotFoundException;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceComponent;
@@ -110,7 +110,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			ret.add(HexiwearDevice.deviceTypeName);
 		}
 
-		return ret;
+		return ret; 
 	}
 
 
@@ -123,12 +123,19 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			logger.info("Device already registered:  {}", device.Id());
 		} else {
 		  try {
-	logger.info("HEXIWEAR - Checking device type: "+deviceType);  
-        device = DeviceFactory.getDevice(deviceType, deviceOverview);
+	logger.info("HEXIWEAR - Checking device type: "+deviceType+" and overview "+deviceOverview);  
+        
+        String objectName = "iot.agile.DeviceFactory";
+        String objectPath = "/iot/agile/DeviceFactory";
+        DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+        logger.info("Connection established: "+connection);
+        DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath, DeviceFactory.class);
+        device = factory.getDevice(deviceType, deviceOverview);
         logger.info("Creating new device: {}", deviceType);
         if (device != null) {
           registeredDev = device.Definition();
           devices.add(registeredDev);
+          logger.info("Created new device: {}", devices);
         }
       } catch (Exception e) {
         logger.error("Can not register device: {}", e.getMessage());
@@ -263,9 +270,9 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 *            Device definition
 	 * @return
 	 */
-	private Device getDevice(DeviceOverview devOverivew) {
+	private Device getDevice(DeviceOverview devOverview) {
 		String objectName = "iot.agile.Device";
-		String objectPath = "/iot/agile/Device/"+devOverivew.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + devOverivew.id.replace(":", "");
+		String objectPath = "/iot/agile/Device/"+devOverview.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + devOverview.id.replace(":", "");
  		try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 			Device device = (Device) connection.getRemoteObject(objectName, objectPath);

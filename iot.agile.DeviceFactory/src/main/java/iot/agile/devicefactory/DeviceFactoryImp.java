@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFactory {
     
+    protected final Logger logger = LoggerFactory.getLogger(DeviceFactoryImp.class);
+    
     /**
     * Bus name for the device factory
     */
@@ -39,7 +41,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     
     public DeviceFactoryImp() throws DBusException {
         dbusConnect(AGILE_DEVICEFACTORY_BUS_NAME, AGILE_DEVICEFACTORY_BUS_PATH, this);
-        //logger.debug("Started Device Factory");
+        logger.debug("Started Device Factory");
     }
   /**
    * Get device based on device type

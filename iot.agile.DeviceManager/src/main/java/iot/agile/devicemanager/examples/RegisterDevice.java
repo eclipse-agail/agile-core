@@ -58,10 +58,10 @@ public class RegisterDevice {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
       DeviceManager deviceManager = (DeviceManager) connection.getRemoteObject(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME,
           AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
-
+      
       // Register device
       DeviceDefinition dev = (deviceManager
-          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, ""), "Sensor Tag"));
+          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, ""), "TI SensorTag"));
       logger.info("Device ID: {}", dev.deviceId);
     } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
       logger.debug("Unkown method");
