@@ -13,8 +13,6 @@ DM_BUS_NAME = "iot.agile.DeviceManager"
 DM_OBJ_PATH = "/iot/agile/DeviceManager"
 D_BUS_NAME = "iot.agile.Device"
 D_OBJ_PATH = "/iot/agile/Device"
-DF_BUS_NAME = "iot.agile.DeviceFactory"
-DF_OBJ_PATH = "/iot/agile/DeviceFactory"
 
 
 # --- Main program ------
@@ -38,13 +36,10 @@ if __name__ == "__main__":
    dbusdm = session_bus.get_object(DM_BUS_NAME, DM_OBJ_PATH)
    device_manager = dbus.Interface(dbusdm, dbus_interface=DM_BUS_NAME)
 
-   dbusdf = session_bus.get_object(DF_BUS_NAME, DF_OBJ_PATH)
-   device_factory = dbus.Interface(dbusdf, dbus_interface=DF_BUS_NAME)
-
    sensortags = []
    for device in devices:
      print(device)
-     types = device_factory.MatchingDeviceTypes(device)
+     types = device_manager.MatchingDeviceTypes(device)
      print("\nMatched types are ")
      print(types)
      if len(types) == 1 :

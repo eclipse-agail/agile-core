@@ -94,22 +94,18 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	@Override
 	public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview) {
 		List<String> ret = new ArrayList();
-		if(TISensorTag.Matches(deviceOverview)) {
-			ret.add(TISensorTag.deviceTypeName);
-		}
-		if(MedicalDevice.Matches(deviceOverview)) {
-			ret.add(MedicalDevice.deviceTypeName);
-		}
-		if(DummyDevice.Matches(deviceOverview)){
- 		  ret.add(DummyDevice.deviceTypeName);
-		}
-		if(deviceOverview.name.equals("GE Lamp")) {
-			ret.add("GE Lamp");
-		}
-		if(HexiwearDevice.Matches(deviceOverview)) {
-			ret.add(HexiwearDevice.deviceTypeName);
-		}
-
+		try{
+                    String objectName = "iot.agile.DeviceFactory";
+                    String objectPath = "/iot/agile/DeviceFactory";
+                    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+                    logger.info("Connection established: "+connection);
+                    DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath, DeviceFactory.class);
+                    ret=factory.MatchingDeviceTypes(deviceOverview);
+                }
+                catch (Exception e) {
+                    logger.error("Can not connect to the DeviceFactory DBus object: {}", e.getMessage());
+                    e.printStackTrace();
+                    }
 		return ret; 
 	}
 
