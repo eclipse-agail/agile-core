@@ -8,6 +8,8 @@ import iot.agile.devicefactory.device.DummyDevice;
 import iot.agile.devicefactory.device.MedicalDevice;
 import iot.agile.devicefactory.device.TISensorTag;
 import iot.agile.devicefactory.device.HexiwearDevice;
+import java.util.ArrayList;
+import java.util.List;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +76,30 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     }
     return device;
   }
+  
+  
+  
+  
+  public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview) {
+		List<String> ret = new ArrayList();
+		if(TISensorTag.Matches(deviceOverview)) {
+			ret.add(TISensorTag.deviceTypeName);
+		}
+		if(MedicalDevice.Matches(deviceOverview)) {
+			ret.add(MedicalDevice.deviceTypeName);
+		}
+		if(DummyDevice.Matches(deviceOverview)){
+ 		  ret.add(DummyDevice.deviceTypeName);
+		}
+		if(deviceOverview.name.equals("GE Lamp")) {
+			ret.add("GE Lamp");
+		}
+		if(HexiwearDevice.Matches(deviceOverview)) {
+			ret.add(HexiwearDevice.deviceTypeName);
+		}
+
+		return ret; 
+	}
   
   /*
   Override abstract method in DBusInterface
