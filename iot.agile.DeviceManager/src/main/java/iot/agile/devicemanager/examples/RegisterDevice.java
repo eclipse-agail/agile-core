@@ -49,7 +49,7 @@ public class RegisterDevice {
 
   private static String deviceAddress = "C4:BE:84:70:69:09";
 
-  private static String deviceName = "TISensorTag";
+  private static String deviceName = "MedicalDevice";
 
   public static void main(String[] args) {
     checkUserInput(args);
@@ -61,7 +61,7 @@ public class RegisterDevice {
       
       // Register device
       DeviceDefinition dev = (deviceManager
-          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, ""), "TI SensorTag"));
+          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, ""), "MedicalDevice"));
       logger.info("Device ID: {}", dev.deviceId);
     } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
       logger.debug("Unkown method");

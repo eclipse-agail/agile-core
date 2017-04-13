@@ -25,10 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
-import iot.agile.devicemanager.device.DummyDevice;
-import iot.agile.devicemanager.device.MedicalDevice;
-import iot.agile.devicemanager.device.HexiwearDevice;
-import iot.agile.devicemanager.device.TISensorTag;
 import iot.agile.DeviceFactory;
 import iot.agile.exception.AgileDeviceNotFoundException;
 import iot.agile.object.AbstractAgileObject;
