@@ -18,6 +18,8 @@ env:
       BASEIMAGE=resin\\/nuc-openjdk:openjdk-8-jdk
 
 before_install:
+  - wget https://download.docker.com/linux/ubuntu/dists/trusty/pool/edge/amd64/docker-ce_17.04.0~ce-0~ubuntu-trusty_amd64.deb
+  - sudo dpkg -i docker-ce_17.04.0~ce-0~ubuntu-trusty_amd64.deb
   - if [ -f $DOCKER_CACHE_FILE ]; then
       gunzip -c $DOCKER_CACHE_FILE | docker load || true;
     fi
