@@ -25,7 +25,7 @@ env:
     - DOCKER_CACHE_FILE=/home/travis/docker-cache/cache.tar.gz
   matrix:
     - IMAGE=agileiot/$COMPONENT-x86_64
-      BASEIMAGE=resin\\/nuc-openjdk:openjdk-8-jdk
+      BASEIMAGE=resin\\/nuc-openjdk:openjdk-8-jdk-20170408
 
 before_install:
   - wget https://download.docker.com/linux/ubuntu/dists/trusty/pool/test/amd64/docker-ce_17.05.0~ce~rc3-0~ubuntu-trusty_amd64.deb
