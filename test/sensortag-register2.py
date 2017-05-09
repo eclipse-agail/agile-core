@@ -25,6 +25,7 @@ if __name__ == "__main__":
    session_bus = dbus.SessionBus()
    dbuspm = session_bus.get_object(PM_BUS_NAME, PM_OBJ_PATH)
    protocol_manager = dbus.Interface(dbuspm, dbus_interface=PM_BUS_NAME)
+   
 
 #   protocol_manager.StartDiscovery()
 #   time.sleep(5)

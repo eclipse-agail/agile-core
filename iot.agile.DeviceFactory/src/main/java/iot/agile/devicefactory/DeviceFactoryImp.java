@@ -7,7 +7,10 @@ import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceOverview;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -21,9 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import iot.agile.devicefactory.LoadClass;
 
 /**
  * Agile device factory
@@ -44,14 +49,18 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
      */
     private static final String AGILE_DEVICEFACTORY_BUS_PATH = "/iot/agile/DeviceFactory";
     /**
-     * The path of the directory where the classes are stored
+     * The path of the directory where the classes are loaded from
      */
     private static final String CLASSPATH_DIR = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/devicefactory/device";
     
     /**
+     * The directory where .class files can be dropped
+     */
+    private static final String ADDCLASS_DIR = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/devicefactory";
+    /**
      * WatchService object to observe directory for changes
      */
-    private static WatchService watcher;
+    private WatchService watcher;
 
     /**
      * The HashMap of loaded classes
@@ -68,16 +77,11 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
 
         //Load the classes from the specified directory into Classes variable
         loadAllClasses();
-
-        //Create the Service Watcher and Register the watcher
-        registerDir();
-
-        //Start the loop on a thread
-        watchChanges();
+           
     }
 
-    /*
-    *Load all the classes, from the specified directory, in a HashMap and return the HashMap 
+    /**
+     * Load all the classes, from the specified directory, in the HashMap Classes 
      */
     private static void loadAllClasses() {
 
@@ -117,8 +121,8 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
         }
     }
 
-    private static void registerDir() {
-        Path dir = FileSystems.getDefault().getPath(CLASSPATH_DIR);
+    private void registerDir() {
+        Path dir = FileSystems.getDefault().getPath(ADDCLASS_DIR);
         try {
             //Initialize the watcher for the directory
             watcher = FileSystems.getDefault().newWatchService();
@@ -131,7 +135,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
 
     }
 
-    private static void watchChanges() {
+    private void watchChanges() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -158,16 +162,53 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                             //Load the classfile and add to the list of loaded classes
                             WatchEvent<Path> ev = (WatchEvent<Path>) event;
                             Path file = ev.context();
-                            if(Classes.get(file.getFileName().toString().split("\\.")[0])==null)
-                            {
-                                loadOneClass(file.getFileName().toString());
-                                logger.debug("Added "+file.getFileName().toString());
+                                                          
+                            File directory = new File(ADDCLASS_DIR);
+                            try{
+
+                                URL[] pathToClass = {directory.toURI().toURL()};
+                                URLClassLoader URLLoader = new URLClassLoader(pathToClass);
+                                //Failed attempt to load the class directly
+//                                logger.error("Attempted URL is "+pathToClass[0].getPath()+file.getFileName().toString().split("\\.")[0]);
+//                                Class aClass = URLLoader.loadClass(file.getFileName().toString());
+//                                Classes.put(file.getFileName().toString().split("\\.")[0], aClass);
+                                
+                                //Class loaded as an InputStream and converted to bytes
+                                InputStream fileInputStream = URLLoader.getResourceAsStream(file.getFileName().toString());
+                                byte[] rawBytes = new byte[fileInputStream.available()];
+                                fileInputStream.read(rawBytes);
+                                
+                                //Create an instance of LoadClass to access protected method defineClass
+                                LoadClass loader = new LoadClass();
+                                Class<?> recoveredClass = loader.getClassFromBytes(file.getFileName().toString().split("\\.")[0], rawBytes);
+                                logger.debug("Filename is "+file.getFileName().toString().split("\\.")[0]);
+                                
+                                if(Classes.get(file.getFileName().toString().split("\\.")[0])==null)
+                                {
+                                    Classes.put(file.getFileName().toString().split("\\.")[0], recoveredClass);
+                                    logger.debug("Added "+file.getFileName().toString());
+                                }
+                            
+                                else
+                                    logger.debug("Class already loaded in the list of classes");
+                                                              
+                                
                             }
-                            
-                            else
-                                logger.debug("Class already loaded in the list of classes");
-//                              
-                            
+                            catch(MalformedURLException e){
+                                logger.error("The argument passed is a malformed URL",e);
+                            }
+//                            catch(ClassNotFoundException e){
+//                                logger.error("The class was not found", e);
+//                            }
+                            catch(NullPointerException e){
+                                logger.error("Null pointer exception occured", e);
+                            }
+                            catch(IOException e){
+                                logger.error("IO exception occured", e);
+                            }
+                            catch(ClassFormatError e){
+                                logger.error("ClassFormatError occured", e);
+                            }
 
                         } 
                         
@@ -186,7 +227,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                     }
 
                     boolean valid = key.reset();
-
+                   
                     if (!valid) {
                         break;
                     }
@@ -200,6 +241,13 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     public DeviceFactoryImp() throws DBusException {
         dbusConnect(AGILE_DEVICEFACTORY_BUS_NAME, AGILE_DEVICEFACTORY_BUS_PATH, this);
         logger.debug("Started Device Factory");
+        
+        //Create the Service Watcher and Register the watcher
+        registerDir();
+
+        //Start the loop on a thread
+        watchChanges();
+        
     }
 
     /**
@@ -233,25 +281,51 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
 
     public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview) {
 
-        Iterator it = Classes.entrySet().iterator();
-
         List<String> ret = new ArrayList();
-
-//		if(TISensorTag.Matches(deviceOverview)) {
-//			ret.add(TISensorTag.deviceTypeName);
-//		}
-//		if(MedicalDevice.Matches(deviceOverview)) {
-//			ret.add(MedicalDevice.deviceTypeName);
-//		}
-//		if(DummyDevice.Matches(deviceOverview)){
-// 		  ret.add(DummyDevice.deviceTypeName);
-//		}
-//		if(deviceOverview.name.equals("GE Lamp")) {
-//			ret.add("GE Lamp");
-//		}
-//		if(HexiwearDevice.Matches(deviceOverview)) {
-//			ret.add(HexiwearDevice.deviceTypeName);
-//		}
+        
+        Class[] methodParams = {DeviceOverview.class};
+        try
+        {
+        for (HashMap.Entry<String, Class> entry : Classes.entrySet()) {
+                    //Need to remove the following line for the devices (Check which are required where)
+                    if(!(entry.getKey().matches("AgileBLEDevice"))&&!(entry.getKey().matches("DeviceImp"))&&!(entry.getKey().matches("SensorUuid")))
+                    {
+                    logger.debug("Key = " + entry.getKey() + ", Value = " + entry.getValue().getName());
+                    //Get the Class object
+                    Class aClass = entry.getValue();
+//                    logger.debug("Class name is "+(String) aClass.getField("deviceTypeName").get(aClass));
+                    //Get the 'Matches' method from the class
+                    Method matches = aClass.getDeclaredMethod("Matches", methodParams);
+//                    logger.debug(matches.getName());
+                    //Call the Matches method with argument deviceOverview, first argument is null since the method is static
+                    if((Boolean)(matches.invoke(null, deviceOverview)))
+                    {
+                        String name = (String) aClass.getField("deviceTypeName").get(aClass);
+                        ret.add(name);
+                    }
+                    }
+                }
+            
+        }
+        
+        catch(NoSuchMethodException e)
+        {
+            logger.error("No such method exception occured",e);
+        }
+        catch(IllegalAccessException e)
+        {
+            logger.error("Method accessed illegally",e);
+        }
+        catch(InvocationTargetException e)
+        {
+            logger.error("Exception from method invoked", e);
+        } catch (NoSuchFieldException e) 
+        {
+            logger.error("The field does not exist", e);
+        } catch (SecurityException e) 
+        {
+            logger.error("Security exception occured", e);
+        }
         return ret;
     }
 
