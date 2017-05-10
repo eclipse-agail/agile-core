@@ -1,3 +1,13 @@
+#-------------------------------------------------------------------------------
+# Copyright (C) 2017 Create-Net / FBK.
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+# 
+# Contributors:
+#     Create-Net / FBK - initial API and implementation
+#-------------------------------------------------------------------------------
 language: generic
 
 sudo: required
@@ -15,9 +25,11 @@ env:
     - DOCKER_CACHE_FILE=/home/travis/docker-cache/cache.tar.gz
   matrix:
     - IMAGE=agileiot/$COMPONENT-x86_64
-      BASEIMAGE=resin\\/nuc-openjdk:openjdk-8-jdk
+      BASEIMAGE=resin\\/nuc-openjdk:openjdk-8-jdk-20170408
 
 before_install:
+  - wget https://download.docker.com/linux/ubuntu/dists/trusty/pool/test/amd64/docker-ce_17.05.0~ce~rc3-0~ubuntu-trusty_amd64.deb
+  - sudo dpkg -i --force-confnew docker-ce_17.05.0~ce~rc3-0~ubuntu-trusty_amd64.deb
   - if [ -f $DOCKER_CACHE_FILE ]; then
       gunzip -c $DOCKER_CACHE_FILE | docker load || true;
     fi
@@ -25,16 +37,21 @@ before_install:
 script:
   - docker run --rm --privileged multiarch/qemu-user-static:register
   - if [ "$BASEIMAGE" ] ; then sed -i "s/^FROM .*/FROM $BASEIMAGE/" Dockerfile ; fi
-  - docker build -t $IMAGE:$TRAVIS_BRANCH .
+  - if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then
+      export DOCKER_TAG=$TRAVIS_BRANCH-pr-$TRAVIS_PULL_REQUEST;
+    else
+      export DOCKER_TAG=$TRAVIS_BRANCH;
+    fi
+  - docker build -t $IMAGE:$DOCKER_TAG .
   - if [[ ${TRAVIS_PULL_REQUEST} == "false" ]]; then
       mkdir -p $(dirname ${DOCKER_CACHE_FILE});
-      docker save $(docker history -q $IMAGE:$TRAVIS_BRANCH | grep -v '<missing>') | gzip > ${DOCKER_CACHE_FILE};
+      docker save $(docker history -q $IMAGE:$DOCKER_TAG | grep -v '<missing>') | gzip > ${DOCKER_CACHE_FILE};
     fi
 
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-  - docker push $IMAGE:$TRAVIS_BRANCH;
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-      docker tag $IMAGE:$TRAVIS_BRANCH $IMAGE;
+  - docker push $IMAGE:$DOCKER_TAG;
+  - if [ "$DOCKER_TAG" == "master" ]; then
+      docker tag $IMAGE:$DOCKER_TAG $IMAGE;
       docker push $IMAGE;
     fi
