@@ -88,7 +88,7 @@ fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceFactory' ]; then
   ./scripts/stop.sh "DeviceFactory"
-  java -jar -Djava.library.path=deps iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar &
+  java -jar -Djava.library.path=deps iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar "$PWD/plugins" &
   echo "Started AGILE Device Factory"
 fi
 

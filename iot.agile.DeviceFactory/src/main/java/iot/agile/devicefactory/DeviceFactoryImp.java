@@ -53,7 +53,8 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     /**
      * The directory where .class files can be dropped
      */
-    private static final String ADDCLASS_DIR = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/device";
+    private static String ADDCLASS_DIR ;
+//            = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/device";
     /**
      * WatchService object to observe directory for changes
      */
@@ -74,7 +75,20 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
 
         //Load the classes from the specified directory into Classes variable
         loadAllClasses();
-           
+        
+        if(args.length==1)
+        {
+            ADDCLASS_DIR = args[0];
+            
+            logger.debug("Drop new classfiles to "+ADDCLASS_DIR);
+            
+            deviceFactory.registerDir();
+            
+            deviceFactory.watchChanges();
+        }
+        
+        else
+            logger.debug("No path specified to load classes dynamically.");
     }
 
     /**
@@ -246,12 +260,6 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     public DeviceFactoryImp() throws DBusException {
         dbusConnect(AGILE_DEVICEFACTORY_BUS_NAME, AGILE_DEVICEFACTORY_BUS_PATH, this);
         logger.debug("Started Device Factory");
-        
-        //Create the Service Watcher and Register the watcher
-        registerDir();
-
-        //Start the loop on a thread
-        watchChanges();
         
     }
 
