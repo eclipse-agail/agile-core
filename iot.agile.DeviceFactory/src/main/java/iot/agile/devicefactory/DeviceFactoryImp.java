@@ -26,7 +26,7 @@ import java.util.List;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import java.util.Arrays;
 /**
  * Agile device factory
  *
@@ -48,7 +48,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     /**
      * The path of the directory where the classes are loaded from
      */
-    private static final String CLASSPATH_DIR = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/device/instance";
+    private static final String CLASSPATH_DIR = "classes/iot/agile/device/instance";
     
     /**
      * The directory where .class files can be dropped
@@ -83,7 +83,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     private static void loadAllClasses() {
 
         //Absolute path for the location of the classes
-        File filePath = new File(CLASSPATH_DIR);
+        File filePath = new File(getDir()+CLASSPATH_DIR);
         File[] files = filePath.listFiles();
 
         //For each file in the directory, load the class and add to the HashMap
@@ -328,6 +328,17 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
             logger.error("Security exception occured", e);
         }
         return ret;
+    }
+    
+    /**
+     * Get the working directory of the current class to use as a relative path for loading classes
+     */
+    private static String getDir(){
+        //Path to the jar file
+        String classDir = DeviceFactoryImp.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        //Truncate the path eliminating the jar filename
+        classDir = classDir.replaceAll(classDir.substring(classDir.lastIndexOf("/")+1),"");
+        return classDir;
     }
 
     /*
