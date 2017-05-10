@@ -275,7 +275,8 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
         Device device = null;
         try {
             for (HashMap.Entry<String, Class> entry : Classes.entrySet()) {
-                if (entry.getKey().equals(deviceType)) {
+                String name = (String) entry.getValue().getField("deviceTypeName").get(entry.getValue());
+                if (name.equals(deviceType)) {
                     logger.debug("Key = " + entry.getKey() + ", Value = " + entry.getValue().getName());
                     Class aClass = entry.getValue();
                     Constructor constructor = aClass.getConstructor(DeviceOverview.class);
