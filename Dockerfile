@@ -38,6 +38,7 @@ scripts/install-agile-interfaces.sh $APATH/deps
 # copy directories into WORKDIR
 COPY agile-main agile-main
 COPY iot.agile.DeviceManager iot.agile.DeviceManager
+COPY iot.agile.DeviceFactory iot.agile.DeviceFactory
 COPY iot.agile.ProtocolManager iot.agile.ProtocolManager
 COPY iot.agile.http iot.agile.http
 COPY test test
