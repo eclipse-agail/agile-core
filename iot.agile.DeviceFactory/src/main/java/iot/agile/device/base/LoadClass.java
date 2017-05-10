@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package iot.agile.devicefactory;
+package iot.agile.device.base;
 
 /**
  *
  * @author agile
  */
 public class LoadClass extends ClassLoader {
-    protected Class<?> getClassFromBytes(String name, byte[] b) {
+    public Class<?> getClassFromBytes(String name, byte[] b) {
         Class<?> c = this.defineClass(name, b, 0, b.length);
         return c;
     }

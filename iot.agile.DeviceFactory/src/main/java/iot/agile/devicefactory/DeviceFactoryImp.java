@@ -1,5 +1,6 @@
 package iot.agile.devicefactory;
 
+import iot.agile.device.base.LoadClass;
 import iot.agile.Device;
 import iot.agile.DeviceFactory;
 import iot.agile.object.AbstractAgileObject;
@@ -47,12 +48,12 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     /**
      * The path of the directory where the classes are loaded from
      */
-    private static final String CLASSPATH_DIR = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/devicefactory/device";
+    private static final String CLASSPATH_DIR = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/device/instance";
     
     /**
      * The directory where .class files can be dropped
      */
-    private static final String ADDCLASS_DIR = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/devicefactory";
+    private static final String ADDCLASS_DIR = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/device";
     /**
      * WatchService object to observe directory for changes
      */
@@ -100,10 +101,10 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
         try {
             //Get the classloader from the current class
             ClassLoader classLoader = DeviceFactoryImp.class.getClassLoader();
-            logger.debug("Loaded ClassLoader, trying to load iot.agile.devicefactory.device." + filename.split("\\.")[0]);
+            logger.debug("Loaded ClassLoader, trying to load iot.agile.device.instance." + filename.split("\\.")[0]);
 
             //Load the class defined by the file name
-            Class aClass = classLoader.loadClass("iot.agile.devicefactory.device." + filename.split("\\.")[0]);
+            Class aClass = classLoader.loadClass("iot.agile.device.instance." + filename.split("\\.")[0]);
             logger.debug("The class was loaded");
 
             //Add only name of the class to the HashMap
@@ -168,7 +169,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
 
                                   //Using the URLClassLoader, place the new file in the directory /iot/agile/devicefactory/device
 //                                logger.error("Attempted URL is "+pathToClass[0].getPath()+file.getFileName().toString().split("\\.")[0]);
-//                                Class aClass = URLLoader.loadClass("iot.agile.devicefactory.device."+file.getFileName().toString());
+//                                Class aClass = URLLoader.loadClass("iot.agile.device.instance."+file.getFileName().toString());
 //                                if(Classes.get(file.getFileName().toString().split("\\.")[0])==null)
 //                                {
 //                                    Classes.put(file.getFileName().toString().split("\\.")[0], aClass);
@@ -183,7 +184,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                                 //Create an instance of LoadClass to access protected method defineClass
                                 LoadClass loader = new LoadClass();
                                 //Add the full name of the class with package to match that from the binary
-                                Class<?> recoveredClass = loader.getClassFromBytes("iot.agile.devicefactory.device."+file.getFileName().toString().split("\\.")[0], rawBytes);
+                                Class<?> recoveredClass = loader.getClassFromBytes("iot.agile.device.instance."+file.getFileName().toString().split("\\.")[0], rawBytes);
                                 
                                 //Check if the class is already in the list of classes
                                 if(Classes.get(file.getFileName().toString().split("\\.")[0])==null)
@@ -291,9 +292,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
         try
         {
         for (HashMap.Entry<String, Class> entry : Classes.entrySet()) {
-                    //Need to remove the following line for the devices (Check which are required where)
-                    if(!(entry.getKey().matches("AgileBLEDevice"))&&!(entry.getKey().matches("DeviceImp"))&&!(entry.getKey().matches("SensorUuid")))
-                    {
+                    
                     logger.debug("Key = " + entry.getKey() + ", Value = " + entry.getValue().getName());
                     //Get the Class object
                     Class aClass = entry.getValue();
@@ -305,7 +304,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                         String name = (String) aClass.getField("deviceTypeName").get(aClass);
                         ret.add(name);
                     }
-                    }
+                    
                 }
             
         }

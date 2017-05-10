@@ -1,4 +1,4 @@
-package iot.agile.devicefactory.device;
+package iot.agile.device.base;
 
 public class SensorUuid {
 	public String serviceUuid;

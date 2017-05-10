@@ -1,4 +1,4 @@
-package iot.agile.devicefactory.device;
+package iot.agile.device.base;
 
 import java.util.Map;
 import org.freedesktop.dbus.exceptions.DBusException;
