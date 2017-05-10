@@ -11,7 +11,6 @@ package iot.agile.devicefactory;
  */
 public class LoadClass extends ClassLoader {
     protected Class<?> getClassFromBytes(String name, byte[] b) {
-        ClassLoader loader = LoadClass.class.getClassLoader();
         Class<?> c = this.defineClass(name, b, 0, b.length);
         return c;
     }

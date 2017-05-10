@@ -1,6 +1,5 @@
 package iot.agile.devicefactory;
 
-import static ch.qos.logback.core.util.Loader.loadClass;
 import iot.agile.Device;
 import iot.agile.DeviceFactory;
 import iot.agile.object.AbstractAgileObject;
@@ -22,18 +21,15 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import iot.agile.devicefactory.LoadClass;
 
 /**
  * Agile device factory
  *
- * @author dagi
+ * @author dagi, koustabhdolui
  *
  */
 public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFactory {
@@ -164,14 +160,20 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                             Path file = ev.context();
                                                           
                             File directory = new File(ADDCLASS_DIR);
-                            try{
+                            try {
 
                                 URL[] pathToClass = {directory.toURI().toURL()};
                                 URLClassLoader URLLoader = new URLClassLoader(pathToClass);
-                                //Failed attempt to load the class directly
+                                
+
+                                  //Using the URLClassLoader, place the new file in the directory /iot/agile/devicefactory/device
 //                                logger.error("Attempted URL is "+pathToClass[0].getPath()+file.getFileName().toString().split("\\.")[0]);
-//                                Class aClass = URLLoader.loadClass(file.getFileName().toString());
-//                                Classes.put(file.getFileName().toString().split("\\.")[0], aClass);
+//                                Class aClass = URLLoader.loadClass("iot.agile.devicefactory.device."+file.getFileName().toString());
+//                                if(Classes.get(file.getFileName().toString().split("\\.")[0])==null)
+//                                {
+//                                    Classes.put(file.getFileName().toString().split("\\.")[0], aClass);
+//                                    logger.debug("Added "+file.getFileName().toString());
+//                                }
                                 
                                 //Class loaded as an InputStream and converted to bytes
                                 InputStream fileInputStream = URLLoader.getResourceAsStream(file.getFileName().toString());
@@ -180,9 +182,10 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                                 
                                 //Create an instance of LoadClass to access protected method defineClass
                                 LoadClass loader = new LoadClass();
-                                Class<?> recoveredClass = loader.getClassFromBytes(file.getFileName().toString().split("\\.")[0], rawBytes);
-                                logger.debug("Filename is "+file.getFileName().toString().split("\\.")[0]);
+                                //Add the full name of the class with package to match that from the binary
+                                Class<?> recoveredClass = loader.getClassFromBytes("iot.agile.devicefactory.device."+file.getFileName().toString().split("\\.")[0], rawBytes);
                                 
+                                //Check if the class is already in the list of classes
                                 if(Classes.get(file.getFileName().toString().split("\\.")[0])==null)
                                 {
                                     Classes.put(file.getFileName().toString().split("\\.")[0], recoveredClass);
@@ -193,22 +196,23 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                                     logger.debug("Class already loaded in the list of classes");
                                                               
                                 
-                            }
+                                }
                             catch(MalformedURLException e){
                                 logger.error("The argument passed is a malformed URL",e);
-                            }
+                                }
+                              //Uncomment to use the URLClassLoader
 //                            catch(ClassNotFoundException e){
 //                                logger.error("The class was not found", e);
 //                            }
                             catch(NullPointerException e){
                                 logger.error("Null pointer exception occured", e);
-                            }
+                                }
                             catch(IOException e){
                                 logger.error("IO exception occured", e);
-                            }
+                                }
                             catch(ClassFormatError e){
                                 logger.error("ClassFormatError occured", e);
-                            }
+                                }
 
                         } 
                         
@@ -221,7 +225,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                                 logger.debug("Could not find "+file.getFileName().toString().split("\\.")[0]+" in list of Classes" );
                             else
                                 logger.debug("Deleted "+removedClass.getName()+" from the list of Classes");
-                        }
+                            }
 
                         
                     }
@@ -293,10 +297,8 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                     logger.debug("Key = " + entry.getKey() + ", Value = " + entry.getValue().getName());
                     //Get the Class object
                     Class aClass = entry.getValue();
-//                    logger.debug("Class name is "+(String) aClass.getField("deviceTypeName").get(aClass));
                     //Get the 'Matches' method from the class
                     Method matches = aClass.getDeclaredMethod("Matches", methodParams);
-//                    logger.debug(matches.getName());
                     //Call the Matches method with argument deviceOverview, first argument is null since the method is static
                     if((Boolean)(matches.invoke(null, deviceOverview)))
                     {
