@@ -59,7 +59,7 @@ public class RegisterDevice {
 
   private static String deviceAddress = "C4:BE:84:70:69:09";
 
-  private static String deviceName = "TISensorTag";
+  private static String deviceName = "MedicalDevice";
 
   public static void main(String[] args) {
     checkUserInput(args);
@@ -68,10 +68,10 @@ public class RegisterDevice {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
       DeviceManager deviceManager = (DeviceManager) connection.getRemoteObject(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME,
           AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, DeviceManager.class);
-
+      
       // Register device
       DeviceDefinition dev = (deviceManager
-          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, ""), "Sensor Tag"));
+          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, ""), "MedicalDevice"));
       logger.info("Device ID: {}", dev.deviceId);
     } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
       logger.debug("Unkown method");

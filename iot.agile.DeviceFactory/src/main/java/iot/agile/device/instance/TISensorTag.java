@@ -8,7 +8,7 @@
  * Contributors:
  *     Create-Net / FBK - initial API and implementation
  ******************************************************************************/
-package iot.agile.devicemanager.device;
+package iot.agile.device.instance;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
+import iot.agile.device.base.AgileBLEDevice;
+import iot.agile.device.base.SensorUuid;
 import iot.agile.exception.AgileNoResultException;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;

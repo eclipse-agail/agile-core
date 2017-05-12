@@ -35,11 +35,13 @@ if __name__ == "__main__":
    session_bus = dbus.SessionBus()
    dbuspm = session_bus.get_object(PM_BUS_NAME, PM_OBJ_PATH)
    protocol_manager = dbus.Interface(dbuspm, dbus_interface=PM_BUS_NAME)
+   
 
 #   protocol_manager.StartDiscovery()
 #   time.sleep(5)
    devices = protocol_manager.Devices()
 #   protocol_manager.StopDiscovery()
+   print ("\nRegistered devices ")
    print (devices)
 
    dbusdm = session_bus.get_object(DM_BUS_NAME, DM_OBJ_PATH)
@@ -47,7 +49,10 @@ if __name__ == "__main__":
 
    sensortags = []
    for device in devices:
+     print(device)
      types = device_manager.MatchingDeviceTypes(device)
+     print("\nMatched types are ")
+     print(types)
      if len(types) == 1 :
        sensortag = device_manager.Register(device, types[0])
        print (sensortag)
@@ -55,5 +60,3 @@ if __name__ == "__main__":
 
    for sensortag in sensortags:
      print (sensortag[0])
-
-

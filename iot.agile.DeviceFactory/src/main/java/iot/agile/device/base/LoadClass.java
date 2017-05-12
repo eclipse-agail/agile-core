@@ -8,18 +8,15 @@
  * Contributors:
  *     Create-Net / FBK - initial API and implementation
  ******************************************************************************/
-package iot.agile.devicemanager.device;
+package iot.agile.device.base;
 
-public class SensorUuid {
-	public String serviceUuid;
-	public String charValueUuid;
-	public String charConfigUuid;
-	public String charFreqUuid;
-
-	public SensorUuid(String service, String charValueUuid, String charConfig, String charFreq) {
-		this.serviceUuid = service;
-		this.charValueUuid = charValueUuid;
-		this.charConfigUuid = charConfig;
-		this.charFreqUuid = charFreq;
-	}
+/**
+ *
+ * @author agile
+ */
+public class LoadClass extends ClassLoader {
+    public Class<?> getClassFromBytes(String name, byte[] b) {
+        Class<?> c = this.defineClass(name, b, 0, b.length);
+        return c;
+    }
 }

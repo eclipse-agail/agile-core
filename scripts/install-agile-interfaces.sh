@@ -31,13 +31,18 @@ fi
 if [ ! -e "$BUILD/agile-interfaces" ] ; then
   cd $BUILD
   git clone https://github.com/Agile-IoT/agile-api-spec.git
-   cd agile-api-spec/agile-dbus-java-interface
-   chmod +x ./scripts/install-dependencies.sh
-   ./scripts/install-dependencies.sh
-   mvn package
-   cp target/agile-interfaces-1.0.jar $DEPS
+else
+  cd $BUILD/agile-interfaces
+  git pull
   cd ..
 fi
+
+cd agile-api-spec/agile-dbus-java-interface
+chmod +x ./scripts/install-dependencies.sh
+./scripts/install-dependencies.sh
+mvn package
+cp target/agile-interfaces-1.0.jar $DEPS
+cd ..
 
 cd $DEPS
 

@@ -8,7 +8,7 @@
  * Contributors:
  *     Create-Net / FBK - initial API and implementation
  ******************************************************************************/
-package iot.agile.devicemanager.device;
+package iot.agile.device.base;
 
 import java.util.Map;
 import org.freedesktop.dbus.exceptions.DBusException;

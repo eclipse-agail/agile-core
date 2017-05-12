@@ -8,21 +8,6 @@
  * Contributors:
  *     Create-Net / FBK - initial API and implementation
  ******************************************************************************/
-/*
- * Copyright 2016 Dagmawi Neway Mekuria <d.mekuria@create-net.org>.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package iot.agile.devicemanager;
 
 import java.util.ArrayList;
@@ -35,11 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import iot.agile.Device;
 import iot.agile.DeviceManager;
-import iot.agile.devicemanager.device.DummyDevice;
-import iot.agile.devicemanager.device.MedicalDevice;
-import iot.agile.devicemanager.device.HexiwearDevice;
-import iot.agile.devicemanager.device.TISensorTag;
-import iot.agile.devicemanager.device.factory.DeviceFactory;
+import iot.agile.DeviceFactory;
 import iot.agile.exception.AgileDeviceNotFoundException;
 import iot.agile.object.AbstractAgileObject;
 import iot.agile.object.DeviceComponent;
@@ -94,23 +75,19 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	@Override
 	public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview) {
 		List<String> ret = new ArrayList();
-		if(TISensorTag.Matches(deviceOverview)) {
-			ret.add(TISensorTag.deviceTypeName);
-		}
-		if(MedicalDevice.Matches(deviceOverview)) {
-			ret.add(MedicalDevice.deviceTypeName);
-		}
-		if(DummyDevice.Matches(deviceOverview)){
- 		  ret.add(DummyDevice.deviceTypeName);
-		}
-		if(deviceOverview.name.equals("GE Lamp")) {
-			ret.add("GE Lamp");
-		}
-		if(HexiwearDevice.Matches(deviceOverview)) {
-			ret.add(HexiwearDevice.deviceTypeName);
-		}
-
-		return ret;
+		try{
+                    String objectName = "iot.agile.DeviceFactory";
+                    String objectPath = "/iot/agile/DeviceFactory";
+                    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+                    logger.info("Connection established: "+connection);
+                    DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath, DeviceFactory.class);
+                    ret=factory.MatchingDeviceTypes(deviceOverview);
+                }
+                catch (Exception e) {
+                    logger.error("Can not connect to the DeviceFactory DBus object: {}", e.getMessage());
+                    e.printStackTrace();
+                    }
+		return ret; 
 	}
 
 
@@ -123,12 +100,19 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			logger.info("Device already registered:  {}", device.Id());
 		} else {
 		  try {
-	logger.info("HEXIWEAR - Checking device type: "+deviceType);  
-        device = DeviceFactory.getDevice(deviceType, deviceOverview);
+	logger.info("HEXIWEAR - Checking device type: "+deviceType+" and overview "+deviceOverview);  
+        
+        String objectName = "iot.agile.DeviceFactory";
+        String objectPath = "/iot/agile/DeviceFactory";
+        DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
+        logger.info("Connection established: "+connection);
+        DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath, DeviceFactory.class);
+        device = factory.getDevice(deviceType, deviceOverview);
         logger.info("Creating new device: {}", deviceType);
         if (device != null) {
           registeredDev = device.Definition();
           devices.add(registeredDev);
+          logger.info("Created new device: {}", devices);
         }
       } catch (Exception e) {
         logger.error("Can not register device: {}", e.getMessage());
@@ -263,9 +247,9 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 *            Device definition
 	 * @return
 	 */
-	private Device getDevice(DeviceOverview devOverivew) {
+	private Device getDevice(DeviceOverview devOverview) {
 		String objectName = "iot.agile.Device";
-		String objectPath = "/iot/agile/Device/"+devOverivew.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + devOverivew.id.replace(":", "");
+		String objectPath = "/iot/agile/Device/"+devOverview.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + devOverview.id.replace(":", "");
  		try {
 			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 			Device device = (Device) connection.getRemoteObject(objectName, objectPath);

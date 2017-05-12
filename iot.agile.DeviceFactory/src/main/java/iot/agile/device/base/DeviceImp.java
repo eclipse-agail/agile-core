@@ -23,7 +23,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package iot.agile.devicemanager.device;
+package iot.agile.device.base;
 
 import java.util.ArrayList;
 import java.util.HashMap;
