@@ -9,7 +9,7 @@
 #     Create-Net / FBK - initial API and implementation
 #-------------------------------------------------------------------------------
 
-FROM resin/raspberrypi3-openjdk:openjdk-8-jdk-20170217
+FROM resin/raspberry-pi3-openjdk:openjdk-8-jdk-20170426
 
 # Add packages
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -57,7 +57,7 @@ COPY pom.xml pom.xml
 
 RUN mvn package
 
-FROM resin/raspberrypi3-openjdk:openjdk-8-jdk-20170217
+FROM resin/raspberry-pi3-openjdk:openjdk-8-jdk-20170426
 WORKDIR /usr/src/app
 ENV APATH /usr/src/app
 
