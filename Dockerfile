@@ -66,6 +66,7 @@ COPY --from=0 $APATH/deps deps
 COPY --from=0 $APATH/iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar
 COPY --from=0 $APATH/iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar
 COPY --from=0 $APATH/iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar
+COPY --from=0 $APATH/iot.agile.DeviceFactory/target/classes/iot/agile/device/instance iot.agile.DeviceFactory/target/classes/iot/agile/device/instance
 COPY --from=0 $APATH/iot.agile.http/target/http-1.0-jar-with-dependencies.jar iot.agile.http/target/http-1.0-jar-with-dependencies.jar
 
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
