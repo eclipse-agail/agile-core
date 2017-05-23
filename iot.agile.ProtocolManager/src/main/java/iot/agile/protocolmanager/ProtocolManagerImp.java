@@ -99,9 +99,6 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	public ProtocolManagerImp() throws DBusException {
 		dbusConnect(AGILE_PROTOCOL_MANAGER_BUS_NAME, AGILE_PROTOCOL_MANAGER_BUS_PATH, this);
 
-		// for demo purposes
-		devices.add(new DeviceOverview("0A:03:11:0A:01:00", ZB_PROTOCOL_ID, "GE Lamp", "AVAILABLE"));
-
 		connection.addSigHandler(ProtocolManager.FoundNewDeviceSignal.class,
 				new DBusSigHandler<ProtocolManager.FoundNewDeviceSignal>() {
 
