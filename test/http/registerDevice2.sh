@@ -1,1 +1,0 @@
-registerDevice.sh
