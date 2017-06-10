@@ -103,7 +103,7 @@ public class DummyDevice extends DeviceImp implements Device {
             e.printStackTrace();
           }
         } else {
-          throw new AgileNoResultException("Componet not supported:" + componentName);
+          throw new AgileNoResultException("Component not supported:" + componentName);
         }
       } else {
         throw new AgileNoResultException("Device not connected: " + deviceName);
@@ -130,7 +130,7 @@ public class DummyDevice extends DeviceImp implements Device {
             e.printStackTrace();
           }
         } else {
-          throw new AgileNoResultException("Componet not supported:" + componentName);
+          throw new AgileNoResultException("Component not supported:" + componentName);
         }
       } else {
         throw new AgileNoResultException("Device not connected: " + deviceName);
