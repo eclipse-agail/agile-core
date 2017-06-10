@@ -194,15 +194,6 @@ public class DummyDevice extends DeviceImp implements Device {
      return String.valueOf(result);
   }
   
-  protected boolean hasotherActiveSubscription() {
-    for (String componentName : subscribedComponents.keySet()) {
-      if (subscribedComponents.get(componentName) > 0) {
-        return true;
-      }
-    }
-    return false;
-  }
-  
   @Override
   protected String getComponentName(Map<String, String> profile) {
     return DUMMY_COMPONENT;

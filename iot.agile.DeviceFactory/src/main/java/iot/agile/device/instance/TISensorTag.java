@@ -286,27 +286,6 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	}
 
 	/**
-	 * Checks if there is another active subscription on the given component of
-	 * the device
-	 * 
-	 * @param componentName
-	 * @return
-	 */
-	@Override
-	protected boolean hasotherActiveSubscription(String componentName) {
-		return (subscribedComponents.get(componentName) > 0);
-	}
-
-	protected boolean hasotherActiveSubscription() {
-		for (String componentName : subscribedComponents.keySet()) {
-			if (subscribedComponents.get(componentName) > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 *
 	 * The sensor service returns the data in an encoded format which can be
 	 * found in the
