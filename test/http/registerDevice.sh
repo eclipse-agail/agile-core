@@ -11,22 +11,28 @@
 #-------------------------------------------------------------------------------
 
 deviceID=\"$1\"
-echo $deviceID
+deviceType="$2"
+
 #Extract device from list of discovered devices
 device=$(curl -X GET --header 'Accept: application/json' 'http://localhost:8080/api/protocols/devices'  | jq '.[] | select(.id == '$deviceID')')
-
 echo $device
 
-types=$(curl -X POST --header 'Content-Type: application/json'  --header 'Accept: application/json' 'http://localhost:8080/api/devices/typeof' -d "$device" | jq -r '@csv' )
-echo "Types: $types"
+if [ -z "$deviceType" ]; then
+  types=$(curl -X POST --header 'Content-Type: application/json'  --header 'Accept: application/json' 'http://localhost:8080/api/devices/typeof' -d "$device" | jq -r '@csv' )
+  echo "Types: $types"
+
 echo ${#types[@]}
 
-if [ ${#types[@]} -ne 1 ]; then
-  echo "Cannot automatically determine Device type"
+  if [[ ${#types[@]} -ne 1 || -z "${types[0]}" ]]; then
+    echo "Cannot automatically determine Device type"
+    exit 1
+  else
+    deviceType="${types[0]}"
+  fi
 else
-  #Register devices
-  echo '{"overview": '"$device"' , "type": '"${types[0]}"'}'
-  curl  -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"overview": '"$device"' , "type": '"${types[0]}"'}' 'http://localhost:8080/api/devices'
+  deviceType=\""$deviceType"\"
 fi
 
-
+echo Registering device
+echo '{"overview": '"$device"' , "type": '"${types[0]}"'}'
+curl  -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{"overview": '"$device"' , "type": '"$deviceType"'}' 'http://localhost:8080/api/devices'
