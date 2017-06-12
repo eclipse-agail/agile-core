@@ -92,10 +92,10 @@ public class DummyDevice extends DeviceImp implements Device {
       if (isConnected()) {
         if (isSensorSupported(componentName.trim())) {
           try {
-            if (!hasotherActiveSubscription()) {
+            if (!hasOtherActiveSubscription()) {
               addNewRecordSignalHandler();
             }
-            if (!hasotherActiveSubscription(componentName)) {
+            if (!hasOtherActiveSubscription(componentName)) {
               deviceProtocol.Subscribe(address, new HashMap<String, String>());
             }
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
@@ -120,10 +120,10 @@ public class DummyDevice extends DeviceImp implements Device {
         if (isSensorSupported(componentName.trim())) {
           try {
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
-            if (!hasotherActiveSubscription(componentName)) {
+            if (!hasOtherActiveSubscription(componentName)) {
               deviceProtocol.Unsubscribe(address, new HashMap<String, String>());
              }
-            if (!hasotherActiveSubscription()) {
+            if (!hasOtherActiveSubscription()) {
               removeNewRecordSignalHandler();
             }
           } catch (Exception e) {

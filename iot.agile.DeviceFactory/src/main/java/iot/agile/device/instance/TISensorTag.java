@@ -126,7 +126,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 		 * if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol !=
 		 * null)) { if (isConnected()) { if
 		 * (isSensorSupported(sensorName.trim())) { try { if
-		 * (!hasotherActiveSubscription(sensorName)) { // turn on sensor
+		 * (!hasOtherActiveSubscription(sensorName)) { // turn on sensor
 		 * deviceProtocol.Write(address, getEnableSensorProfile(sensorName),
 		 * TURN_ON_SENSOR); }
 		 *//**
@@ -136,7 +136,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			 *//*
 			 * Thread.sleep(1010); // read value byte[] readValue =
 			 * deviceProtocol.Read(address, getReadValueProfile(sensorName)); if
-			 * (!hasotherActiveSubscription(sensorName)) {
+			 * (!hasOtherActiveSubscription(sensorName)) {
 			 * deviceProtocol.Write(address,
 			 * getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR); } return
 			 * formatReading(sensorName, readValue); } catch (Exception e) {
@@ -182,10 +182,10 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
  					try {
-						if (!hasotherActiveSubscription()) {
+						if (!hasOtherActiveSubscription()) {
 							addNewRecordSignalHandler();
 						}
-						if (!hasotherActiveSubscription(componentName)) {
+						if (!hasOtherActiveSubscription(componentName)) {
   							deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
 							/* Setting the period on the Pressure sensor was not working. Since we are anyway using the default value, keep this disabled. TODO: verify pressure senosr.
 							byte[] period = { 100 };
@@ -216,13 +216,13 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				if (isSensorSupported(componentName.trim())) {
 					try {
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
-						if (!hasotherActiveSubscription(componentName)) {
+						if (!hasOtherActiveSubscription(componentName)) {
 							// disable notification
 							deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
 							// turn off sensor
 							deviceProtocol.Write(address, getTurnOffSensorProfile(componentName), TURN_OFF_SENSOR);
 						}
-						if (!hasotherActiveSubscription()) {
+						if (!hasOtherActiveSubscription()) {
 							removeNewRecordSignalHandler();
 						}
 					} catch (Exception e) {
