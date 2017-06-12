@@ -519,7 +519,22 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 * @param componentName
 	 * @return
 	 */
-	protected boolean hasotherActiveSubscription(String componentName) {
+	protected boolean hasOtherActiveSubscription(String componentName) {
+		return (subscribedComponents.get(componentName) > 0);
+	}
+
+	/**
+	 * Checks if there is another active subscription on any component of
+	 * the device
+	 * 
+	 * @return
+	 */
+	protected boolean hasOtherActiveSubscription() {
+		for (String componentName : subscribedComponents.keySet()) {
+			if (subscribedComponents.get(componentName) > 0) {
+				return true;
+			}
+		}
 		return false;
 	}
 

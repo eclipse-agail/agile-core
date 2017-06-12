@@ -153,7 +153,7 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
       if (isConnected()) {
         if (isSensorSupported(componentName.trim())) {
           try {
-            if (!hasotherActiveSubscription(componentName)) {
+            if (!hasOtherActiveSubscription(componentName)) {
               deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
               addNewRecordSignalHandler();
             }
@@ -180,7 +180,7 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
         if (isSensorSupported(componentName.trim())) {
           try {
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
-            if (!hasotherActiveSubscription(componentName)) {
+            if (!hasOtherActiveSubscription(componentName)) {
               deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
               removeNewRecordSignalHandler();
             }
@@ -227,7 +227,7 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
 	 * @return
 	 */
 	@Override
-	protected boolean hasotherActiveSubscription(String componentName) {
+	protected boolean hasOtherActiveSubscription(String componentName) {
 		for (String component : subscribedComponents.keySet()) {
 			if (subscribedComponents.get(component) > 0) {
 				return true;

@@ -92,10 +92,10 @@ public class DummyDevice extends DeviceImp implements Device {
       if (isConnected()) {
         if (isSensorSupported(componentName.trim())) {
           try {
-            if (!hasotherActiveSubscription()) {
+            if (!hasOtherActiveSubscription()) {
               addNewRecordSignalHandler();
             }
-            if (!hasotherActiveSubscription(componentName)) {
+            if (!hasOtherActiveSubscription(componentName)) {
               deviceProtocol.Subscribe(address, new HashMap<String, String>());
             }
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
@@ -103,7 +103,7 @@ public class DummyDevice extends DeviceImp implements Device {
             e.printStackTrace();
           }
         } else {
-          throw new AgileNoResultException("Componet not supported:" + componentName);
+          throw new AgileNoResultException("Component not supported:" + componentName);
         }
       } else {
         throw new AgileNoResultException("Device not connected: " + deviceName);
@@ -120,17 +120,17 @@ public class DummyDevice extends DeviceImp implements Device {
         if (isSensorSupported(componentName.trim())) {
           try {
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
-            if (!hasotherActiveSubscription(componentName)) {
+            if (!hasOtherActiveSubscription(componentName)) {
               deviceProtocol.Unsubscribe(address, new HashMap<String, String>());
              }
-            if (!hasotherActiveSubscription()) {
+            if (!hasOtherActiveSubscription()) {
               removeNewRecordSignalHandler();
             }
           } catch (Exception e) {
             e.printStackTrace();
           }
         } else {
-          throw new AgileNoResultException("Componet not supported:" + componentName);
+          throw new AgileNoResultException("Component not supported:" + componentName);
         }
       } else {
         throw new AgileNoResultException("Device not connected: " + deviceName);
@@ -192,15 +192,6 @@ public class DummyDevice extends DeviceImp implements Device {
   protected String formatReading(String sensorName, byte[] readData) {
      int result = (readData[0] & 0xFF); 
      return String.valueOf(result);
-  }
-  
-  protected boolean hasotherActiveSubscription() {
-    for (String componentName : subscribedComponents.keySet()) {
-      if (subscribedComponents.get(componentName) > 0) {
-        return true;
-      }
-    }
-    return false;
   }
   
   @Override
