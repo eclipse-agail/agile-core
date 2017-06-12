@@ -122,34 +122,46 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 
 	@Override
 	public String DeviceRead(String sensorName) {
-		/*
-		 * if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol !=
-		 * null)) { if (isConnected()) { if
-		 * (isSensorSupported(sensorName.trim())) { try { if
-		 * (!hasOtherActiveSubscription(sensorName)) { // turn on sensor
-		 * deviceProtocol.Write(address, getEnableSensorProfile(sensorName),
-		 * TURN_ON_SENSOR); }
-		 *//**
-			 * The default read data period (frequency) of most of sensor tag
-			 * sensors is 1000ms therefore the first data will be available to
-			 * read after 1000ms for these we call Read method after 1 second
-			 *//*
-			 * Thread.sleep(1010); // read value byte[] readValue =
-			 * deviceProtocol.Read(address, getReadValueProfile(sensorName)); if
-			 * (!hasOtherActiveSubscription(sensorName)) {
-			 * deviceProtocol.Write(address,
-			 * getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR); } return
-			 * formatReading(sensorName, readValue); } catch (Exception e) {
-			 * logger.debug("Error in reading value from Sensor {}", e);
-			 * e.printStackTrace(); } } else { logger.debug(
-			 * "Sensor not supported: {}", sensorName); return null; } } else {
-			 * logger.debug("BLE Device not connected: {}", deviceName); return
-			 * null; } } else { logger.debug("Protocol not supported:: {}",
-			 * protocol); return null; }
-			 */
-		return NotificationRead(sensorName);
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+			if (isConnected()) {
+				if (isSensorSupported(sensorName.trim())) {
+					try {
+						if (!hasOtherActiveSubscription(sensorName)) {
+							// turn on sensor
+							deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
+						}
+						/**
+						 * The default read data period (frequency) of most of
+						 * sensor tag sensors is 1000ms therefore the first data
+						 * will be available to read after 1000ms for these we
+						 * call Read method after 1 second
+						 */
+						Thread.sleep(1010);
+						// read value
+						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
+						if (!hasOtherActiveSubscription(sensorName)) {
+							deviceProtocol.Write(address, getTurnOffSensorProfile(sensorName), TURN_OFF_SENSOR);
+						}
+						return formatReading(sensorName, readValue);
+					} catch (Exception e) {
+						logger.debug("Error in reading value from Sensor {}", e);
+						e.printStackTrace();
+					}
+				} else {
+					logger.debug("Sensor not supported: {}", sensorName);
+					return null;
+				}
+			} else {
+				logger.debug("BLE Device not connected: {}", deviceName);
+				return null;
+			}
+		} else {
+			logger.debug("Protocol not supported:: {}", protocol);
+			return null;
+		}
+		return null;
 	}
-	
+
 	public String NotificationRead(String componentName){
  		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 		if (isConnected()) {
