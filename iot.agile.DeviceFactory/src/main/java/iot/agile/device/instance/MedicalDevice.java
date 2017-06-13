@@ -60,7 +60,7 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 	}
 
 	public static boolean Matches(DeviceOverview d) {
-		return d.name.contains("Medical");
+		return d.name.contains("Medical") || d.name.contains("MyOximeter");
 	}
 
 	public static String deviceTypeName = "Oximeter";
