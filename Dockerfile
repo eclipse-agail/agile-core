@@ -34,6 +34,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     qdbus \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+#Make maven and javac work in ARM emulation
+ENV MAVEN_OPTS="-Xint"
+ENV _JAVA_OPTIONS="-Xint"
+ENV JAVA_TOOL_OPTIONS="-Xint"
+
 # resin-sync will always sync to /usr/src/app, so code needs to be here.
 WORKDIR /usr/src/app
 ENV APATH /usr/src/app
