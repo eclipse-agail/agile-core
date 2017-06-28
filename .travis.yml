@@ -29,7 +29,7 @@ env:
     - DOCKER_IMAGE=agileiot/$COMPONENT-armv7l
     - DOCKER_IMAGE=agileiot/$COMPONENT-x86_64
       VERSIONIST=true
-      BASEIMAGE=resin\\/intel-nuc-zulujdk:8-jdk
+      BASEIMAGE=agileiot\\/intel-nuc-zulujdk:8-jdk
 
 before_install:
   - source <(curl -s https://raw.githubusercontent.com/Agile-IoT/agile-ci-scripts/master/agile-ci-functions.sh)
