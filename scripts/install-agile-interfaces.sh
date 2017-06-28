@@ -10,6 +10,8 @@
 #     Create-Net / FBK - initial API and implementation
 #-------------------------------------------------------------------------------
 
+set -e
+
 CURRDIR=`pwd`
 DEPS=${1:-$CURRDIR/deps}
 BUILD=$DEPS/build
