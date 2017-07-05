@@ -78,7 +78,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		try{
                     String objectName = "iot.agile.DeviceFactory";
                     String objectPath = "/iot/agile/DeviceFactory";
-                    DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
                     logger.info("Connection established: "+connection);
                     DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath, DeviceFactory.class);
                     ret=factory.MatchingDeviceTypes(deviceOverview);
@@ -104,7 +103,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
         
         String objectName = "iot.agile.DeviceFactory";
         String objectPath = "/iot/agile/DeviceFactory";
-        DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
         logger.info("Connection established: "+connection);
         DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath, DeviceFactory.class);
         device = factory.getDevice(deviceType, deviceOverview);
@@ -231,7 +229,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		String objectName = "iot.agile.Device";
     String objectPath = "/iot/agile/Device/"+devDef.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + devDef.address.replace(":", "");
      try {
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 			Device device = (Device) connection.getRemoteObject(objectName, objectPath);
 			return device;
 		} catch (Exception e) {
@@ -251,7 +248,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		String objectName = "iot.agile.Device";
 		String objectPath = "/iot/agile/Device/"+devOverview.getProtocol().replace("iot.agile.protocol.", "").toLowerCase() + devOverview.id.replace(":", "");
  		try {
-			DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 			Device device = (Device) connection.getRemoteObject(objectName, objectPath);
 			return device;
 		} catch (Exception e) {
