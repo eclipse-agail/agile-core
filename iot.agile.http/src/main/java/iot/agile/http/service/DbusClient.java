@@ -54,7 +54,7 @@ public class DbusClient {
     connection = DBusConnection.getConnection(AgileObjectInterface.DEFAULT_DBUS_CONNECTION);
   }
 
-  protected DBusInterface getObject(String objectBusname, String objectPath, Class<? extends DBusInterface> clazz) throws DBusException {
+  protected synchronized DBusInterface getObject(String objectBusname, String objectPath, Class<? extends DBusInterface> clazz) throws DBusException {
     
     String key = objectBusname + ":" + objectPath;
     if(instances.containsKey(key)) {
