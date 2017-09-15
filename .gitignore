@@ -1,4 +1,6 @@
-deps
+/build
+/deps
+target
 /agile-interfaces/target/
 .settings/
 .classpath
@@ -14,3 +16,4 @@ deps
 /bluez-5.39/
 /DeviceFactory/target/
 /iot.agile.DeviceFactory/target/
+*/logs/*
