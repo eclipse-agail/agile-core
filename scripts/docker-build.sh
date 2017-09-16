@@ -12,5 +12,6 @@
 
 set -e
 
-docker build . -f Dockerfile.x86_64 -t agile-iot/agile-core-x86_64
-docker build . -f Dockerfile.armhf -t agile-iot/agile-core-armhf
+# ./scripts/install-deps.sh
+
+mvn clean package
