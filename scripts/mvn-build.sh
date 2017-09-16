@@ -12,38 +12,6 @@
 
 set -e
 
-WD=`pwd`
-CURRDIR=${1:-$WD}
-BUILD=$CURRDIR/build
+# ./scripts/install-deps.sh
 
-mkdir -p $BUILD
-
-cd $BUILD
-
-LIBNAME="dbus-java-mvn"
-
-if [ ! -e "./$LIBNAME" ]
-then
-    git clone https://github.com/muka/dbus-java-mvn.git $LIBNAME
-fi
-
-cd $LIBNAME
-git pull origin master
-
-mvn clean install
-
-# $BUILD/dbus-java-mvn/target/dbus-java-3.0.jar
-
-cd $BUILD
-
-if [ ! -e "./agile-api-spec" ]
-then
-  git clone https://github.com/Agile-IoT/agile-api-spec.git agile-api-spec
-fi
-
-cd agile-api-spec
-git pull origin master
-
-cd agile-dbus-java-interface
-
-mvn clean install
+mvn clean package
