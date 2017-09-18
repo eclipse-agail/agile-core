@@ -17,5 +17,5 @@ echo "Compiling mvn packages"
 
 echo "Build docker images"
 
-docker build . -f Dockerfile -t agile-iot/agile-core-armhf
+docker build . -f Dockerfile -t agile-iot/agile-core-armv7l
 docker build . -f Dockerfile.x86_64 -t agile-iot/agile-core-x86_64

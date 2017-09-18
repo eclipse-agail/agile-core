@@ -76,10 +76,10 @@ case $MODULE in
     PKG="iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar"
     ;;
    "DeviceManager")
-    PKG="iot.agile.ProtocolManager/target/device-manager-1.0-jar-with-dependencies.jar"
+    PKG="iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar"
     ;;
    "DeviceFactory")
-    PKG="iot.agile.ProtocolManager/target/DeviceFactory-1.0-jar-with-dependencies.jar"
+    PKG="iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar"
     ;;
    "http")
     PKG="iot.agile.http/target/http-1.0-jar-with-dependencies.jar"
