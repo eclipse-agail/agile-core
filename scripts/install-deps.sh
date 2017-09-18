@@ -18,32 +18,36 @@ BUILD=$CURRDIR/build
 
 mkdir -p $BUILD
 
-cd $BUILD
+git_fetch() {
 
-LIBNAME="dbus-java-mvn"
+    cd $BUILD
 
-if [ ! -e "./$LIBNAME" ]
-then
-    git clone https://github.com/muka/dbus-java-mvn.git $LIBNAME
-fi
+    REPO=$1
+    LIBNAME=$2
+    BRANCH=${3:-"master"}
 
-cd $LIBNAME
-git pull origin master
+    if [ ! -e "./$LIBNAME" ]
+    then
+        echo "Clone $REPO to $LIBNAME"
+        git clone $REPO $LIBNAME
+    fi
 
+    echo "Fetching $LIBNAME"
+    cd $LIBNAME
+    git checkout $BRANCH
+    git pull
+    echo "OK"
+}
+
+LIB="jnr-unixsocket"
+git_fetch "https://github.com/jnr/jnr-unixsocket" "$LIB" # "master"
 mvn clean install
 
-# $BUILD/dbus-java-mvn/target/dbus-java-3.0.jar
+LIB="dbus-java-mvn"
+git_fetch "https://github.com/muka/dbus-java-mvn.git" "$LIB" # "master"
+mvn clean install
 
-cd $BUILD
-
-if [ ! -e "./agile-api-spec" ]
-then
-  git clone https://github.com/Agile-IoT/agile-api-spec.git agile-api-spec
-fi
-
-cd agile-api-spec
-git pull origin master
-
+LIB="agile-api-spec"
+git_fetch "https://github.com/Agile-IoT/agile-api-spec.git" "$LIB" # "master"
 cd agile-dbus-java-interface
-
 mvn clean install

@@ -12,6 +12,9 @@
 
 set -e
 
-# ./scripts/install-deps.sh
+echo "Compiling mvn packages"
+./scripts/mvn-build.sh
 
-mvn clean package
+echo "Build docker images"
+docker build . -f Dockerfile -t agile-iot/agile-core-armhf
+docker build . -f Dockerfile.x86_64 -t agile-iot/agile-core-x86_64

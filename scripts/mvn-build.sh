@@ -12,5 +12,8 @@
 
 set -e
 
-docker build . -f Dockerfile.x86_64 -t agile-iot/agile-core-x86_64
-docker build . -f Dockerfile.armhf -t agile-iot/agile-core-armhf
+
+echo "Installing deps"
+./scripts/install-deps.sh >> /dev/null
+
+mvn clean package -DskipTests=true
