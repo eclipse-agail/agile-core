@@ -23,7 +23,8 @@ git_fetch() {
     cd $BUILD
 
     REPO=$1
-    LIBNAME=$2
+    BNAME=`basename $REPO | sed 's/\.git//'`
+    LIBNAME=${2:-BNAME}
     BRANCH=${3:-"master"}
 
     if [ ! -e "./$LIBNAME" ]
@@ -40,14 +41,14 @@ git_fetch() {
 }
 
 LIB="jnr-unixsocket"
-git_fetch "https://github.com/jnr/jnr-unixsocket" "$LIB" # "master"
-mvn clean install
+git_fetch "https://github.com/jnr/jnr-unixsocket.git" "$LIB" # "master"
+mvn clean install -DskipTests=true
 
 LIB="dbus-java-mvn"
 git_fetch "https://github.com/muka/dbus-java-mvn.git" "$LIB" # "master"
-mvn clean install
+mvn clean install -DskipTests=true
 
 LIB="agile-api-spec"
 git_fetch "https://github.com/Agile-IoT/agile-api-spec.git" "$LIB" # "master"
-cd agile-dbus-java-interface
-mvn clean install
+cd $BUILD/$LIB/agile-dbus-java-interface
+mvn clean install -DskipTests=true

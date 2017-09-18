@@ -5,25 +5,22 @@
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
-# 
+#
 # Contributors:
 #     Create-Net / FBK - initial API and implementation
 #-------------------------------------------------------------------------------
 
-MODULE=${1:-all}
-DEPS=`realpath ./deps`
+MODULE=$1
 
-if [ ! -e "$DEPS" ]; then
-  echo "Installing dependencies"
-  ./scripts/install-deps.sh
-fi
-
-echo "DEPS dir $DEPS"
-
-if [ "${MODULE}" = 'all' ]; then
+if [ "${MODULE}" = '' ]; then
+  echo "Missing module name! Provide one of those options:"
   echo ""
-  echo "To start a single module use:\n $0 DeviceManager|ProtocolManager|http|DeviceFactory"
+  echo " - DeviceManager"
+  echo " - ProtocolManager"
+  echo " - http"
+  echo " - DeviceFactory"
   echo ""
+  exit 1
 fi
 
 TOEXPORT=""
@@ -73,38 +70,24 @@ if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
 fi
 export DBUS_SESSION_BUS_ADDRESS
 
-export MAVEN_OPTS_BASE="-Djava.library.path=$DEPS:$DEPS/lib -DDISPLAY=$DISPLAY -DDBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib:/usr/lib:/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/arm
-
-mvn="mvn"
-
-if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
-  ./scripts/stop.sh "ProtocolManager"
-  java -jar -Djava.library.path=deps iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar &
-  echo "Started AGILE Protocol Manager"
-fi
-
-if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
-  ./scripts/stop.sh "DeviceManager"
-  java -jar -Djava.library.path=deps iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar &
-  echo "Started AGILE Device Manager"
-fi
-
-if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
-  ./scripts/stop.sh "http"
-  java -jar -Djava.library.path=deps iot.agile.http/target/http-1.0-jar-with-dependencies.jar &
-  echo "Started AGILE HTTP API"
-fi
-
-if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceFactory' ]; then
-  ./scripts/stop.sh "DeviceFactory"
-  java -jar -Djava.library.path=deps iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar "$PWD/plugins" &
-  echo "Started AGILE Device Factory"
-fi
-
+PKG=""
+case $MODULE in
+   "ProtocolManager")
+    PKG="iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar"
+    ;;
+   "DeviceManager")
+    PKG="iot.agile.ProtocolManager/target/device-manager-1.0-jar-with-dependencies.jar"
+    ;;
+   "DeviceFactory")
+    PKG="iot.agile.ProtocolManager/target/DeviceFactory-1.0-jar-with-dependencies.jar"
+    ;;
+   "http")
+    PKG="iot.agile.http/target/http-1.0-jar-with-dependencies.jar"
+    ;;
+esac
 
 echo "Modules launched use this variables in the shell:"
 echo $TOEXPORT
 echo ""
 
-wait
+java -jar $PKG
