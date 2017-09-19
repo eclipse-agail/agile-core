@@ -63,8 +63,8 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     /**
      * The directory where .class files can be dropped
      */
-    private static String ADDCLASS_DIR ;
-//            = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/device";
+    private static String ADDCLASS_DIR = null ;
+
     /**
      * WatchService object to observe directory for changes
      */
@@ -83,8 +83,6 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     public static void main(String[] args) throws DBusException {
         DeviceFactoryImp deviceFactory = new DeviceFactoryImp();
 
-        //Load the classes from the specified directory into Classes variable
-        loadAllClasses();
         
         if(args.length==1)
         {
@@ -97,8 +95,13 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
             deviceFactory.watchChanges();
         }
         
+        
         else
             logger.debug("No path specified to load classes dynamically.");
+        
+        
+        //Load the classes from the specified directory into Classes variable
+        loadAllClasses();
     }
 
     /**
@@ -106,7 +109,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
      */
     private static void loadAllClasses() {
 
-        //Absolute path for the location of the classes
+        //Absolute path for the location of the classes in classpath
         File filePath = new File(getDir()+CLASSPATH_DIR);
         File[] files = filePath.listFiles();
 
@@ -117,6 +120,25 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                 loadOneClass(file.getName());
             }
 
+        }
+        
+        logger.debug("Getting files from"+ADDCLASS_DIR);
+        
+        //Load all files from the addition directory
+        if(ADDCLASS_DIR!=null)
+        {   
+            
+            filePath = new File(ADDCLASS_DIR);
+            files = filePath.listFiles();
+
+        //For each file in the directory, load the class and add to the HashMap
+        for (File file : files) {
+
+            if (!(file.getName().contains("$"))) {
+                loadOneClass(file.getName());
+            }
+
+        }
         }
 
     }
