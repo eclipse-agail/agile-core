@@ -4,7 +4,7 @@
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
-# 
+#
 # Contributors:
 #     Create-Net / FBK - initial API and implementation
 -->
@@ -13,6 +13,16 @@ Agile core components
 ===
 
 This repository contains the alpha version of the following AGILE components:
+
+Prerequisites
+---
+
+For the compilation, the following packages needs to be installed:
+- gettext git cmake
+
+A `java` 8 compatible JDK and maven (`mvn`) must be already available in the system.
+
+JAVA_HOME must be set for compilation to work.
 
 Agile Protocol Manager
 ---
@@ -63,10 +73,6 @@ Launching the API
 ---
 
 Under the `scripts` directory you can find different scripts to setup and start / stop the modules.
-
-*Note* A `java` 8 compatible JDK and maven (`mvn`) must be already available in the system.
-
-*Note* JAVA_HOME must be set for compilation to work.
 
 - `./scripts/start.sh` will install (if not available) all the dependencies required to run and start the modules.
 
