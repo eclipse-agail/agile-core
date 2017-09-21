@@ -24,10 +24,12 @@ import iot.agile.exception.AgileNoResultException;
 import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceComponent;
+import java.io.ByteArrayOutputStream;
 
 public class TISensorTag extends AgileBLEDevice implements Device {
 	protected Logger logger = LoggerFactory.getLogger(TISensorTag.class);
 	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();	
+        protected static final Map<String, SensorUuid> actuators = new HashMap<String, SensorUuid>();
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
  	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
 	private static final String TEMPERATURE = "Temperature";
@@ -37,6 +39,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	private static final String PRESSURE = "Pressure";
 	private static final String GYROSCOPE = "Gyroscope";
 	private static final String OPTICAL = "Optical";
+        private static final String IOCOMPONENTS = "IOComponents";
 
 	{
 		subscribedComponents.put(TEMPERATURE, 0);
@@ -86,6 +89,8 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				new SensorUuid("f000aa80-0451-4000-b000-000000000000", "f000aa81-0451-4000-b000-000000000000",
 						"f000aa82-0451-4000-b000-000000000000", "f000aa83-0451-4000-b000-000000000000"));
 		*/
+                actuators.put(IOCOMPONENTS, new SensorUuid("f000aa64-0451-4000-b000-000000000000", "f000aa65-0451-4000-b000-000000000000",
+						"f000aa66-0451-4000-b000-000000000000", ""));
 	}
 
 
@@ -253,8 +258,27 @@ public class TISensorTag extends AgileBLEDevice implements Device {
         
         @Override
         public void Write(String componentName, String payload) {
-		logger.debug("Device. Write not implemented");
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+			if (isConnected()) {
+                            
+                            try{
+                                deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
+                                deviceProtocol.Write(address, getReadValueProfile(componentName), getBytes(payload));
+                            }
+                            catch(Exception ex)
+                            {
+                             logger.error("Exception occured: "+ex);   
+                            }
+                        }
+                        else {
+                throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+			}
+            } else {
+  throw new AgileNoResultException("Protocol not supported: " + protocol);
+		}
 	}
+                
+        
 
 	// =======================Utility methods===========================
 	@Override
@@ -420,4 +444,14 @@ public class TISensorTag extends AgileBLEDevice implements Device {
     }
     return null;
   }
+
+    private byte[] getBytes(String payload) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        
+        output.write(Byte.valueOf(payload));
+        
+        byte[] bytes = output.toByteArray();
+        
+        return bytes;
+    }
 }
