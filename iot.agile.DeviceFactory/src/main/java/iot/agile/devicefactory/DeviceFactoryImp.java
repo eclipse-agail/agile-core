@@ -123,7 +123,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
         
         catch(NullPointerException ex)
         {
-            logger.error("NullPointer exception occured"+ex);
+            logger.error("NullPointer exception occured: "+ex);
         }
         
 

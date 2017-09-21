@@ -224,10 +224,10 @@ public class Device {
 	}
 
   @POST
-  @Path("/{sensorName}")
-  public void Write(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
+  @Path("/{componentName}/{payload}")
+  public void Write(@PathParam("id") String id, @PathParam("componentName") String componentName, @PathParam("payload") String payload) throws DBusException {
     try {
-      getDevice(id).Write();
+      getDevice(id).Write(componentName, payload);
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {

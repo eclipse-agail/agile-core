@@ -198,4 +198,9 @@ public class DummyDevice extends DeviceImp implements Device {
   protected String getComponentName(Map<String, String> profile) {
     return DUMMY_COMPONENT;
   }
+  
+  @Override
+  public void Write(String componentName, String payload) {
+		logger.debug("Device. Write not implemented");
+	}
 }
