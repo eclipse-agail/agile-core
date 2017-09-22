@@ -12,10 +12,12 @@
 
 set -e
 
-echo "Compiling mvn packages"
-./scripts/mvn-build.sh
+# echo "Compiling mvn packages"
+# ./scripts/mvn-build.sh
 
-echo "Build docker images"
+# echo "Build docker images"
+# docker build . -f Dockerfile -t agile-iot/agile-core-armv7l
+# docker build . -f Dockerfile.x86_64 -t agile-iot/agile-core-x86_64
 
-docker build . -f Dockerfile -t agile-iot/agile-core-armv7l
-docker build . -f Dockerfile.x86_64 -t agile-iot/agile-core-x86_64
+docker build . -f Dockerfile -t opny/agile-core-armv7l
+docker push opny/agile-core-armv7l

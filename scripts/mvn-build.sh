@@ -13,7 +13,7 @@
 set -e
 
 
-echo "Installing deps"
-./scripts/install-deps.sh >> /dev/null
+# echo "Installing deps"
+# ./scripts/install-deps.sh # >> /dev/null
 
 mvn clean package -DskipTests=true

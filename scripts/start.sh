@@ -12,6 +12,8 @@
 
 MODULE=$1
 
+WD=`pwd`
+
 if [ "${MODULE}" = '' ]; then
   echo "Missing module name! Provide one of those options:"
   echo ""
@@ -90,4 +92,7 @@ echo "Modules launched use this variables in the shell:"
 echo $TOEXPORT
 echo ""
 
-java -jar $PKG
+mkdir -p $WD/tmp
+chmod 777 $WD/tmp
+
+java -Djava.io.tmpdir=$WD/tmp -jar $PKG

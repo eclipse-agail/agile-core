@@ -9,16 +9,13 @@
 #     Create-Net / FBK - initial API and implementation
 #-------------------------------------------------------------------------------
 
-FROM agileiot/raspberry-pi3-zulujdk:8-jre
+# FROM agileiot/raspberry-pi3-zulujdk:8-jre
+FROM maxleiko/armhf-alpine-java
 WORKDIR /usr/src/app
 
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y dbus-x11 && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apk add dbus-x11
 
-RUN mkdir -p iot.agile.ProtocolManager/target
-RUN mkdir -p iot.agile.DeviceManager/target
-RUN mkdir -p iot.agile.DeviceFactory/target
-RUN mkdir -p iot.agile.DeviceFactory
+RUN mkdir -p iot.agile.ProtocolManager/target iot.agile.DeviceManager/target iot.agile.DeviceFactory/target iot.agile.DeviceFactory
 
 COPY ./scripts scripts
 
@@ -28,4 +25,4 @@ COPY ./iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.ja
 COPY ./iot.agile.http/target/http-1.0-jar-with-dependencies.jar iot.agile.http/target/http-1.0-jar-with-dependencies.jar
 COPY ./iot.agile.DeviceFactory/target/classes/iot/agile/device/instance iot.agile.DeviceFactory/target/classes/iot/agile/device/instance
 
-CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
+CMD [ "./scripts/start.sh" ]
