@@ -20,4 +20,3 @@ set -e
 # docker build . -f Dockerfile.x86_64 -t agile-iot/agile-core-x86_64
 
 docker build . -f Dockerfile -t opny/agile-core-armv7l
-docker push opny/agile-core-armv7l
