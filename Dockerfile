@@ -13,8 +13,6 @@
 FROM maxleiko/armhf-alpine-java
 WORKDIR /usr/src/app
 
-RUN apk add dbus-x11
-
 RUN mkdir -p iot.agile.ProtocolManager/target iot.agile.DeviceManager/target iot.agile.DeviceFactory/target iot.agile.DeviceFactory
 
 COPY ./scripts scripts
