@@ -48,4 +48,7 @@ case $MODULE in
     ;;
 esac
 
-DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS java -jar $PKG
+mkdir -p $WD/tmp
+chmod 777 $WD/tmp
+
+DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS java -Djava.io.tmpdir=$WD/tmp -jar $PKG
