@@ -29,6 +29,7 @@ if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
   echo "!! Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
   exit 1
 fi
+
 export DBUS_SESSION_BUS_ADDRESS
 
 PKG=""
@@ -47,11 +48,7 @@ case $MODULE in
     ;;
 esac
 
-echo "Modules launched use this variables in the shell:"
-echo $TOEXPORT
-echo ""
-
 mkdir -p $WD/tmp
 chmod 777 $WD/tmp
 
-java -Djava.io.tmpdir=$WD/tmp -jar $PKG
+DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS java -Djava.io.tmpdir=$WD/tmp -jar $PKG
