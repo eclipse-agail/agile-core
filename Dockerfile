@@ -10,7 +10,8 @@
 #-------------------------------------------------------------------------------
 
 # FROM agileiot/raspberry-pi3-zulujdk:8-jre
-FROM maxleiko/armhf-alpine-java
+# FROM maxleiko/armhf-alpine-java
+FROM resin/raspberry-pi-openjdk:8-jre
 WORKDIR /usr/src/app
 
 RUN mkdir -p iot.agile.ProtocolManager/target iot.agile.DeviceManager/target iot.agile.DeviceFactory/target iot.agile.DeviceFactory
