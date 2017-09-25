@@ -11,7 +11,7 @@
 #-------------------------------------------------------------------------------
 
 MODULE=$1
-
+DEFAULTDBUS="unix:path=/usr/src/app/.agile_bus/agile_bus_socket"
 WD=`pwd`
 
 if [ "${MODULE}" = '' ]; then
@@ -26,8 +26,8 @@ if [ "${MODULE}" = '' ]; then
 fi
 
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
-  echo "!! Cannot export DBUS_SESSION_BUS_ADDRESS. Exit"
-  exit 1
+  echo "Using default Agile DBUS address $DEFAULTDBUS"
+  DBUS_SESSION_BUS_ADDRESS=$DEFAULTDBUS
 fi
 
 export DBUS_SESSION_BUS_ADDRESS
