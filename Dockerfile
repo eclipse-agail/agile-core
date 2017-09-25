@@ -9,10 +9,7 @@
 #     Create-Net / FBK - initial API and implementation
 #-------------------------------------------------------------------------------
 
-# FROM agileiot/raspberry-pi3-zulujdk:8-jre
-# FROM maxleiko/armhf-alpine-java
-# FROM resin/raspberry-pi-openjdk:8-jre
-FROM arm32v7/openjdk:8-jre
+FROM resin/raspberry-pi-openjdk:8-jre
 
 WORKDIR /usr/src/app
 

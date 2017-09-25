@@ -48,9 +48,4 @@ case $MODULE in
     ;;
 esac
 
-MTMP=$WD/tmp
-
-mkdir -p $MTMP
-chmod 777 $MTMP
-
-java -Djava.io.tmpdir=$MTMP -Djava.library.path=$MTMP -jar $PKG
+java -Djava.library.path="$WD/jni" -jar $PKG
