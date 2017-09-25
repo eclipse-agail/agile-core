@@ -48,7 +48,9 @@ case $MODULE in
     ;;
 esac
 
-mkdir -p $WD/tmp
-chmod 777 $WD/tmp
+MTMP=$WD/tmp
 
-DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS java -Djava.io.tmpdir=$WD/tmp -jar $PKG
+mkdir -p $MTMP
+chmod 777 $MTMP
+
+java -Djava.io.tmpdir=$MTMP -Djava.library.path=$MTMP -jar $PKG
