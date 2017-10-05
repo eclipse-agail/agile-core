@@ -30,12 +30,12 @@ if [ ! -e "$BUILD" ] ; then
   mkdir -p $BUILD
 fi
 
-if [ ! -e "$BUILD/agile-interfaces" ] ; then
+if [ ! -e "$BUILD/agile-api-spec" ] ; then
   cd $BUILD
   git clone https://github.com/Agile-IoT/agile-api-spec.git
 else
-  cd $BUILD/agile-interfaces
-  git pull
+  cd $BUILD/agile-api-spec
+#  git pull
   cd ..
 fi
 

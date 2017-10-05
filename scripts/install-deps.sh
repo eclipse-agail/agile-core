@@ -12,7 +12,8 @@
 
 set -e
 
-apt install --no-install-recommends -y gettext git cmake
+# prerequisites
+# apt install --no-install-recommends -y gettext git cmake
 # needed for docs only
 # sudo apt install --no-install-recommends -y texlive-latex-base texlive-latex-extra tex4ht
 
