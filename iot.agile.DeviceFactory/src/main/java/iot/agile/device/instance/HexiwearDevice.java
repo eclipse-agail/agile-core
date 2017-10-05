@@ -197,6 +197,11 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
       throw new AgileNoResultException("Protocol not supported: " + protocol);
     }
   }
+  
+    @Override
+  public void Write(String componentName, String payload) {
+		logger.debug("Device. Write not implemented");
+	}
 
 	// =======================Utility methods===========================
 
