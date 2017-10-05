@@ -30,7 +30,7 @@ import iot.agile.object.RecordObject;
 import iot.agile.object.DeviceComponent;
 import iot.agile.exception.AgileNoResultException;
 
-public class HexiwearDevice extends AgileBLEDevice implements Device {
+public abstract class HexiwearDevice extends AgileBLEDevice implements Device {
   protected Logger logger = LoggerFactory.getLogger(HexiwearDevice.class);
   protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
   private static final String Acc = "Accelerometer";

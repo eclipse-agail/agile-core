@@ -30,7 +30,7 @@ import iot.agile.exception.AgileNoResultException;
 import iot.agile.device.base.AgileBLEDevice;
 import iot.agile.device.base.SensorUuid;
 
-public class MedicalDevice extends AgileBLEDevice implements Device {
+public abstract class MedicalDevice extends AgileBLEDevice implements Device {
   protected Logger logger = LoggerFactory.getLogger(MedicalDevice.class);
   protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
 	private static final String SpO2 = "SpO2";

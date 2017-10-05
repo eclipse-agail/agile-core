@@ -27,7 +27,7 @@ import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceStatusType;
 import iot.agile.object.StatusType;
 
-public class DummyDevice extends DeviceImp implements Device {
+public abstract class DummyDevice extends DeviceImp implements Device {
   protected Logger logger = LoggerFactory.getLogger(DummyDevice.class);
 
   public static final String deviceTypeName = "Dummy";
