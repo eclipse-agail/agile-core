@@ -111,15 +111,24 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
         File[] files = filePath.listFiles();
 
         //For each file in the directory, load the class and add to the HashMap
-        for (File file : files) {
-
-            if (!(file.getName().contains("$"))) {
-                loadOneClass(file.getName());
-            }
-
-        }
-
-    }
+             try{
+             for (File file : files) {
+  		  
+              if (!(file.getName().contains("$"))) {		              
+                  loadOneClass(file.getName());		                  
+              }		              
+             
+             }
+  		  
+          }		         
+         
+         catch(NullPointerException ex)
+         {
+             logger.error("NullPointer exception occured"+ex);
+         }
+         
+  		  
+      }		    
     
     private static void loadOneClass(String filename) {
         try {
