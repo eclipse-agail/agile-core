@@ -37,8 +37,8 @@ mv libmatthew-java-$LMLIB $BUILD
 
 cd $BUILD/libmatthew-java-$LMLIB
 
-make >> /dev/null
-PREFIX=$BUILD make install >> /dev/null
+make
+PREFIX=$BUILD make install
 
 cp ./*.jar $DEPS
 cp ./*.so $DEPS
@@ -46,7 +46,7 @@ cp ./libunix-java.so $DEPS/unix-java.so
 
 cd $BUILD/dbus-java-$DBUSJAVA
 
-PREFIX=$BUILD JAVAUNIXLIBDIR=$BUILD/lib/jni JAVAUNIXJARDIR=$BUILD/share/java make bin >> /dev/null
+PREFIX=$BUILD JAVAUNIXLIBDIR=$BUILD/lib/jni JAVAUNIXJARDIR=$BUILD/share/java make bin
 
 cp ./*.jar $DEPS
 
