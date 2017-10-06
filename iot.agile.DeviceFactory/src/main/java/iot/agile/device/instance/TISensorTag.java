@@ -26,7 +26,7 @@ import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceComponent;
 import java.io.ByteArrayOutputStream;
 
-public abstract class TISensorTag extends AgileBLEDevice implements Device {
+public class TISensorTag extends AgileBLEDevice implements Device {
 	protected Logger logger = LoggerFactory.getLogger(TISensorTag.class);
 	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();	
         protected static final Map<String, SensorUuid> actuators = new HashMap<String, SensorUuid>();
