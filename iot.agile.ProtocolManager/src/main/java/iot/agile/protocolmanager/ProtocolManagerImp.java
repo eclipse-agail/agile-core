@@ -147,6 +147,9 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
 				String status = protocolInstance.DiscoveryStatus();
 				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), status));
+			} catch(ServiceUnknown ex){
+				logger.info("{} protocol is not supported", protocol.name); 
+				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), "FAILURE"));
 			} catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
 				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), "FAILURE"));
