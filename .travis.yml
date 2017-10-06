@@ -40,7 +40,6 @@ before_install:
 
 script:
   - docker_build_if_needed
-  - git checkout Dockerfile
   - cache_save
 
 after_success:
