@@ -147,6 +147,9 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
 				String status = protocolInstance.DiscoveryStatus();
 				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), status));
+			} catch(ServiceUnknown ex){
+				logger.info("{} protocol is not supported", protocol.name); 
+				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), "FAILURE"));
 			} catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
 				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), "FAILURE"));
@@ -168,9 +171,9 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			Protocol protocolInstance;
 			try {
 				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
- 	      protocolInstance.StartDiscovery();
+ 				protocolInstance.StartDiscovery();
  			}catch(ServiceUnknown ex){
-        logger.info("{} protocol is not supported", protocol.name); 
+				logger.info("{} protocol is not supported", protocol.name); 
  			}catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
 			}
@@ -191,8 +194,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
 				protocolInstance.StopDiscovery();
 			}catch(ServiceUnknown ex){
-	       logger.info("{} protocol is not supported", protocol.name); 
-	    } catch (DBusException ex) {
+				logger.info("{} protocol is not supported", protocol.name); 
+			} catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
 			}
 		}
@@ -226,8 +229,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 					protocols.add(new ProtocolOverview("ZB", "ZigBee", protocolId, "Avaliable"));
 					break;
 				case DUMMY_PROTOCOL_ID:
-          protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolId, "Avaliable"));
-          break;
+					protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolId, "Avaliable"));
+				break;
 			}
 		}
 	}
