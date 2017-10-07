@@ -34,6 +34,8 @@ import java.util.concurrent.ConcurrentMap;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.DBusSigHandler;
+import org.freedesktop.DBus.Local.Disconnected;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import iot.agile.object.AgileObjectInterface;
@@ -52,6 +54,21 @@ public class DbusClient {
 
   public DbusClient() throws DBusException {
     connection = DBusConnection.getConnection(AgileObjectInterface.DEFAULT_DBUS_CONNECTION);
+    logger.debug("DbusClient connection: {}", connection);
+
+    DBusSigHandler sigHandler = new DBusSigHandler<Disconnected>() {
+            @Override
+            public void handle(Disconnected sig) {
+              logger.error("got disconnected signal http: {}", sig);
+              try {
+                connection = DBusConnection.getConnection(AgileObjectInterface.DEFAULT_DBUS_CONNECTION);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+          };
+          connection.addSigHandler(Disconnected.class, sigHandler);
+
   }
 
   protected synchronized DBusInterface getObject(String objectBusname, String objectPath, Class<? extends DBusInterface> clazz) throws DBusException {
