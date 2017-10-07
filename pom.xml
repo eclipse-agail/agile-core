@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.freedesktop.dbus</groupId>
       <artifactId>libdbus-java</artifactId>
-      <version>2.9</version>
+      <version>2.10</version>
     </dependency>
     <dependency>
       <groupId>cx.ath.matthew</groupId>
