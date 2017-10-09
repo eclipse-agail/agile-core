@@ -63,8 +63,8 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     /**
      * The directory where .class files can be dropped
      */
-    private static String ADDCLASS_DIR ;
-//            = "/home/agile/gitsample/agile-core/iot.agile.DeviceFactory/target/classes/iot/agile/device";
+    private static String ADDCLASS_DIR = null ;
+
     /**
      * WatchService object to observe directory for changes
      */
@@ -83,8 +83,6 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     public static void main(String[] args) throws DBusException {
         DeviceFactoryImp deviceFactory = new DeviceFactoryImp();
 
-        //Load the classes from the specified directory into Classes variable
-        loadAllClasses();
         
         if(args.length==1)
         {
@@ -97,8 +95,13 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
             deviceFactory.watchChanges();
         }
         
+        
         else
             logger.debug("No path specified to load classes dynamically.");
+        
+        
+        //Load the classes from the specified directory into Classes variable
+        loadAllClasses();
     }
 
     /**
@@ -106,29 +109,57 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
      */
     private static void loadAllClasses() {
 
-        //Absolute path for the location of the classes
+        //Absolute path for the location of the classes in classpath
         File filePath = new File(getDir()+CLASSPATH_DIR);
         File[] files = filePath.listFiles();
 
         //For each file in the directory, load the class and add to the HashMap
-             try{
-             for (File file : files) {
+
+        try{
+            for (File file : files) {
   		  
-              if (!(file.getName().contains("$"))) {		              
-                  loadOneClass(file.getName());		                  
-              }		              
+                if (!(file.getName().contains("$"))) {		              
+                    loadOneClass(file.getName());		                  
+                }		              
              
-             }
+            }
   		  
-          }		         
+        }		         
          
-         catch(NullPointerException ex)
-         {
-             logger.error("NullPointer exception occured"+ex);
-         }
+        catch(NullPointerException ex){
+            logger.error("NullPointer exception occured"+ex);
+        }
          
-  		  
-      }		    
+
+        for (File file : files) {
+
+            if (!(file.getName().contains("$"))) {
+                loadOneClass(file.getName());
+            }
+
+        }
+        
+        logger.debug("Getting files from"+ADDCLASS_DIR);
+        
+        //Load all files from the addition directory
+        if(ADDCLASS_DIR!=null)
+        {   
+            
+            filePath = new File(ADDCLASS_DIR);
+            files = filePath.listFiles();
+
+        //For each file in the directory, load the class and add to the HashMap
+        for (File file : files) {
+
+            if (!(file.getName().contains("$"))) {
+                loadOneClass(file.getName());
+            }
+
+        }
+        }
+
+    }
+
     
     private static void loadOneClass(String filename) {
         try {
@@ -142,11 +173,14 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
 
             //Add only name of the class to the HashMap
             Classes.put(filename.split("\\.")[0], aClass);
-        } catch (SecurityException e) {
+        } 
+        catch (SecurityException e) {
             logger.error("Error in loading the classloader", e);
-        } catch (ClassNotFoundException e) {
+        } 
+        catch (ClassNotFoundException e) {
             logger.error("The class was not found", e);
-        } catch (IllegalArgumentException e) {
+        } 
+        catch (IllegalArgumentException e) {
             logger.error("Illegal Argument Exception occured", e);
         }
     }
@@ -159,7 +193,8 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
             //Add the types of WatchEvent for the directory
             WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
 
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             logger.error("IO Exception occured", e);
         }
 
@@ -174,7 +209,8 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                     try {
                         //Fetch the key from the watcher queue
                         key = watcher.take();
-                    } catch (InterruptedException e) {
+                    } 
+                    catch (InterruptedException e) {
                         logger.error("Interrupted Exception occured", e);
                         return;
                     }
@@ -319,21 +355,21 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
         Class[] methodParams = {DeviceOverview.class};
         try
         {
-        for (HashMap.Entry<String, Class> entry : Classes.entrySet()) {
-                    
-                    logger.debug("Key = " + entry.getKey() + ", Value = " + entry.getValue().getName());
-                    //Get the Class object
-                    Class aClass = entry.getValue();
-                    //Get the 'Matches' method from the class
-                    Method matches = aClass.getDeclaredMethod("Matches", methodParams);
-                    //Call the Matches method with argument deviceOverview, first argument is null since the method is static
-                    if((Boolean)(matches.invoke(null, deviceOverview)))
-                    {
-                        String name = (String) aClass.getField("deviceTypeName").get(aClass);
-                        ret.add(name);
-                    }
-                    
+            for (HashMap.Entry<String, Class> entry : Classes.entrySet()) {
+
+                logger.debug("Key = " + entry.getKey() + ", Value = " + entry.getValue().getName());
+                //Get the Class object
+                Class aClass = entry.getValue();
+                //Get the 'Matches' method from the class
+                Method matches = aClass.getDeclaredMethod("Matches", methodParams);
+                //Call the Matches method with argument deviceOverview, first argument is null since the method is static
+                if((Boolean)(matches.invoke(null, deviceOverview)))
+                {
+                    String name = (String) aClass.getField("deviceTypeName").get(aClass);
+                    ret.add(name);
                 }
+
+            }
             
         }
         
