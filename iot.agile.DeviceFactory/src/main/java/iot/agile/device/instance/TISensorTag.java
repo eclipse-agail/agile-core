@@ -268,7 +268,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
         
         @Override
       public void Write(String componentName, String payload) {
-              if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+          if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (isConnected()) {
                             
                             try{
@@ -277,7 +277,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
                             }
                             catch(Exception ex)
                             {
-                             logger.error("Exception occured: "+ex);   
+                             logger.error("Exception occured in Write: "+ex);   
                             }
                         }
                         else {
@@ -289,8 +289,26 @@ public class TISensorTag extends AgileBLEDevice implements Device {
         }
       
         @Override
-      public void Execute(String command) {
-		logger.debug("Device. Execute not implemented");
+      public void Execute(String commandId) {
+          if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+			if (isConnected()) {
+                            
+                            try{
+                                deviceProtocol.Write(address, getEnableSensorProfile(IOCOMPONENTS), TURN_ON_SENSOR);
+                                deviceProtocol.Write(address, getReadValueProfile(IOCOMPONENTS), commands.get(commandId));
+                            }
+                            catch(Exception ex)
+                            {
+                             logger.error("Exception occured in Execute: "+ex);   
+                            }
+                        }
+                        else {
+                throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+			}
+            } else {
+  throw new AgileNoResultException("Protocol not supported: " + protocol);
+		}
+		
 	}
 
 	// =======================Utility methods===========================
