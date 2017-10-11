@@ -287,6 +287,11 @@ public class TISensorTag extends AgileBLEDevice implements Device {
   throw new AgileNoResultException("Protocol not supported: " + protocol);
 		}
         }
+      
+        @Override
+      public void Execute(String command) {
+		logger.debug("Device. Execute not implemented");
+	}
 
 	// =======================Utility methods===========================
 	@Override

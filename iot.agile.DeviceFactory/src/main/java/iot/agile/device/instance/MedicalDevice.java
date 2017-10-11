@@ -166,6 +166,11 @@ public abstract class MedicalDevice extends AgileBLEDevice implements Device {
   public void Write(String componentName, String payload) {
 		logger.debug("Device. Write not implemented");
 	}
+  
+  @Override
+  public void Execute(String command) {
+		logger.debug("Device. Execute not implemented");
+	}
 
 	// =======================Utility methods===========================
 

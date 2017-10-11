@@ -177,14 +177,11 @@ public class Device {
    }
 
   @POST
-  @Path("/execute/{command}")
-  public void Execute(@PathParam("id") String id, @PathParam("command") String command, Map<String,Variant> args) 
+  @Path("/execute/{commandId}")
+  public void Execute(@PathParam("id") String id, @PathParam("commandId") String commandId) 
       throws DBusException {
-    if (args == null) {
-      args = new HashMap<String,Variant>();
-    }
     try {
-      getDevice(id).Execute(command, args);
+      getDevice(id).Execute(commandId);
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception e) {

@@ -167,15 +167,15 @@ public abstract class DummyDevice extends DeviceImp implements Device {
     return new StatusType(deviceStatus.toString());
   }
   
-  @Override
-  public void Execute(String command, Map<String, Variant> args) {
-    if(command.equalsIgnoreCase(DeviceStatusType.ON.toString())){
-      deviceStatus = DeviceStatusType.ON;
-    }else if(command.equalsIgnoreCase(DeviceStatusType.OFF.toString())){
-      deviceStatus = DeviceStatusType.OFF;
-    }
-  }
-  
+//  @Override
+//  public void Execute(String command, Map<String, Variant> args) {
+//    if(command.equalsIgnoreCase(DeviceStatusType.ON.toString())){
+//      deviceStatus = DeviceStatusType.ON;
+//    }else if(command.equalsIgnoreCase(DeviceStatusType.OFF.toString())){
+//      deviceStatus = DeviceStatusType.OFF;
+//    }
+//  }
+//  
   protected boolean isConnected() {
     if (Status().getStatus().equals(DeviceStatusType.CONNECTED.toString()) || Status().getStatus().equals(DeviceStatusType.ON.toString())) {
       return true;
@@ -202,6 +202,11 @@ public abstract class DummyDevice extends DeviceImp implements Device {
   @Override
   public void Write(String componentName, String payload) {
 		logger.debug("Device. Write not implemented");
+	}
+  
+  @Override
+  public void Execute(String command) {
+		logger.debug("Device. Execute not implemented");
 	}
 }
 
