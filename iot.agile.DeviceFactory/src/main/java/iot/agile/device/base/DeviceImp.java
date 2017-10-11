@@ -403,6 +403,8 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	public String getDeviceAgileID() {
 		return deviceAgileID;
 	}
+        
+        public abstract List<String> Commands();
 
 	/**
 	 *

@@ -26,6 +26,7 @@ import iot.agile.object.DeviceComponent;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceStatusType;
 import iot.agile.object.StatusType;
+import java.util.List;
 
 public abstract class DummyDevice extends DeviceImp implements Device {
   protected Logger logger = LoggerFactory.getLogger(DummyDevice.class);
@@ -201,13 +202,18 @@ public abstract class DummyDevice extends DeviceImp implements Device {
   
   @Override
   public void Write(String componentName, String payload) {
-		logger.debug("Device. Write not implemented");
+    logger.debug("Device. Write not implemented");
 	}
   
   @Override
   public void Execute(String command) {
-		logger.debug("Device. Execute not implemented");
+    logger.debug("Device. Execute not implemented");
 	}
+
+  @Override
+  public List<String> Commands(){
+    logger.debug("Device. Commands not implemented");
+    return null;
+      }
+
 }
-
-

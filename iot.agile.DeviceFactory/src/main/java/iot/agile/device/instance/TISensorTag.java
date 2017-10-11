@@ -25,6 +25,7 @@ import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceComponent;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public class TISensorTag extends AgileBLEDevice implements Device {
 	protected Logger logger = LoggerFactory.getLogger(TISensorTag.class);
@@ -310,6 +311,12 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 		}
 		
 	}
+      
+        @Override
+      public List<String> Commands(){
+          logger.debug("Device. Commands not implemented");
+          return null;
+      }
 
 	// =======================Utility methods===========================
 	@Override

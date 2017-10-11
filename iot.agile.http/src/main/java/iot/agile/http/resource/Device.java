@@ -255,4 +255,16 @@ public class Device {
       throw new WebApplicationException("Error on unsubscribing for data", ex);
     }
   }
+  
+    @GET
+  @Path("/commands")
+  public List<String> Commands(@PathParam("id") String id) throws DBusException {
+    try {
+      return getDevice(id).Commands();
+    } catch (UnknownObject | ServiceUnknown ex) {
+      throw new AgileDeviceNotFoundException("Device not found");
+    } catch (Exception ex) {
+      throw new WebApplicationException("Error on unsubscribing for data", ex);
+    }
+  }
 }

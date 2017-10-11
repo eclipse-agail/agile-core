@@ -200,13 +200,19 @@ public abstract class HexiwearDevice extends AgileBLEDevice implements Device {
   
 @Override
   public void Write(String componentName, String payload) {
-		logger.debug("Device. Write not implemented");
+            logger.debug("Device. Write not implemented");
 	}
   
 @Override
   public void Execute(String command) {
-		logger.debug("Device. Execute not implemented");
+            logger.debug("Device. Execute not implemented");
 	}
+  
+  @Override
+  public List<String> Commands(){
+            logger.debug("Device. Commands not implemented");
+            return null;
+      }
 
 	// =======================Utility methods===========================
 
