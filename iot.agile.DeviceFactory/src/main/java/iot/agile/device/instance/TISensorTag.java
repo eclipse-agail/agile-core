@@ -25,6 +25,7 @@ import iot.agile.object.DeviceDefinition;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceComponent;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TISensorTag extends AgileBLEDevice implements Device {
@@ -102,6 +103,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
                 commands.put("TURN_ON_LED1", TURN_ON_LED1);
                 commands.put("TURN_ON_LED2", TURN_ON_LED2);
                 commands.put("TURN_ON_BUZZER", TURN_ON_BUZZER);
+                commands.put("TURN_OFF_ALL", TURN_OFF_SENSOR);
         }
 
 
@@ -314,8 +316,8 @@ public class TISensorTag extends AgileBLEDevice implements Device {
       
         @Override
       public List<String> Commands(){
-          logger.debug("Device. Commands not implemented");
-          return null;
+          List<String> commandList = new ArrayList<>(commands.keySet());
+          return commandList;
       }
 
 	// =======================Utility methods===========================
