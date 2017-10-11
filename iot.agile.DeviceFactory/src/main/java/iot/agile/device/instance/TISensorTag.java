@@ -29,7 +29,7 @@ import java.io.ByteArrayOutputStream;
 public class TISensorTag extends AgileBLEDevice implements Device {
 	protected Logger logger = LoggerFactory.getLogger(TISensorTag.class);
 	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();	
-        protected static final Map<String, SensorUuid> actuators = new HashMap<String, SensorUuid>();
+        protected static final Map<String, byte[]> commands = new HashMap<String, byte[]>();
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
  	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
 	private static final String TEMPERATURE = "Temperature";
@@ -40,6 +40,9 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	private static final String GYROSCOPE = "Gyroscope";
 	private static final String OPTICAL = "Optical";
         private static final String IOCOMPONENTS = "IOComponents";
+        private static final byte[] TURN_ON_LED1 = {0x01};
+        private static final byte[] TURN_ON_LED2 = {0x02};
+        private static final byte[] TURN_ON_BUZZER = {0x04};
 
 	{
 		subscribedComponents.put(TEMPERATURE, 0);
@@ -89,10 +92,16 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				new SensorUuid("f000aa80-0451-4000-b000-000000000000", "f000aa81-0451-4000-b000-000000000000",
 						"f000aa82-0451-4000-b000-000000000000", "f000aa83-0451-4000-b000-000000000000"));
 		*/
-                 actuators.put(IOCOMPONENTS, new SensorUuid("f000aa64-0451-4000-b000-000000000000", "f000aa65-0451-4000-b000-000000000000",
+                 sensors.put(IOCOMPONENTS, new SensorUuid("f000aa64-0451-4000-b000-000000000000", "f000aa65-0451-4000-b000-000000000000",
  						"f000aa66-0451-4000-b000-000000000000", ""));
   			  	
 	}
+        
+        static{
+                commands.put("TURN_ON_LED1", TURN_ON_LED1);
+                commands.put("TURN_ON_LED2", TURN_ON_LED2);
+                commands.put("TURN_ON_BUZZER", TURN_ON_BUZZER);
+        }
 
 
 	public static boolean Matches(DeviceOverview d) {
