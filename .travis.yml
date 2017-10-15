@@ -28,7 +28,8 @@ env:
   matrix:
     - DOCKER_IMAGE=agileiot/$COMPONENT-x86_64
       VERSIONIST=true
-      BASEIMAGE=agileiot\\/intel-nuc-zulujdk:8-jdk
+      BASEIMAGE_BUILD=agileiot/intel-nuc-zulujdk:8-jdk-maven
+      BASEIMAGE_DEPLOY=agileiot/intel-nuc-zulujdk:8-jre
 
 before_install:
   - source <(curl -s https://raw.githubusercontent.com/Agile-IoT/agile-ci-scripts/master/agile-ci-functions.sh)
@@ -39,7 +40,6 @@ before_install:
 
 script:
   - docker_build_if_needed
-  - git checkout Dockerfile
   - cache_save
 
 after_success:

@@ -44,7 +44,6 @@ else
 fi
 
 cd agile-api-spec/agile-dbus-java-interface
-chmod +x ./scripts/install-dependencies.sh
 ./scripts/install-dependencies.sh
 mvn package
 cp target/agile-interfaces-1.0.jar $DEPS
