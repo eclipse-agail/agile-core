@@ -156,6 +156,7 @@ public class Device {
   @Path("/connection")
   public void Connect(@PathParam("id") String id) throws DBusException {
     try {
+      logger.debug("Connect on {}", id);
       getDevice(id).Connect();
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
@@ -168,6 +169,7 @@ public class Device {
   @Path("/connection")
   public void Disconnect(@PathParam("id") String id) throws DBusException {
     try {
+      logger.debug("Disconnect on {}", id);
       getDevice(id).Disconnect();
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
@@ -198,6 +200,7 @@ public class Device {
 	public RecordObject Read(@PathParam("id") String id, @PathParam("sensorName") String sensorName)
 			throws DBusException {
     try {
+      logger.debug("Read on {}/{}", id, sensorName);
       return getDevice(id).Read(sensorName);
     } catch (AgileNoResultException e) {
       return null;
@@ -213,6 +216,7 @@ public class Device {
 	public RecordObject LastUpdate(@PathParam("id") String id, @PathParam("componentID") String componentID)
 			throws DBusException {
     try {
+      logger.debug("LastUpdate on {}/{}", id, componentID);
       return getDevice(id).LastUpdate(componentID);
     } catch (AgileNoResultException e) {
       return null;
@@ -239,6 +243,7 @@ public class Device {
   @Path("/{sensorName}/subscribe")
   public void Subscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     try {
+      logger.debug("Subscribe to {}/{}", id, sensorName);
       getDevice(id).Subscribe(sensorName);
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
@@ -251,6 +256,7 @@ public class Device {
   @Path("/{sensorName}/subscribe")
   public void Unsubscribe(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
     try {
+      logger.debug("Unsubscribe from {}/{}", id, sensorName);
       getDevice(id).Unsubscribe(sensorName);
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");

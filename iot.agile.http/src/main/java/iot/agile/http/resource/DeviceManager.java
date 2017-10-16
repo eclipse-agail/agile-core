@@ -151,6 +151,7 @@ public class DeviceManager {
 	@Path("/{id}")
 	public void Delete(@PathParam("id") String id) throws DBusException {
     try {
+      logger.debug("Delete on {}", id);
       client.getDeviceManager().Delete(id);
     } catch (AgileDeviceNotFoundException e) {
       logger.debug("Device not found ex");

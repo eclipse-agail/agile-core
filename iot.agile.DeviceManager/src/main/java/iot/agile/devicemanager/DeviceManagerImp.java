@@ -180,6 +180,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 */
 	@Override
 	public void Delete(String id) {
+		logger.info("Deleting device {}", id);
 		DeviceDefinition devDefn = Read(id);
 		if (devDefn != null) {
 			Device device = getDevice(devDefn);
