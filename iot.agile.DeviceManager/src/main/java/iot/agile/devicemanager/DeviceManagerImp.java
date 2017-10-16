@@ -186,7 +186,6 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			if (device != null) {
 				try {
 					device.Stop();
-					connection.unExportObject(devDefn.path);
 					devices.remove(devDefn);
 					logger.info("Device deleted: {}", id);
 					} catch (Exception e) {

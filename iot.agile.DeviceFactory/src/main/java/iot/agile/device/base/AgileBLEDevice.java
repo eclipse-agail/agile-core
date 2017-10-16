@@ -90,16 +90,6 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 		}
 	}
 	
-  @Override
-  public void Stop() throws DBusException {
-   for(String component : subscribedComponents.keySet()){
-     if(subscribedComponents.get(component) >0){
-       Unsubscribe(component);     
-     }
-   }
-   Disconnect();
-  }
-  
 	/**
 	 * Given the profile of the component returns the name of the sensor
 	 * 

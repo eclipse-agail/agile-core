@@ -141,16 +141,6 @@ public class DummyDevice extends DeviceImp implements Device {
    }
 
   @Override
-  public void Stop() throws DBusException {
-    for (String component : subscribedComponents.keySet()) {
-      if (subscribedComponents.get(component) > 0) {
-        Unsubscribe(component);
-      }
-    }
-    Disconnect();
-  }
-
-  @Override
   public void Connect() throws DBusException {
     deviceStatus = DeviceStatusType.CONNECTED;
     logger.info("Device connected {}", deviceID);

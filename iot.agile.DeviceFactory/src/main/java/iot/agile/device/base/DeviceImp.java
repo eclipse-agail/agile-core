@@ -418,6 +418,23 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	public void Unsubscribe(String component) throws DBusException {
 	}
 
+	@Override
+	public void Stop() throws DBusException {
+		try {
+			if (isConnected()) {
+				for(String component : subscribedComponents.keySet()){
+					if(subscribedComponents.get(component) >0){
+						Unsubscribe(component);
+					}
+				}
+				Disconnect();
+			}
+		} catch (Exception e) {
+			logger.error("Failed to stop device ", e);
+		}
+		dbusDisconnect();
+	}
+
 	/**
 	 * Utility methods
 	 */
