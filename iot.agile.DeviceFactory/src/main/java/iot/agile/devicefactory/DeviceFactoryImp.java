@@ -124,20 +124,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
              
             }
   		  
-        }		         
-         
-        catch(NullPointerException ex){
-            logger.error("NullPointer exception occured"+ex);
-        }
-         
-
-        for (File file : files) {
-
-            if (!(file.getName().contains("$"))) {
-                loadOneClass(file.getName());
-            }
-
-        }
+        
         
         logger.debug("Getting files from"+ADDCLASS_DIR);
         
@@ -156,6 +143,12 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
             }
 
         }
+        }
+        
+        }		         
+         
+        catch(NullPointerException ex){
+            logger.error("NullPointer exception occured"+ex);
         }
 
     }
