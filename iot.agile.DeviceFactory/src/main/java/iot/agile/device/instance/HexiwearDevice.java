@@ -30,7 +30,7 @@ import iot.agile.object.RecordObject;
 import iot.agile.object.DeviceComponent;
 import iot.agile.exception.AgileNoResultException;
 
-public class HexiwearDevice extends AgileBLEDevice implements Device {
+public abstract class HexiwearDevice extends AgileBLEDevice implements Device {
   protected Logger logger = LoggerFactory.getLogger(HexiwearDevice.class);
   protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
   private static final String Acc = "Accelerometer";
@@ -197,6 +197,22 @@ public class HexiwearDevice extends AgileBLEDevice implements Device {
       throw new AgileNoResultException("Protocol not supported: " + protocol);
     }
   }
+  
+@Override
+  public void Write(String componentName, String payload) {
+            logger.debug("Device. Write not implemented");
+	}
+  
+@Override
+  public void Execute(String command) {
+            logger.debug("Device. Execute not implemented");
+	}
+  
+  @Override
+  public List<String> Commands(){
+            logger.debug("Device. Commands not implemented");
+            return null;
+      }
 
 	// =======================Utility methods===========================
 

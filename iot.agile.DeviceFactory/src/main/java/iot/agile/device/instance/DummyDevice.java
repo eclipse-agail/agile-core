@@ -26,8 +26,9 @@ import iot.agile.object.DeviceComponent;
 import iot.agile.object.DeviceOverview;
 import iot.agile.object.DeviceStatusType;
 import iot.agile.object.StatusType;
+import java.util.List;
 
-public class DummyDevice extends DeviceImp implements Device {
+public abstract class DummyDevice extends DeviceImp implements Device {
   protected Logger logger = LoggerFactory.getLogger(DummyDevice.class);
 
   public static final String deviceTypeName = "Dummy";
@@ -157,15 +158,15 @@ public class DummyDevice extends DeviceImp implements Device {
     return new StatusType(deviceStatus.toString());
   }
   
-  @Override
-  public void Execute(String command, Map<String, Variant> args) {
-    if(command.equalsIgnoreCase(DeviceStatusType.ON.toString())){
-      deviceStatus = DeviceStatusType.ON;
-    }else if(command.equalsIgnoreCase(DeviceStatusType.OFF.toString())){
-      deviceStatus = DeviceStatusType.OFF;
-    }
-  }
-  
+//  @Override
+//  public void Execute(String command, Map<String, Variant> args) {
+//    if(command.equalsIgnoreCase(DeviceStatusType.ON.toString())){
+//      deviceStatus = DeviceStatusType.ON;
+//    }else if(command.equalsIgnoreCase(DeviceStatusType.OFF.toString())){
+//      deviceStatus = DeviceStatusType.OFF;
+//    }
+//  }
+//  
   protected boolean isConnected() {
     if (Status().getStatus().equals(DeviceStatusType.CONNECTED.toString()) || Status().getStatus().equals(DeviceStatusType.ON.toString())) {
       return true;
@@ -188,4 +189,21 @@ public class DummyDevice extends DeviceImp implements Device {
   protected String getComponentName(Map<String, String> profile) {
     return DUMMY_COMPONENT;
   }
+  
+  @Override
+  public void Write(String componentName, String payload) {
+    logger.debug("Device. Write not implemented");
+	}
+  
+  @Override
+  public void Execute(String command) {
+    logger.debug("Device. Execute not implemented");
+	}
+
+  @Override
+  public List<String> Commands(){
+    logger.debug("Device. Commands not implemented");
+    return null;
+      }
+
 }

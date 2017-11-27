@@ -179,14 +179,11 @@ public class Device {
    }
 
   @POST
-  @Path("/execute/{command}")
-  public void Execute(@PathParam("id") String id, @PathParam("command") String command, Map<String,Variant> args) 
+  @Path("/execute/{commandId}")
+  public void Execute(@PathParam("id") String id, @PathParam("commandId") String commandId) 
       throws DBusException {
-    if (args == null) {
-      args = new HashMap<String,Variant>();
-    }
     try {
-      getDevice(id).Execute(command, args);
+      getDevice(id).Execute(commandId);
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception e) {
@@ -228,10 +225,10 @@ public class Device {
 	}
 
   @POST
-  @Path("/{sensorName}")
-  public void Write(@PathParam("id") String id, @PathParam("sensorName") String sensorName) throws DBusException {
+  @Path("/{componentName}/{payload}")
+  public void Write(@PathParam("id") String id, @PathParam("componentName") String componentName, @PathParam("payload") String payload) throws DBusException {
     try {
-      getDevice(id).Write();
+      getDevice(id).Write(componentName, payload);
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {
@@ -258,6 +255,18 @@ public class Device {
     try {
       logger.debug("Unsubscribe from {}/{}", id, sensorName);
       getDevice(id).Unsubscribe(sensorName);
+    } catch (UnknownObject | ServiceUnknown ex) {
+      throw new AgileDeviceNotFoundException("Device not found");
+    } catch (Exception ex) {
+      throw new WebApplicationException("Error on unsubscribing for data", ex);
+    }
+  }
+  
+    @GET
+  @Path("/commands")
+  public List<String> Commands(@PathParam("id") String id) throws DBusException {
+    try {
+      return getDevice(id).Commands();
     } catch (UnknownObject | ServiceUnknown ex) {
       throw new AgileDeviceNotFoundException("Device not found");
     } catch (Exception ex) {

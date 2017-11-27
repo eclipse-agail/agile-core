@@ -258,11 +258,10 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	/**
 	 *
 	 *
+     * @param commandId
 	 * @see iot.agile.protocol.ble.device.IDevice#Execute(java.lang.String)
 	 */
-	public void Execute(String command, Map<String, Variant> args) {
-		logger.debug("Device. Execute not implemented");
-	}
+	public abstract void Execute(String commandId);
 
 	/**
 	 *
@@ -392,11 +391,11 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	/**
 	 * Writes data into the given sensor
 	 *
+     * @param componentName
+     * @param payload
 	 * @see iot.agile.protocol.ble.device.IDevice#Write()
 	 */
-	public void Write() {
-		logger.debug("Device. Write not implemented");
-	}
+	public abstract void Write(String componentName, String payload);
 
 	/**
 	 * @return the deviceAgileID
@@ -404,6 +403,8 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	public String getDeviceAgileID() {
 		return deviceAgileID;
 	}
+        
+        public abstract List<String> Commands();
 
 	/**
 	 *
