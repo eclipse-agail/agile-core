@@ -13,7 +13,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package iot.agile.main;
+package org.eclipse.agail.main;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -22,9 +22,9 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import iot.agile.devicemanager.DeviceManagerImp;
-import iot.agile.http.HttpServer;
-import iot.agile.protocolmanager.ProtocolManagerImp;
+import org.eclipse.agail.devicemanager.DeviceManagerImp;
+import org.eclipse.agail.http.HttpServer;
+import org.eclipse.agail.protocolmanager.ProtocolManagerImp;
 
 /**
  *

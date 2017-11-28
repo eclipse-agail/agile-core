@@ -50,10 +50,10 @@ scripts/install-agile-interfaces.sh $APATH/deps
 
 # copy directories into WORKDIR
 COPY agile-main agile-main
-COPY iot.agile.DeviceManager iot.agile.DeviceManager
-COPY iot.agile.DeviceFactory iot.agile.DeviceFactory
-COPY iot.agile.ProtocolManager iot.agile.ProtocolManager
-COPY iot.agile.http iot.agile.http
+COPY org.eclipse.agail.DeviceManager org.eclipse.agail.DeviceManager
+COPY org.eclipse.agail.DeviceFactory org.eclipse.agail.DeviceFactory
+COPY org.eclipse.agail.ProtocolManager org.eclipse.agail.ProtocolManager
+COPY org.eclipse.agail.http org.eclipse.agail.http
 COPY test test
 COPY pom.xml pom.xml
 
@@ -65,10 +65,10 @@ ENV APATH /usr/src/app
 
 COPY --from=0 $APATH/scripts scripts
 COPY --from=0 $APATH/deps deps
-COPY --from=0 $APATH/iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar
-COPY --from=0 $APATH/iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar
-COPY --from=0 $APATH/iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar
-COPY --from=0 $APATH/iot.agile.DeviceFactory/target/classes/iot/agile/device/instance iot.agile.DeviceFactory/target/classes/iot/agile/device/instance
-COPY --from=0 $APATH/iot.agile.http/target/http-1.0-jar-with-dependencies.jar iot.agile.http/target/http-1.0-jar-with-dependencies.jar
+COPY --from=0 $APATH/org.eclipse.agail.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar org.eclipse.agail.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar
+COPY --from=0 $APATH/org.eclipse.agail.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar org.eclipse.agail.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar
+COPY --from=0 $APATH/org.eclipse.agail.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar org.eclipse.agail.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar
+COPY --from=0 $APATH/org.eclipse.agail.DeviceFactory/target/classes/org/eclipse/agail/device/instance org.eclipse.agail.DeviceFactory/target/classes/org/eclipse/agail/device/instance
+COPY --from=0 $APATH/org.eclipse.agail.http/target/http-1.0-jar-with-dependencies.jar org.eclipse.agail.http/target/http-1.0-jar-with-dependencies.jar
 
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]

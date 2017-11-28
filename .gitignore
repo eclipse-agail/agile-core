@@ -7,10 +7,10 @@ deps
 /api.http/target/
 .metadata/
 .recommenders
-/iot.agile.http/target/
+/org.eclipse.agail.http/target/
 */*.log
 *.log
 /agile-main/target/
 /bluez-5.39/
 /DeviceFactory/target/
-/iot.agile.DeviceFactory/target/
+/org.eclipse.agail.DeviceFactory/target/
