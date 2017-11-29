@@ -41,10 +41,7 @@ WORKDIR /usr/src/app
 ENV APATH /usr/src/app
 
 COPY scripts scripts
-
-RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
-scripts/install-dbus-java.sh $APATH/deps
-
+COPY agile-dbus-java-interface agile-dbus-java-interface
 RUN CC=clang CXX=clang++ CMAKE_C_COMPILER=clang CMAKE_CXX_COMPILER=clang++ \
 scripts/install-agile-interfaces.sh $APATH/deps
 
