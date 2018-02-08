@@ -64,6 +64,7 @@ WORKDIR /usr/src/app
 ENV APATH /usr/src/app
 
 COPY --from=0 $APATH/scripts scripts
+COPY --from=0 $APATH/test test
 COPY --from=0 $APATH/deps deps
 COPY --from=0 $APATH/iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar
 COPY --from=0 $APATH/iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar
