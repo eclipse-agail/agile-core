@@ -21,7 +21,8 @@ if [ ! -e "$BUILD" ] ; then
 fi
 
 cd agile-dbus-java-interface
-./scripts/install-dependencies.sh
+./scripts/install-dependencies.sh $DEPS
+ln -s $DEPS deps
 mvn package
 cp target/agile-interfaces-1.0.jar $DEPS
 cd ..
