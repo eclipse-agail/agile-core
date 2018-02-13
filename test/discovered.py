@@ -17,8 +17,8 @@ import dbus
 # -----------------------
 
 # DBus
-PM_BUS_NAME = "iot.agile.ProtocolManager"
-PM_OBJ_PATH = "/iot/agile/ProtocolManager"
+PM_BUS_NAME = "org.eclipse.agail.ProtocolManager"
+PM_OBJ_PATH = "/org/eclipse/agail/ProtocolManager"
 
 # --- Main program ------
 if __name__ == "__main__":

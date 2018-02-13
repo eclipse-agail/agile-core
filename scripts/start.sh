@@ -80,25 +80,25 @@ mvn="mvn"
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "ProtocolManager"
-  java -jar -Djava.library.path=deps iot.agile.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar &
+  java -jar -Djava.library.path=deps org.eclipse.agail.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Protocol Manager"
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "DeviceManager"
-  java -jar -Djava.library.path=deps iot.agile.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar &
+  java -jar -Djava.library.path=deps org.eclipse.agail.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Device Manager"
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
   ./scripts/stop.sh "http"
-  java -jar -Djava.library.path=deps iot.agile.http/target/http-1.0-jar-with-dependencies.jar &
+  java -jar -Djava.library.path=deps org.eclipse.agail.http/target/http-1.0-jar-with-dependencies.jar &
   echo "Started AGILE HTTP API"
 fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceFactory' ]; then
   ./scripts/stop.sh "DeviceFactory"
-  java -jar -Djava.library.path=deps iot.agile.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar "$PWD/plugins" &
+  java -jar -Djava.library.path=deps org.eclipse.agail.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar "$PWD/plugins" &
   echo "Started AGILE Device Factory"
 fi
 

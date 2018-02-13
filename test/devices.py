@@ -17,8 +17,8 @@ import dbus
 # -----------------------
 
 # DBus
-DM_BUS_NAME = "iot.agile.DeviceManager"
-DM_OBJ_PATH = "/iot/agile/DeviceManager"
+DM_BUS_NAME = "org.eclipse.agail.DeviceManager"
+DM_OBJ_PATH = "/org/eclipse/agail/DeviceManager"
 
 # --- Main program ------
 if __name__ == "__main__":

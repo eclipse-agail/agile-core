@@ -12,18 +12,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>iot.agile</groupId>
+  <groupId>org.eclipse.agail</groupId>
   <artifactId>dbus-api</artifactId>
   <version>1.0</version>
   <packaging>pom</packaging>
   <name>Agile DBus API</name>
 
   <modules>
-    <module>iot.agile.ProtocolManager</module>
-    <module>iot.agile.DeviceManager</module>
-    <module>iot.agile.http</module>
+    <module>org.eclipse.agail.ProtocolManager</module>
+    <module>org.eclipse.agail.DeviceManager</module>
+    <module>org.eclipse.agail.http</module>
     <module>agile-main</module>
-    <module>iot.agile.DeviceFactory</module>
+    <module>org.eclipse.agail.DeviceFactory</module>
   </modules>
 
   <properties>
@@ -44,7 +44,7 @@
 
   <dependencies>
     <dependency>
-       <groupId>iot.agile</groupId>
+       <groupId>org.eclipse.agail</groupId>
        <artifactId>agile-interfaces</artifactId>
        <version>1.0</version>
      </dependency>

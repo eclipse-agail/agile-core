@@ -11,7 +11,7 @@
 #-------------------------------------------------------------------------------
 
 ARG="$1"
-PATTERN="iot.agile.$ARG"
+PATTERN="org.eclipse.agail.$ARG"
 
 echo "Send kill signal to $PATTERN"
 pkill -f $PATTERN
