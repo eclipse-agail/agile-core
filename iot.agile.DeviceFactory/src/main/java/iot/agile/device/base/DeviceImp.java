@@ -421,6 +421,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 
 	@Override
 	public void Stop() throws DBusException {
+        logger.info ("Stopping device "+ deviceName + ":" + deviceID);
 		try {
 			if (isConnected()) {
 				for(String component : subscribedComponents.keySet()){
@@ -433,7 +434,11 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 		} catch (Exception e) {
 			logger.error("Failed to stop device ", e);
 		}
-		dbusDisconnect();
+        //logger.info("Disconnect from dbus");
+		//dbusDisconnect();
+        logger.info ("removing "+deviceID+ "object from "  + connection.toString());   
+        String devicePath = AGILE_DEVICE_BASE_BUS_PATH + deviceID; 
+        if (connection != null) connection.unExportObject(devicePath);
 	}
 
 	/**
