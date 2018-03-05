@@ -10,30 +10,30 @@
  ******************************************************************************/
 package org.eclipse.agail.device.instance;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.freedesktop.dbus.exceptions.DBusException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.eclipse.agail.Device;
 import org.eclipse.agail.device.base.AgileBLEDevice;
 import org.eclipse.agail.device.base.SensorUuid;
 import org.eclipse.agail.exception.AgileNoResultException;
+import org.eclipse.agail.object.DeviceComponent;
 import org.eclipse.agail.object.DeviceDefinition;
 import org.eclipse.agail.object.DeviceOverview;
-import org.eclipse.agail.object.DeviceComponent;
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import org.freedesktop.dbus.exceptions.DBusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TISensorTag extends AgileBLEDevice implements Device {
 	protected Logger logger = LoggerFactory.getLogger(TISensorTag.class);
-	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();	
-        protected static final Map<String, byte[]> commands = new HashMap<String, byte[]>();
+	protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
+	protected static final Map<String, byte[]> commands = new HashMap<String, byte[]>();
 	private static final byte[] TURN_ON_SENSOR = { 0X01 };
- 	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
+	private static final byte[] TURN_OFF_SENSOR = { 0X00 };
 	private static final String TEMPERATURE = "Temperature";
 	private static final String ACCELEROMETER = "Accelerometer";
 	private static final String HUMIDITY = "Humidity";
@@ -41,27 +41,27 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	private static final String PRESSURE = "Pressure";
 	private static final String GYROSCOPE = "Gyroscope";
 	private static final String OPTICAL = "Optical";
-        private static final String IOCOMPONENTS = "IOComponents";
-        private static final byte[] TURN_ON_LED1 = {0x01};
-        private static final byte[] TURN_ON_LED2 = {0x02};
-        private static final byte[] TURN_ON_BUZZER = {0x04};
+	private static final String IOCOMPONENTS = "IOComponents";
+	private static final byte[] TURN_ON_LED1 = { 0x01 };
+	private static final byte[] TURN_ON_LED2 = { 0x02 };
+	private static final byte[] TURN_ON_BUZZER = { 0x04 };
 
 	{
 		subscribedComponents.put(TEMPERATURE, 0);
-		//subscribedComponents.put(ACCELEROMETER, 0);
+		// subscribedComponents.put(ACCELEROMETER, 0);
 		subscribedComponents.put(HUMIDITY, 0);
 		subscribedComponents.put(PRESSURE, 0);
-		//subscribedComponents.put(GYROSCOPE, 0);
+		// subscribedComponents.put(GYROSCOPE, 0);
 		subscribedComponents.put(OPTICAL, 0);
 	}
-	
+
 	{
 		profile.add(new DeviceComponent(TEMPERATURE, "Degree celsius (°C)"));
-		//profile.add(new DeviceComponent(ACCELEROMETER, ""));
+		// profile.add(new DeviceComponent(ACCELEROMETER, ""));
 		profile.add(new DeviceComponent(HUMIDITY, "Relative humidity (%RH)"));
-		//profile.add(new DeviceComponent(MAGNETOMETER, ""));
+		// profile.add(new DeviceComponent(MAGNETOMETER, ""));
 		profile.add(new DeviceComponent(PRESSURE, "Hecto pascal (hPa)"));
-		//profile.add(new DeviceComponent(GYROSCOPE, ""));
+		// profile.add(new DeviceComponent(GYROSCOPE, ""));
 		profile.add(new DeviceComponent(OPTICAL, "Light intensity (W/sr)"));
 	}
 
@@ -73,39 +73,43 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 				new SensorUuid("f000aa20-0451-4000-b000-000000000000", "f000aa21-0451-4000-b000-000000000000",
 						"f000aa22-0451-4000-b000-000000000000", "f000aa23-0451-4000-b000-000000000000"));
 		/*
-		sensors.put(MAGNETOMETER,
-				new SensorUuid("f000aa30-0451-4000-b000-000000000000", "f000aa31-0451-4000-b000-000000000000",
-						"f000aa32-0451-4000-b000-000000000000", "f000aa33-0451-4000-b000-000000000000"));
-		*/
+		 * sensors.put(MAGNETOMETER, new
+		 * SensorUuid("f000aa30-0451-4000-b000-000000000000",
+		 * "f000aa31-0451-4000-b000-000000000000",
+		 * "f000aa32-0451-4000-b000-000000000000",
+		 * "f000aa33-0451-4000-b000-000000000000"));
+		 */
 		sensors.put(PRESSURE,
 				new SensorUuid("f000aa40-0451-4000-b000-000000000000", "f000aa41-0451-4000-b000-000000000000",
 						"f000aa42-0451-4000-b000-000000000000", "f000aa44-0451-4000-b000-000000000000"));
 		/*
-		sensors.put(GYROSCOPE,
-				new SensorUuid("f000aa50-0451-4000-b000-000000000000", "f000aa51-0451-4000-b000-000000000000",
-						"f000aa52-0451-4000-b000-000000000000", "f000aa53-0451-4000-b000-000000000000"));
-		*/
+		 * sensors.put(GYROSCOPE, new SensorUuid("f000aa50-0451-4000-b000-000000000000",
+		 * "f000aa51-0451-4000-b000-000000000000",
+		 * "f000aa52-0451-4000-b000-000000000000",
+		 * "f000aa53-0451-4000-b000-000000000000"));
+		 */
 
 		sensors.put(OPTICAL,
 				new SensorUuid("f000aa70-0451-4000-b000-000000000000", "f000aa71-0451-4000-b000-000000000000",
 						"f000aa72-0451-4000-b000-000000000000", "f000aa73-0451-4000-b000-000000000000"));
 		/*
-		sensors.put(ACCELEROMETER,
-				new SensorUuid("f000aa80-0451-4000-b000-000000000000", "f000aa81-0451-4000-b000-000000000000",
-						"f000aa82-0451-4000-b000-000000000000", "f000aa83-0451-4000-b000-000000000000"));
-		*/
-                 sensors.put(IOCOMPONENTS, new SensorUuid("f000aa64-0451-4000-b000-000000000000", "f000aa65-0451-4000-b000-000000000000",
- 						"f000aa66-0451-4000-b000-000000000000", ""));
-  			  	
-	}
-        
-        static{
-                commands.put("TURN_ON_LED1", TURN_ON_LED1);
-                commands.put("TURN_ON_LED2", TURN_ON_LED2);
-                commands.put("TURN_ON_BUZZER", TURN_ON_BUZZER);
-                commands.put("TURN_OFF_ALL", TURN_OFF_SENSOR);
-        }
+		 * sensors.put(ACCELEROMETER, new
+		 * SensorUuid("f000aa80-0451-4000-b000-000000000000",
+		 * "f000aa81-0451-4000-b000-000000000000",
+		 * "f000aa82-0451-4000-b000-000000000000",
+		 * "f000aa83-0451-4000-b000-000000000000"));
+		 */
+		sensors.put(IOCOMPONENTS, new SensorUuid("f000aa64-0451-4000-b000-000000000000",
+				"f000aa65-0451-4000-b000-000000000000", "f000aa66-0451-4000-b000-000000000000", ""));
 
+	}
+
+	static {
+		commands.put("TURN_ON_LED1", TURN_ON_LED1);
+		commands.put("TURN_ON_LED2", TURN_ON_LED2);
+		commands.put("TURN_ON_BUZZER", TURN_ON_BUZZER);
+		commands.put("TURN_OFF_ALL", TURN_OFF_SENSOR);
+	}
 
 	public static boolean Matches(DeviceOverview d) {
 		return d.name.contains("SensorTag");
@@ -149,10 +153,9 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 							deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
 						}
 						/**
-						 * The default read data period (frequency) of most of
-						 * sensor tag sensors is 1000ms therefore the first data
-						 * will be available to read after 1000ms for these we
-						 * call Read method after 1 second
+						 * The default read data period (frequency) of most of sensor tag sensors is
+						 * 1000ms therefore the first data will be available to read after 1000ms for
+						 * these we call Read method after 1 second
 						 */
 						Thread.sleep(1010);
 						// read value
@@ -180,10 +183,10 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 		return null;
 	}
 
-	public String NotificationRead(String componentName){
- 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-		if (isConnected()) {
-      if (isSensorSupported(componentName.trim())) {
+	public String NotificationRead(String componentName) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+			if (isConnected()) {
+				if (isSensorSupported(componentName.trim())) {
 					try {
 						deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
 						byte[] period = { 100 };
@@ -191,36 +194,38 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 						byte[] result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
 						return formatReading(componentName, result);
 					} catch (DBusException e) {
-					e.printStackTrace();
+						e.printStackTrace();
+					}
+				} else {
+					throw new AgileNoResultException("Sensor not supported:" + componentName);
 				}
 			} else {
-        throw new AgileNoResultException("Sensor not supported:" + componentName);
+				throw new AgileNoResultException("BLE Device not connected: " + deviceName);
 			}
-    } else {
-      throw new AgileNoResultException("BLE Device not connected: " + deviceName);
-    }
-	} else {
-    throw new AgileNoResultException("Protocol not supported: " + protocol);
+		} else {
+			throw new AgileNoResultException("Protocol not supported: " + protocol);
+		}
+		throw new AgileNoResultException("Unable to read " + componentName);
 	}
- 		throw new AgileNoResultException("Unable to read "+componentName);
-	}
-	
+
 	@Override
 	public synchronized void Subscribe(String componentName) {
 		logger.info("Subscribe to {}", componentName);
- 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
- 					try {
+					try {
 						if (!hasOtherActiveSubscription()) {
 							addNewRecordSignalHandler();
 						}
 						if (!hasOtherActiveSubscription(componentName)) {
-  							deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
-							/* Setting the period on the Pressure sensor was not working. Since we are anyway using the default value, keep this disabled. TODO: verify pressure senosr.
-							byte[] period = { 100 };
-							deviceProtocol.Write(address, getFrequencyProfile(componentName), period);
-							*/
+							deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
+							/*
+							 * Setting the period on the Pressure sensor was not working. Since we are
+							 * anyway using the default value, keep this disabled. TODO: verify pressure
+							 * senosr. byte[] period = { 100 }; deviceProtocol.Write(address,
+							 * getFrequencyProfile(componentName), period);
+							 */
 							deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
 						}
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
@@ -228,17 +233,17 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 						e.printStackTrace();
 					}
 				} else {
-          throw new AgileNoResultException("Sensor not supported:" + componentName);
+					throw new AgileNoResultException("Sensor not supported:" + componentName);
 				}
 			} else {
-        throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+				throw new AgileNoResultException("BLE Device not connected: " + deviceName);
 			}
 		} else {
-      throw new AgileNoResultException("Protocol not supported: " + protocol);
+			throw new AgileNoResultException("Protocol not supported: " + protocol);
 		}
 	}
 
-@Override
+	@Override
 	public synchronized void Unsubscribe(String componentName) throws DBusException {
 		logger.info("Unsubscribe from {}", componentName);
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
@@ -259,66 +264,60 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 						e.printStackTrace();
 					}
 				} else {
-          throw new AgileNoResultException("Sensor not supported:" + componentName);
+					throw new AgileNoResultException("Sensor not supported:" + componentName);
 				}
 			} else {
-        throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+				throw new AgileNoResultException("BLE Device not connected: " + deviceName);
 			}
 		} else {
-      throw new AgileNoResultException("Protocol not supported: " + protocol);
+			throw new AgileNoResultException("Protocol not supported: " + protocol);
 		}
 	}
-        
-        @Override
-      public void Write(String componentName, String payload) {
-          if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+
+	@Override
+	public void Write(String componentName, String payload) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (isConnected()) {
-                            
-                            try{
-                                deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
-                                deviceProtocol.Write(address, getReadValueProfile(componentName), getBytes(payload));
-                            }
-                            catch(Exception ex)
-                            {
-                             logger.error("Exception occured in Write: "+ex);   
-                            }
-                        }
-                        else {
-                throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+
+				try {
+					deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
+					deviceProtocol.Write(address, getReadValueProfile(componentName), getBytes(payload));
+				} catch (Exception ex) {
+					logger.error("Exception occured in Write: " + ex);
+				}
+			} else {
+				throw new AgileNoResultException("BLE Device not connected: " + deviceName);
 			}
-            } else {
-  throw new AgileNoResultException("Protocol not supported: " + protocol);
+		} else {
+			throw new AgileNoResultException("Protocol not supported: " + protocol);
 		}
-        }
-      
-        @Override
-      public void Execute(String commandId) {
-          if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-			if (isConnected()) {
-                            
-                            try{
-                                deviceProtocol.Write(address, getEnableSensorProfile(IOCOMPONENTS), TURN_ON_SENSOR);
-                                deviceProtocol.Write(address, getReadValueProfile(IOCOMPONENTS), commands.get(commandId));
-                            }
-                            catch(Exception ex)
-                            {
-                             logger.error("Exception occured in Execute: "+ex);   
-                            }
-                        }
-                        else {
-                throw new AgileNoResultException("BLE Device not connected: " + deviceName);
-			}
-            } else {
-  throw new AgileNoResultException("Protocol not supported: " + protocol);
-		}
-		
 	}
-      
-        @Override
-      public List<String> Commands(){
-          List<String> commandList = new ArrayList<>(commands.keySet());
-          return commandList;
-      }
+
+	@Override
+	public void Execute(String commandId) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+			if (isConnected()) {
+
+				try {
+					deviceProtocol.Write(address, getEnableSensorProfile(IOCOMPONENTS), TURN_ON_SENSOR);
+					deviceProtocol.Write(address, getReadValueProfile(IOCOMPONENTS), commands.get(commandId));
+				} catch (Exception ex) {
+					logger.error("Exception occured in Execute: " + ex);
+				}
+			} else {
+				throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+			}
+		} else {
+			throw new AgileNoResultException("Protocol not supported: " + protocol);
+		}
+
+	}
+
+	@Override
+	public List<String> Commands() {
+		List<String> commandList = new ArrayList<>(commands.keySet());
+		return commandList;
+	}
 
 	// =======================Utility methods===========================
 	@Override
@@ -368,11 +367,10 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 
 	/**
 	 *
-	 * The sensor service returns the data in an encoded format which can be
-	 * found in the
-	 * wiki(http://processors.wiki.ti.com/index.php/SensorTag_User_Guide#
-	 * IR_Temperature_Sensor). Convert the raw sensor reading value format to
-	 * human understandable value and print it.
+	 * The sensor service returns the data in an encoded format which can be found
+	 * in the wiki(http://processors.wiki.ti.com/index.php/SensorTag_User_Guide#
+	 * IR_Temperature_Sensor). Convert the raw sensor reading value format to human
+	 * understandable value and print it.
 	 * 
 	 * @param sensorName
 	 *            Name of the sensor to read value from
@@ -391,29 +389,22 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 			rawData = shortSignedAtOffset(readData, 2);
 			result = convertHumidity(rawData);
 		} else if (sensorName.contains(PRESSURE)) {
-			int lowerByte = Byte.toUnsignedInt(readData[3]);
-			int upperByte = Byte.toUnsignedInt(readData[4]);
-			int upper = Byte.toUnsignedInt(readData[5]);
-			int rawResult = (upperByte << 8) + (lowerByte & 0xff) + upper;
-			float pressure = convertPressure(rawResult);
+			
+			// int lowerByte = Byte.toUnsignedInt(readData[3]);
+			// int upperByte = Byte.toUnsignedInt(readData[4]);
+			// int upper = Byte.toUnsignedInt(readData[5]);
+			// int rawResult = (upperByte << 8) + (lowerByte & 0xff) + upper;
+			// float pressure = convertPressure(rawResult);
+			// result = pressure;
 
-			int t_r; // Temperature raw value from sensor
-			int p_r; // Pressure raw value from sensor
-			Double t_a; // Temperature actual value in unit centi degrees
-						// celsius
-			Double S; // Interim value in calculation
-			Double O; // Interim value in calculation
-			Double p_a; // Pressure actual value in unit Pascal.
+			// Solved in new firmware as explained here (I didn't check as I was unable to update firmware)
+			// Current firmware 1.30
+			// After update to 1.50 (latest) uncomment the upper code and use that
+			// https://github.com/evothings/evothings-examples/issues/161
+			float rawP = (readData[5] << 16) + (readData[4] << 8) + readData[3];
+			float pressure = convertPressure((int) rawP);
+			result = pressure;
 
-			t_r = shortSignedAtOffset(readData, 0);
-			p_r = shortSignedAtOffset(readData, 3);
-
-			t_a = (100 * (readData[0] * t_r / Math.pow(2, 8) + readData[1] * Math.pow(2, 6))) / Math.pow(2, 16);
-			S = readData[3] + readData[4] * t_r / Math.pow(2, 17)
-					+ ((readData[5] * t_r / Math.pow(2, 15)) * t_r) / Math.pow(2, 19);
-			p_a = ((S * p_r) / Math.pow(2, 14));
-			return Double.toString(p_a);
-			// result = Float.toString(pressure);
 		} else if (sensorName.equals(OPTICAL)) {
 			rawData = shortSignedAtOffset(readData, 0);
 			result = convertOpticalRead(rawData);
@@ -457,7 +448,7 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	}
 
 	private float convertPressure(int raw) {
-		return raw / 100;
+		return raw / 100.0f;
 	}
 
 	private float convertOpticalRead(int raw) {
@@ -468,30 +459,30 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	}
 
 	/**
-   * Given the profile of the component returns the name of the sensor
-   * 
-   * @param uuid
-   * @return
-   */
-  @Override
-  protected String getComponentName(Map<String, String> profile) {
-    String serviceUUID = profile.get(GATT_SERVICE);
-    String charValueUuid = profile.get(GATT_CHARACTERSTICS);
-    for (Entry<String, SensorUuid> su : sensors.entrySet()) {
-      if (su.getValue().serviceUuid.equals(serviceUUID) && su.getValue().charValueUuid.equals(charValueUuid)) {
-        return su.getKey();
-      }
-    }
-    return null;
-  }
-  
-  private byte[] getBytes(String payload) {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        
-        output.write(Byte.valueOf(payload));
-        
-        byte[] bytes = output.toByteArray();
-        
-        return bytes;
-    }
+	 * Given the profile of the component returns the name of the sensor
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	@Override
+	protected String getComponentName(Map<String, String> profile) {
+		String serviceUUID = profile.get(GATT_SERVICE);
+		String charValueUuid = profile.get(GATT_CHARACTERSTICS);
+		for (Entry<String, SensorUuid> su : sensors.entrySet()) {
+			if (su.getValue().serviceUuid.equals(serviceUUID) && su.getValue().charValueUuid.equals(charValueUuid)) {
+				return su.getKey();
+			}
+		}
+		return null;
+	}
+
+	private byte[] getBytes(String payload) {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+		output.write(Byte.valueOf(payload));
+
+		byte[] bytes = output.toByteArray();
+
+		return bytes;
+	}
 }
