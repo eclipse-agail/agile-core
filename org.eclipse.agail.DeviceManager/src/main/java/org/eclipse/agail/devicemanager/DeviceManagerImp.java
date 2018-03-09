@@ -13,19 +13,18 @@ package org.eclipse.agail.devicemanager;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.freedesktop.dbus.DBusConnection;
+import org.eclipse.agail.Device;
+import org.eclipse.agail.DeviceFactory;
+import org.eclipse.agail.DeviceManager;
+import org.eclipse.agail.devicemanager.jsondb.DeviceWithType;
+import org.eclipse.agail.devicemanager.jsondb.JsonDB;
+import org.eclipse.agail.exception.AgileDeviceNotFoundException;
+import org.eclipse.agail.object.AbstractAgileObject;
+import org.eclipse.agail.object.DeviceDefinition;
+import org.eclipse.agail.object.DeviceOverview;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.agail.Device;
-import org.eclipse.agail.DeviceManager;
-import org.eclipse.agail.DeviceFactory;
-import org.eclipse.agail.exception.AgileDeviceNotFoundException;
-import org.eclipse.agail.object.AbstractAgileObject;
-import org.eclipse.agail.object.DeviceComponent;
-import org.eclipse.agail.object.DeviceDefinition;
-import org.eclipse.agail.object.DeviceOverview;
 
 /**
  * @author dagi
@@ -51,6 +50,8 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 */
 	protected final List<DeviceDefinition> devices = new ArrayList<DeviceDefinition>();
 
+	private JsonDB db;
+
 	public static void main(String[] args) throws DBusException {
 		DeviceManager deviceManager = new DeviceManagerImp();
 	}
@@ -59,6 +60,8 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
 		dbusConnect(AGILE_DEVICEMANAGER_MANAGER_BUS_NAME, AGILE_DEVICEMANAGER_MANAGER_BUS_PATH, this);
 		logger.debug("Started Device Manager");
+
+		db = new JsonDB();
 	}
 
 	/**
@@ -98,41 +101,43 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			registeredDev = device.Definition();
 			logger.info("Device already registered:  {}", device.Id());
 		} else {
-		  try {
-	logger.info("HEXIWEAR - Checking device type: "+deviceType+" and overview "+deviceOverview);  
-        
-        String objectName = "org.eclipse.agail.DeviceFactory";
-        String objectPath = "/org/eclipse/agail/DeviceFactory";
-        logger.info("Connection established: "+connection);
-        DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath, DeviceFactory.class);
-        device = factory.getDevice(deviceType, deviceOverview);
-        logger.info("Creating new device: {}", deviceType);
-        if (device != null) {
-          registeredDev = device.Definition();
-          devices.add(registeredDev);
-          logger.info("Created new device: {}", devices);
-        }
-      } catch (Exception e) {
-        logger.error("Can not register device: {}", e.getMessage());
-        e.printStackTrace();
-        }
-		}	  
-    // connect device
-    if (device != null) {
-      final Device dev = device;
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            dev.Connect();
-            logger.info("Device connected");
-          } catch (Exception e) {
-            logger.error("Error encountered while attempting to connect: {}", e.getMessage());
-          }
-        }
-      }).start();
-    }
-    return registeredDev;
+			try {
+				logger.info("HEXIWEAR - Checking device type: " + deviceType + " and overview " + deviceOverview);
+
+				String objectName = "org.eclipse.agail.DeviceFactory";
+				String objectPath = "/org/eclipse/agail/DeviceFactory";
+				logger.info("Connection established: " + connection);
+				DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath,
+						DeviceFactory.class);
+				device = factory.getDevice(deviceType, deviceOverview);
+				logger.info("Creating new device: {}", deviceType);
+				if (device != null) {
+					registeredDev = device.Definition();
+					db.saveDevice(deviceOverview, deviceType);
+					devices.add(registeredDev);
+					logger.info("Created new device: {}", devices);
+				}
+			} catch (Exception e) {
+				logger.error("Can not register device: {}", e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		// connect device
+		if (device != null) {
+			final Device dev = device;
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						dev.Connect();
+						logger.info("Device connected");
+					} catch (Exception e) {
+						logger.error("Error encountered while attempting to connect: {}", e.getMessage());
+					}
+				}
+			}).start();
+		}
+		return registeredDev;
 	}
 
 	/**
@@ -169,6 +174,15 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 */
 	@Override
 	public List<DeviceDefinition> Devices() {
+		List<DeviceWithType> devs = db.readData();
+		logger.info("******************** Devices {} fround in jsonDB.", devs.size());
+		for (int i = 0; i < devs.size(); i++) {
+			DeviceWithType dev = devs.get(i);
+			Register(dev.getDeviceOverview(), dev.getDeviceType());
+			// logger.info("Devices (id= {}, name= {}) with type ({}) fround in jsonDB.",
+			// dev.getDeviceOverview().id, dev.getDeviceOverview().name,
+			// dev.getDeviceType());
+		}
 		return devices;
 	}
 
@@ -182,14 +196,16 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	public void Delete(String id) {
 		logger.info("Deleting device {}", id);
 		DeviceDefinition devDefn = Read(id);
+		logger.info("Device deleted: {}, {}, {}", devDefn.deviceId, devDefn.getAddress(), devDefn.name);
 		if (devDefn != null) {
 			Device device = getDevice(devDefn);
 			if (device != null) {
 				try {
 					device.Stop();
 					devices.remove(devDefn);
+					db.deletDevice(devDefn.getAddress());
 					logger.info("Device deleted: {}", id);
-					} catch (Exception e) {
+				} catch (Exception e) {
 				    logger.error("Unable to delete device: {}", id);
 				    e.printStackTrace();
 				}
