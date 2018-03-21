@@ -278,10 +278,12 @@ public class TISensorTag extends AgileBLEDevice implements Device {
 	public void Write(String componentName, String payload) {
 		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
 			if (isConnected()) {
-
 				try {
-					deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
-					deviceProtocol.Write(address, getReadValueProfile(componentName), getBytes(payload));
+					if(payload.equals("0")) {
+						deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_OFF_SENSOR);
+					} else {
+						deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
+					}
 				} catch (Exception ex) {
 					logger.error("Exception occured in Write: " + ex);
 				}
