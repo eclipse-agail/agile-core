@@ -28,8 +28,12 @@ public class JsonDB {
 	private File dbFile;
 
 	private void setFile() {
-		if (System.getenv("DBFILE") != null && dbFile == null) {
+		logger.debug("System.getenv(\"DBFILE\") {}", System.getenv("DBFILE"));
+		if(System.getenv("DBFILE") != null) {
 			dbFileName = System.getenv("DBFILE");
+		}
+		logger.debug("DBdevice File found {}", dbFileName);
+		if (dbFile == null) {
 			dbFile = new File(dbFileName);
 			if (dbFile.exists()) {
 				logger.info("DB File {} found.", dbFileName);
