@@ -70,9 +70,8 @@ Exposes the [org.eclipse.agail.DeviceFactory](http://agile-iot.github.io/agile-a
 - DBus interface name **org.eclipse.agail.DeviceFactory**
 - DBus interface path **/org/eclipse/agail/DeviceFactory**
 
-The DeviceFactory can load device implementation both from its own classpath and from a plugin folder. The plugin folder, specified as the first parameter to the DeviceManager, should contain
-class files, implementing the org.eclipse.egail.Device interface. Class files should be placed in the plugin folder structured in a folder hierarchy corresponding to the package, i.e. the usual
-Java way (e.g. <pluginfolder>/org/eclipse/agail/device/instance/MyNewAgileDevice.class).
+The DeviceFactory can also load device implementation from a plugin folder. This plugin folder should be part of the classpath and also specified as the first parameter to the DeviceFactory.
+Class files with device implementation must implement the org.eclipse.egail.Device interface, and should be placed directly in the org.eclipse.agail.device.instance package. Class files must be placed in the plugin folder structured in a folder hierarchy corresponding to the package, i.e. the usual Java way: <pluginfolder>/org/eclipse/agail/device/instance/MyNewAgileDevice.class.
 
 HTTP API
 ---
