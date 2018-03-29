@@ -62,6 +62,17 @@ Register BLE Device The package org.eclipse.agail.devicemanager.example contains
     - Connect BLE Device(TI SensorTag): The ConnectDevice.java file in org.eclipse.agail.devicemanager.example package demonstrates the usage of Agile org.eclipse.agail.Device Dbus interface to connect a TI SensorTag device.
     - Read Data: The ReadData.java file in org.eclipse.agail.devicemanager.example package demonstrates the usage of org.eclipse.agail.Device DBus interface in order to read temperature data from TI SensorTag temperature sensor/service.
 
+AGILE Device Factory
+---
+
+Exposes the [org.eclipse.agail.DeviceFactory](http://agile-iot.github.io/agile-api-spec/docs/html/api.html#iot_agile_DeviceFactory) interface
+
+- DBus interface name **org.eclipse.agail.DeviceFactory**
+- DBus interface path **/org/eclipse/agail/DeviceFactory**
+
+The DeviceFactory can also load device implementation from a plugin folder. This plugin folder should be part of the classpath and also specified as the first parameter to the DeviceFactory.
+Class files with device implementation must implement the org.eclipse.egail.Device interface, and should be placed directly in the org.eclipse.agail.device.instance package. Class files must be placed in the plugin folder structured in a folder hierarchy corresponding to the package, i.e. the usual Java way: <pluginfolder>/org/eclipse/agail/device/instance/MyNewAgileDevice.class.
+
 HTTP API
 ---
 
