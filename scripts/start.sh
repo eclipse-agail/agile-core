@@ -100,7 +100,9 @@ fi
 
 if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceFactory' ]; then
   ./scripts/stop.sh "DeviceFactory"
-  java -jar -Djava.library.path=deps org.eclipse.agail.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar "$PWD/plugins" &
+  java -cp "org.eclipse.agail.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar:$PWD/plugins" \
+       -Djava.library.path=deps \
+       org.eclipse.agail.devicefactory.DeviceFactoryImp "$PWD/plugins" &
   echo "Started AGILE Device Factory"
 fi
 
