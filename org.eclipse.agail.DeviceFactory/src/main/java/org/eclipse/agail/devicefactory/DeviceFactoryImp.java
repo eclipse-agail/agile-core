@@ -58,9 +58,13 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
      */
     private static final String AGILE_DEVICEFACTORY_BUS_PATH = "/org/eclipse/agail/DeviceFactory";
     /**
+     * The path of the directory of the classpath base
+     */
+    private static final String CLASSPATH_BASE = "classes";
+    /**
      * The path of the directory where the classes are loaded from
      */
-    private static final String CLASSPATH_DIR = "classes/org/eclipse/agail/device/instance";
+    private static final String DEVICE_CLASSPATH = "org/eclipse/agail/device/instance";
     
     /**
      * The directory where .class files can be dropped
@@ -112,7 +116,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
     private static void loadAllClasses() {
 
         //Absolute path for the location of the classes in classpath
-        File filePath = new File(getDir()+CLASSPATH_DIR);
+        File filePath = new File(getDir()+CLASSPATH_BASE+"/"+DEVICE_CLASSPATH);
         File[] files = filePath.listFiles();
 
         //For each file in the directory, load the class and add to the HashMap
@@ -134,7 +138,7 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
         if(ADDCLASS_DIR!=null)
         {   
             
-            filePath = new File(ADDCLASS_DIR);
+            filePath = new File(ADDCLASS_DIR+"/"+DEVICE_CLASSPATH);
             files = filePath.listFiles();
 
         //For each file in the directory, load the class and add to the HashMap
