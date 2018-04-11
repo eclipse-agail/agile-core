@@ -129,6 +129,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 * @see org.eclipse.agail.protocol.ble.protocolmanager.ProtocolManager#Protocols()
 	 */
 	public List<ProtocolOverview> Protocols() {
+        logger.info("protocols " + protocols.toString());
 		return protocols;
 	}
 
@@ -222,25 +223,57 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	}
 
 	protected void addProtocol(String protocolId) {
-		if (!protocols.contains(protocolId)) {
-			switch (protocolId) {
-				case BLE_PROTOCOL_ID:
-					protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolId, "Avaliable"));
-					break;
-				case ZB_PROTOCOL_ID:
-					protocols.add(new ProtocolOverview("ZB", "ZigBee", protocolId, "Avaliable"));
-					break;
-				case DUMMY_PROTOCOL_ID:
-					protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolId, "Avaliable"));
+        logger.info("add protocolID "+ protocolId);
+        //Parse both full path + ID type parameters
+
+        String protocolIDFullpath = protocolId;
+        if (!protocolId.contains(".")) {
+            protocolIDFullpath = "org.eclipse.agail.protocol." +protocolId; 
+        } else {
+            protocolIDFullpath  = protocolId;
+            String[] protComp= protocolId.split(".");
+            if (protComp.length >0) {    
+                protocolId =protComp[protComp.length-1];
+            }
+        }
+
+        for (ProtocolOverview prot : protocols){
+           logger.info(protocolIDFullpath +"?"+prot.getId() +" : "+ prot.getName() +" : "+ prot.getDbusInterface());
+            
+            if (prot.getDbusInterface().equals(protocolIDFullpath)){
+                logger.info("already exists"+ protocolId);
+                return;
+            }
+        }
+
+
+		switch (protocolIDFullpath) {
+			case BLE_PROTOCOL_ID:
+				protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolIDFullpath, "Avaliable"));
 				break;
-			}
+			case ZB_PROTOCOL_ID:
+				protocols.add(new ProtocolOverview("ZB", "Zigbee", protocolIDFullpath, "Avaliable"));
+				break;
+			case DUMMY_PROTOCOL_ID:
+				protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolIDFullpath, "Avaliable"));
+			    break;
+            default:
+              // TODO check classpath?
+                protocols.add(new ProtocolOverview(protocolId,protocolId,protocolIDFullpath, "Avaliable"));
+                
 		}
 	}
 
 	protected void removeProtocol(String protocolId) {
-		if (protocols.contains(protocolId)) {
-			protocols.remove(protocolId);
-		}
+       logger.info("remove protocol " + protocolId +":" + protocols.toString() +"contains: "+protocols.contains(protocolId));
+        for (ProtocolOverview prot : protocols){
+            logger.info(prot.getId().toString());
+            if (prot.getId().equals(protocolId)){
+                protocols.remove(prot);
+                logger.info(prot.toString() + "removed");
+                return;
+            }
+        }
 	}
 
 	@Override
