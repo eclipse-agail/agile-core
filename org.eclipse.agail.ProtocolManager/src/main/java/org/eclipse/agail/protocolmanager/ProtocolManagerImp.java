@@ -43,6 +43,7 @@ import org.eclipse.agail.Protocol;
 import org.eclipse.agail.ProtocolManager;
 import org.eclipse.agail.object.AbstractAgileObject;
 import org.eclipse.agail.object.DeviceOverview;
+import org.eclipse.agail.object.DeviceOverviewExt;
 import org.eclipse.agail.object.DiscoveryStatus;
 import org.eclipse.agail.object.ProtocolOverview;
 
@@ -106,11 +107,25 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 					@Override
 					public void handle(FoundNewDeviceSignal signal) {
-						devices.add(signal.device);
+                        logger.info("device "+signal.device.getId() +"@"+System.currentTimeMillis());
+                        for (int i =0; i<devices.size() ; i++) {
+                            DeviceOverview dev=devices.get(i);    
+			                if (dev.getId().equals(signal.device.getId())) {
+                                DeviceOverview devNew=new DeviceOverview(signal.device.getId(),signal.device.getProtocol(),signal.device.getName(), signal.device.getStatus() + ":" + String.valueOf(System.currentTimeMillis()));    
+                                logger.info(devNew.toString());          
+                                devices.set(i,devNew);
+                                logger.info(devices.toString());
+				            return;
+			                }
+		                } 
+
+                        DeviceOverviewExt devNew=new DeviceOverviewExt(signal.device.getId(),signal.device.getProtocol(),signal.device.getName(), signal.device.getStatus() , String.valueOf(System.currentTimeMillis()));
+                        devices.add(devNew);
 						logger.info("Found new device signal received");
 					}
 
 				});
+
 		logger.debug("ProtocolManager is running");
 	}
 
@@ -120,7 +135,16 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 * @see org.eclipse.agail.protocol.ble.protocolmanager.ProtocolManager#Devices()
 	 */
 	public List<DeviceOverview> Devices() {
-		return devices;
+        return devices;
+	}
+
+	/**
+	 *
+	 *
+	 * @see org.eclipse.agail.protocol.ble.protocolmanager.ProtocolManager#Devices()
+	 */
+	public List<DeviceOverviewExt> DevicesExt() {
+        return null;
 	}
 
 	/**
