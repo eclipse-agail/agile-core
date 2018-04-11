@@ -43,7 +43,6 @@ import org.eclipse.agail.Protocol;
 import org.eclipse.agail.ProtocolManager;
 import org.eclipse.agail.object.AbstractAgileObject;
 import org.eclipse.agail.object.DeviceOverview;
-import org.eclipse.agail.object.DeviceOverviewExt;
 import org.eclipse.agail.object.DiscoveryStatus;
 import org.eclipse.agail.object.ProtocolOverview;
 
@@ -119,7 +118,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			                }
 		                } 
 
-                        DeviceOverviewExt devNew=new DeviceOverviewExt(signal.device.getId(),signal.device.getProtocol(),signal.device.getName(), signal.device.getStatus() , String.valueOf(System.currentTimeMillis()));
+                        DeviceOverview devNew=new DeviceOverview(signal.device.getId(),signal.device.getProtocol(),signal.device.getName(), signal.device.getStatus() + ":" + String.valueOf(System.currentTimeMillis()));
                         devices.add(devNew);
 						logger.info("Found new device signal received");
 					}
@@ -138,14 +137,6 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
         return devices;
 	}
 
-	/**
-	 *
-	 *
-	 * @see org.eclipse.agail.protocol.ble.protocolmanager.ProtocolManager#Devices()
-	 */
-	public List<DeviceOverviewExt> DevicesExt() {
-        return null;
-	}
 
 	/**
 	 *
