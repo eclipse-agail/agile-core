@@ -194,9 +194,30 @@ public class DummyDevice extends DeviceImp implements Device {
   
   @Override
   public void Write(String componentName, String payload) {
-    logger.debug("Device. Write not implemented");
+	  if ((protocol.equals(DUMMY_PROTOCOL_ID)) && (deviceProtocol != null)) {
+		  if (isConnected()) {
+				if (isSensorSupported(componentName.trim())) {
+					try {
+						logger.debug("Device Write: Time to step into the the moon's atmosphere without mask");
+						if(payload.equals("0")) {
+							deviceProtocol.Unsubscribe(address, new HashMap<String, String>());
+						} else {
+							deviceProtocol.Subscribe(address, new HashMap<String, String>());
+						}
+					} catch (Exception ex) {
+						logger.error("Exception occured in Write: " + ex);
+					}
+				} else {
+			        throw new AgileNoResultException("Componet not supported:" + componentName);
+			    }
+			} else {
+				throw new AgileNoResultException("Dummy Device not connected: " + deviceName);
+			}
+		} else {
+			throw new AgileNoResultException("Protocol not supported: " + protocol);
+		}
 	}
-  
+
   @Override
   public void Execute(String command) {
     logger.debug("Device. Execute not implemented");
@@ -207,5 +228,4 @@ public class DummyDevice extends DeviceImp implements Device {
     logger.debug("Device. Commands not implemented");
     return null;
       }
-
 }
