@@ -113,7 +113,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
                                 DeviceOverview devNew=new DeviceOverview(signal.device.getId(),signal.device.getProtocol(),signal.device.getName(), signal.device.getStatus() + ":" + String.valueOf(System.currentTimeMillis()));    
                                 logger.info(devNew.toString());          
                                 devices.set(i,devNew);
-                                logger.info(devices.toString());
+                                //logger.info(devices.toString());
 				            return;
 			                }
 		                } 
