@@ -69,12 +69,14 @@ public class WeightDevice extends AgileBLEDevice implements Device {
 	@Override
 	public void Connect() throws DBusException {
 		super.Connect();
-    	deviceProtocol.Write(address, getEnableSensorProfile(Weight), INIT_COMM);
+    	//deviceProtocol.Write(address, getEnableSensorProfile(Weight), INIT_COMM);
 		
 		for (String componentName : subscribedComponents.keySet()) {
 			if (subscribedComponents.get(componentName) > 0) {
 				logger.info("Resubscribing to {}", componentName);
 				//deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
+                Unsubscribe(componentName);
+                Subscribe(componentName);
 			}
 		}
 		
@@ -170,7 +172,13 @@ public class WeightDevice extends AgileBLEDevice implements Device {
   
     @Override
   public void Execute(String command) {
-            logger.debug("Device. Execute not implemented");
+    try {
+        logger.info("weight execute command");
+   	    deviceProtocol.Write(address, getEnableSensorProfile(Weight), INIT_COMM);
+    } catch (DBusException e) {
+        logger.info (e.toString());
+    }
+
 	}
     @Override
   public List<String> Commands(){
