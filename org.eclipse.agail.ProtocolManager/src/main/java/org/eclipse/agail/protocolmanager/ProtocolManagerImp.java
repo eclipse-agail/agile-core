@@ -79,6 +79,11 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 * Dummy Protocol Agile ID 
 	 */
 	public static final String DUMMY_PROTOCOL_ID = "org.eclipse.agail.protocol.Dummy";
+
+	/**
+	 * LoRa Protocol Agile ID 
+	 */
+	public static final String LORA_PROTOCOL_ID = "org.eclipse.agail.protocol.LoRa";
 	
 	/**
 	 * List of supported protocols
@@ -96,6 +101,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 		// for demo purposes
 		protocolManager.Add(BLE_PROTOCOL_ID);
 		protocolManager.Add(DUMMY_PROTOCOL_ID);
+		protocolManager.Add(LORA_PROTOCOL_ID);
  	}
 
 	public ProtocolManagerImp() throws DBusException {
@@ -249,17 +255,19 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 		switch (protocolIDFullpath) {
 			case BLE_PROTOCOL_ID:
-				protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolIDFullpath, "Avaliable"));
+				protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolIDFullpath, "Available"));
 				break;
 			case ZB_PROTOCOL_ID:
-				protocols.add(new ProtocolOverview("ZB", "Zigbee", protocolIDFullpath, "Avaliable"));
+				protocols.add(new ProtocolOverview("ZB", "Zigbee", protocolIDFullpath, "Available"));
 				break;
 			case DUMMY_PROTOCOL_ID:
-				protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolIDFullpath, "Avaliable"));
-			    break;
-            default:
-              // TODO check classpath?
-                protocols.add(new ProtocolOverview(protocolId,protocolId,protocolIDFullpath, "Avaliable"));
+				protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolIDFullpath, "Available"));
+			case LORA_PROTOCOL_ID:
+				protocols.add(new ProtocolOverview("LoRa", "LoRA/MQTT", protocolIDFullpath, "Available"));
+			break;
+        default:
+        // TODO check classpath?
+        protocols.add(new ProtocolOverview(protocolId,protocolId,protocolIDFullpath, "Available"));
                 
 		}
 	}
