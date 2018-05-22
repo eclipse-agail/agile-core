@@ -1,0 +1,16 @@
+deps
+/agile-interfaces/target/
+.settings/
+.classpath
+.project
+.log
+/api.http/target/
+.metadata/
+.recommenders
+/org.eclipse.agail.http/target/
+*/*.log
+*.log
+/agile-main/target/
+/bluez-5.39/
+/DeviceFactory/target/
+/org.eclipse.agail.DeviceFactory/target/
