@@ -303,11 +303,16 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
         }
 				break;
       case StepsStored:
-      if ((readData.length == 4) && ((readData[2] & 0x80)) != 0x80) {
-        result = (((readData[0] & 0xff)<<8) | (readData[1] & 0xff));
-      }
-        break;
-			default:
+          if ((readData.length == 4) && ((readData[2] & 0x80)) != 0x80) {
+            result = (((readData[0] & 0xff)<<8) | (readData[1] & 0xff));
+            int timeInc = ((readData[2] & 0xff)<<8) | (readData[3] & 0xff);
+            if ((timeInc % 5) !=0){
+                 result = 0;
+                 logger.info ("StoredStep time not multiple of 5 " + timeInc);
+          }
+        }
+                break;
+	  default:
 
 		}
 		return Integer.toString(result);
