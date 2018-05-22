@@ -47,6 +47,8 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
 	private static final String Steps = "step_count_day";
   private static final String HeartRate = "heart_rate";
   private static final String StepsStored = "step_count_history";
+  private static final String SleepStored = "sleep_history";
+
   private static final String Setup = "setup";
 
   private static int lastStepValue = 0 ;
@@ -65,6 +67,7 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
 		profile.add(new DeviceComponent(Steps, ""));
     profile.add(new DeviceComponent(HeartRate, ""));
     profile.add(new DeviceComponent(StepsStored, ""));
+    profile.add(new DeviceComponent(SleepStored, ""));
 	}
 
 
@@ -72,6 +75,8 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
 		sensors.put(Steps, new SensorUuid("6e400001-b5a3-f393-e0a9-e50e24dcca9e", "6e400003-b5a3-f393-e0a9-e50e24dcca9e", "", ""));
     sensors.put(HeartRate, new SensorUuid("6e400001-b5a3-f393-e0a9-e50e24dcca9e", "6e400003-b5a3-f393-e0a9-e50e24dcca9e", "", ""));
     sensors.put(StepsStored, new SensorUuid("6e400001-b5a3-f393-e0a9-e50e24dcca9e", "6e400003-b5a3-f393-e0a9-e50e24dcca9e", "6e400002-b5a3-f393-e0a9-e50e24dcca9e", ""));
+    sensors.put(SleepStored, new SensorUuid("6e400001-b5a3-f393-e0a9-e50e24dcca9e", "6e400003-b5a3-f393-e0a9-e50e24dcca9e", "6e400002-b5a3-f393-e0a9-e50e24dcca9e", ""));
+
     sensors.put(Setup, new SensorUuid("6e400001-b5a3-f393-e0a9-e50e24dcca9e", "6e400003-b5a3-f393-e0a9-e50e24dcca9e", "6e400002-b5a3-f393-e0a9-e50e24dcca9e", ""));
 
 	}
@@ -137,7 +142,7 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
             if (!hasOtherActiveSubscription(componentName)) {
                 logger.info("subscribing to " +componentName);
               deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
-              if (componentName.equals(StepsStored)){
+              if (componentName.equals(StepsStored) || componentName.equals(SleepStored)){
                 deviceProtocol.Write(address, getEnableSensorProfile(StepsStored), SEND_STORED_STEPS_CMD);
                 trackerHistoryStartTime = System.currentTimeMillis();
               }
@@ -312,6 +317,13 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
           }
         }
                 break;
+      case SleepStored:  
+          if ((readData.length == 4) && ((readData[2] & 0x80)) == 0x80) {
+            result = (((readData[0] & 0xff)<<8) | (readData[1] & 0xff));
+            if (result == 0) result = 1;
+            logger.info("Sleep");
+          }
+                break;
 	  default:
 
 		}
@@ -344,7 +356,7 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
  								String readVal = formatReading(componentName, sig.record);
  								 if (Integer.parseInt(readVal) != 0 ) {
                    RecordObject recObj;
-                   if (componentName.equals(StepsStored)){
+                   if (componentName.equals(StepsStored) || componentName.equals(SleepStored)){
                      recObj = new RecordObject(deviceID, componentName,
                          formatReading(componentName, sig.record), getMeasurementUnit(componentName), "",
                          extractStoredStepTime(sig.record ,trackerHistoryStartTime));
