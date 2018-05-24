@@ -99,7 +99,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 		ProtocolManager protocolManager = new ProtocolManagerImp();
 
 		// for demo purposes
-		protocolManager.Add(BLE_PROTOCOL_ID);
+		// protocolManager.Add(BLE_PROTOCOL_ID);
 		protocolManager.Add(DUMMY_PROTOCOL_ID);
 		protocolManager.Add(LORA_PROTOCOL_ID);
  	}
@@ -254,9 +254,9 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 
 		switch (protocolIDFullpath) {
-			case BLE_PROTOCOL_ID:
-				protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolIDFullpath, "Available"));
-				break;
+			// case BLE_PROTOCOL_ID:
+			// 	protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolIDFullpath, "Available"));
+			// 	break;
 			case ZB_PROTOCOL_ID:
 				protocols.add(new ProtocolOverview("ZB", "Zigbee", protocolIDFullpath, "Available"));
 				break;
