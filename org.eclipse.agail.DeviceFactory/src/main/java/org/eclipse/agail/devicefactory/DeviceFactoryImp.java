@@ -336,6 +336,9 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                     Constructor constructor = aClass.getConstructor(DeviceOverview.class);
                     logger.debug("The Constructor was loaded");
                     device = (Device) constructor.newInstance(deviceOverview);
+                    if(deviceType.equals("Generic")) {
+                    	device.Connect();
+                    }
                     logger.debug("The device was loaded");
                 }
 

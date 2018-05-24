@@ -13,13 +13,13 @@
 
 package org.eclipse.agail.device.base;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import org.freedesktop.dbus.DBusSigHandler;
-import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -447,11 +447,13 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 					@Override
 					public void handle(NewRecordSignal sig) {
 						if (address.equals(sig.address)) {
+							logger.debug("Signal {}, {}, {}", sig.address, sig.profile, sig.record.toString());
 							String componentName = getComponentName(sig.profile);
 							RecordObject recObj = new RecordObject(deviceID, componentName,
 									formatReading(componentName, sig.record), getMeasurementUnit(componentName), "",
 									System.currentTimeMillis());
 							data = recObj;
+							logger.info("Notification {} value ", recObj);
 							logger.info("Device notification component {} value {}", componentName, recObj.value);
 							lastReadStore.put(componentName, recObj);
 							try {
@@ -552,6 +554,24 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	protected String getComponentName(Map<String, String> profile) {
 		return null;
+	}
+
+	public void GetServices() throws DBusException {
+		try {
+            Class c = Protocol.class;
+            Method[] m = c.getDeclaredMethods();
+//            logger.debug("=================== here we go ========================");
+            for (int i = 0; i < c.getMethods().length; i++) {
+            	logger.debug(m[i].toString());
+            	if(m[i].toString().equals("GetSensors")) {
+            		logger.debug("method found");
+//            		logger.debug("=================== here we go ======================== {} ", address);
+            		deviceProtocol.GetSensors(address);
+            	}
+            }
+        } catch (Throwable e) {
+            System.err.println(e);
+        }
 	}
 
 }

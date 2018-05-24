@@ -17,6 +17,10 @@ public class SensorUuid {
 	public String charValueUuid;
 	public String charConfigUuid;
 	public String charFreqUuid;
+	
+	public SensorUuid() {
+		
+	}
 
 	public SensorUuid(String service, String charValueUuid, String charConfig, String charFreq) {
 		this.serviceUuid = service;

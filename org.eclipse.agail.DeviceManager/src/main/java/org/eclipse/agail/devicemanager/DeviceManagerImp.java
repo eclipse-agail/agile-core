@@ -132,7 +132,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 				public void run() {
 					try {
 						dev.Connect();
-						logger.info("Device connected");
+						logger.info("Device connected {}", dev.Id());
 					} catch (Exception e) {
 						logger.error("Error encountered while attempting to connect: {}", e.getMessage());
 					}
