@@ -264,7 +264,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 				protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolIDFullpath, "Available"));
 				break;
 			case LORA_PROTOCOL_ID:
-				protocols.add(new ProtocolOverview("LoRa", "LoRA/MQTT", protocolIDFullpath, "Available"));
+				protocols.add(new ProtocolOverview("LoRa", "LoRa/MQTT", protocolIDFullpath, "Available"));
 				break;
         default:
         // TODO check classpath?

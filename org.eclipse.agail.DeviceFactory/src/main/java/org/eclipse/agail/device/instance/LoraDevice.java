@@ -15,6 +15,8 @@ package org.eclipse.agail.device.instance;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.nio.ByteBuffer;
+
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
@@ -33,7 +35,7 @@ import java.util.List;
 public class LoraDevice extends DeviceImp implements Device {
   protected Logger logger = LoggerFactory.getLogger(LoraDevice.class);
 
-  public static final String deviceTypeName = "LoRa";
+  public static final String deviceTypeName = "LoRa"; 
 
   /**
    * LoRa Protocol imp DBus interface id
@@ -43,14 +45,20 @@ public class LoraDevice extends DeviceImp implements Device {
    * LoRa Protocol imp DBus interface path
    */
   private static final String LORA_PROTOCOL_PATH = "/org/eclipse/agail/protocol/LoRa";
-
-  private static final String LORA_COMPONENT = "LoraData";
-
+  
+  private static final String TEMPERATURE = "Temperature";	
+	private static final String HUMIDITY = "Relative_Humidity";
+	
   private DeviceStatusType deviceStatus = DeviceStatusType.DISCONNECTED;
 
   {
-    profile.add(new DeviceComponent(LORA_COMPONENT, "lora"));
-    subscribedComponents.put(LORA_COMPONENT, 0);
+    subscribedComponents.put(TEMPERATURE, 0);		
+    subscribedComponents.put(HUMIDITY, 0);
+  }
+
+  {   
+    profile.add(new DeviceComponent(TEMPERATURE, "Degree celsius (°C)"));		
+		profile.add(new DeviceComponent(HUMIDITY, "Relative humidity (%RH)"));
   }
 
   public LoraDevice(DeviceOverview deviceOverview) throws DBusException {
@@ -62,7 +70,7 @@ public class LoraDevice extends DeviceImp implements Device {
     logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
   }
 
-  public static boolean Matches(DeviceOverview d) {
+  public static boolean Matches(DeviceOverview d) {    
     return d.name.contains(deviceTypeName);
   }
 
@@ -71,14 +79,16 @@ public class LoraDevice extends DeviceImp implements Device {
     if ((protocol.equals(LORA_PROTOCOL_ID)) && (deviceProtocol != null)) {
       if (isConnected()) {
         if (isSensorSupported(componentName.trim())) {
-          try {
-            byte[] readData = deviceProtocol.Read(LORA_COMPONENT, new HashMap<String, String>());
+          try {            
+            HashMap<String, String> aux = new HashMap<String, String>();
+            aux.put("id", componentName);            
+            byte[] readData = deviceProtocol.Read(address, aux);
             return formatReading(componentName, readData);
           } catch (DBusException e) {
             e.printStackTrace();
           }
         } else {
-          throw new AgileNoResultException("Componet not supported:" + componentName);
+          throw new AgileNoResultException("Component not supported:" + componentName);
         }
       } else {
         throw new AgileNoResultException("Device not connected: " + deviceName);
@@ -99,7 +109,9 @@ public class LoraDevice extends DeviceImp implements Device {
               addNewRecordSignalHandler();
             }
             if (!hasOtherActiveSubscription(componentName)) {
-              deviceProtocol.Subscribe(address, new HashMap<String, String>());
+              HashMap<String, String> aux = new HashMap<String, String>();
+              aux.put("id", componentName);
+              deviceProtocol.Subscribe(address, aux);              
             }
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
           } catch (Exception e) {
@@ -124,7 +136,9 @@ public class LoraDevice extends DeviceImp implements Device {
           try {
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
             if (!hasOtherActiveSubscription(componentName)) {
-              deviceProtocol.Unsubscribe(address, new HashMap<String, String>());
+              HashMap<String, String> aux = new HashMap<String, String>();
+              aux.put("id", componentName);
+              deviceProtocol.Unsubscribe(address, aux);              
              }
             if (!hasOtherActiveSubscription()) {
               removeNewRecordSignalHandler();
@@ -178,18 +192,18 @@ public class LoraDevice extends DeviceImp implements Device {
   
   @Override
   protected boolean isSensorSupported(String sensorName) {
-    return LORA_COMPONENT.equals(sensorName);
+    return subscribedComponents.containsKey(sensorName);
   }
   
   @Override
-  protected String formatReading(String sensorName, byte[] readData) {
-     int result = (readData[0] & 0xFF); 
-     return String.valueOf(result);
+  protected String formatReading(String sensorName, byte[] readData) { 
+    return Float.toString(ByteBuffer.wrap(readData).getFloat());
   }
   
   @Override
-  protected String getComponentName(Map<String, String> profile) {
-    return LORA_COMPONENT;
+  protected String getComponentName(Map<String, String> profile) {    
+    return profile.get("id");
+
   }
   
   @Override
