@@ -1,7 +1,6 @@
 package org.eclipse.agail.device.instance;
 
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -50,13 +49,6 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 		for (String componentName : subscribedComponents.keySet()) {
 			logger.debug("Sensor Name: " + componentName);
 			if (subscribedComponents.get(componentName) > 0) {
-				// logger.info("Resubscribing to {}", componentName);
-
-				if (this.deviceName.equals("ble247189079500")) {
-					Map<String, String> enableProfile = getEnableSensorProfile(componentName);
-					logger.debug("{}", enableProfile);
-					deviceProtocol.Write(address, enableProfile, TURN_ON_SENSOR);
-				}
 				Map<String, String> readValue = getReadValueProfile(componentName);
 				logger.debug("{}", readValue);
 				deviceProtocol.Subscribe(address, readValue);
@@ -77,17 +69,8 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 			if (isConnected()) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
-						if (!hasOtherActiveSubscription(sensorName)) {
-							// turn on sensor
-							if (this.deviceName.equals("ble247189079500")) {
-								deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
-							}
-						}
-						Thread.sleep(1010);
-						// read value
 						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
 						return Arrays.toString(readValue);
-						// return formatReading(sensorName, readValue);
 					} catch (Exception e) {
 						logger.debug("Error in reading value from Sensor {}", e);
 						e.printStackTrace();
@@ -112,13 +95,9 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
 					try {
-						if (this.deviceName.equals("ble247189079500")) {
-							deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
-							byte[] period = { 100 };
-							deviceProtocol.Write(address, getFrequencyProfile(componentName), period);
-						}
 						byte[] result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
-						return formatReading(componentName, result);
+						formatReading(componentName, result);
+						return Arrays.toString(result);
 					} catch (DBusException e) {
 						e.printStackTrace();
 					}
@@ -143,12 +122,6 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 					try {
 						if (!hasOtherActiveSubscription()) {
 							addNewRecordSignalHandler();
-						}
-						if (!hasOtherActiveSubscription(componentName)) {
-							if (this.deviceName.equals("ble247189079500")) {
-								deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
-							}
-							deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
 						}
 						byte[] result = deviceProtocol.Read(address, getReadValueProfile(componentName));
 						formatReading(componentName, result);
@@ -178,10 +151,6 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 						if (!hasOtherActiveSubscription(componentName)) {
 							// disable notification
 							deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
-							// turn off sensor
-							if (this.deviceName.equals("ble247189079500")) {
-								deviceProtocol.Write(address, getTurnOffSensorProfile(componentName), TURN_OFF_SENSOR);
-							}
 						}
 						if (!hasOtherActiveSubscription()) {
 							removeNewRecordSignalHandler();
