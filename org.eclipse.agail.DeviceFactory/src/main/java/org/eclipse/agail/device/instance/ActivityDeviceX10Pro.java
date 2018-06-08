@@ -61,6 +61,7 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
 		subscribedComponents.put(Steps, 0);
     subscribedComponents.put(HeartRate, 0);
     subscribedComponents.put(StepsStored, 0);
+    //subscribedComponents.put(SleepStored, 0);
 	}
 
  	{
@@ -323,6 +324,15 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
             if (result == 0) result = 1;
             logger.info("Sleep");
           }
+            //debug
+            if (readData.length < 3) break;
+            if ((readData.length == 4) && ((readData[2] & 0x80)) != 0x80){
+                int timeInc = ((readData[2] & 0xff)<<8) | (readData[3] & 0xff);
+                if ((timeInc < 18 * 12) && (timeInc > 12 * 12)){
+                    logger.info("Debug Sleep");
+                    result = 1;
+                    }
+            }    
                 break;
 	  default:
 
