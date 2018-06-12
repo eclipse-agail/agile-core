@@ -69,6 +69,7 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 			if (isConnected()) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
+						deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
 						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
 						return Arrays.toString(readValue);
 					} catch (Exception e) {
@@ -123,6 +124,7 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 						if (!hasOtherActiveSubscription()) {
 							addNewRecordSignalHandler();
 						}
+						deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
 						byte[] result = deviceProtocol.Read(address, getReadValueProfile(componentName));
 						formatReading(componentName, result);
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
@@ -175,7 +177,6 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 			if (isConnected()) {
 
 				try {
-					deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
 					deviceProtocol.Write(address, getReadValueProfile(componentName), getBytes(payload));
 				} catch (Exception ex) {
 					logger.error("Exception occured in Write: " + ex);
@@ -211,7 +212,7 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 						logger.debug("GATTCharacteristics size: {}", deviceComponent.getValue().size());
 						// if ((deviceComponent.getValue().size() == 2 ||
 						// deviceComponent.getValue().size() == 3)) {
-						String name = "Sensor " + (++i);
+						String name = deviceComponent.getKey() + " - Sensor " + (++i);
 						subscribedComponents.put(name, 0);
 						addSensor(name, deviceComponent.getKey(), deviceComponent.getValue());
 						// profile.add(new DeviceComponent(deviceComponent.getKey(),
