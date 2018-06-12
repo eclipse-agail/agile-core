@@ -143,7 +143,7 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
             if (!hasOtherActiveSubscription(componentName)) {
                 logger.info("subscribing to " +componentName);
               deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
-              if (componentName.equals(StepsStored) || componentName.equals(SleepStored)){
+              if (componentName.equals(StepsStored) /*|| componentName.equals(SleepStored)*/){
                 deviceProtocol.Write(address, getEnableSensorProfile(StepsStored), SEND_STORED_STEPS_CMD);
                 trackerHistoryStartTime = System.currentTimeMillis();
               }
@@ -323,16 +323,17 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
             result = (((readData[0] & 0xff)<<8) | (readData[1] & 0xff));
             if (result == 0) result = 1;
             logger.info("Sleep");
-          }
-            //debug
-            if (readData.length < 3) break;
-            if ((readData.length == 4) && ((readData[2] & 0x80)) != 0x80){
-                int timeInc = ((readData[2] & 0xff)<<8) | (readData[3] & 0xff);
-                if ((timeInc < 18 * 12) && (timeInc > 12 * 12)){
-                    logger.info("Debug Sleep");
-                    result = 1;
-                    }
-            }    
+                //debug
+                if (readData.length < 3) break;
+                if ((readData.length == 4) && ((readData[2] & 0x80)) != 0x80){
+                    int timeInc = ((readData[2] & 0xff)<<8) | (readData[3] & 0xff);
+                    if ((timeInc < 18 * 12) && (timeInc > 12 * 12)){
+                        logger.info("Debug Sleep");
+                        result = 1;
+                        }
+                }
+            }
+    
                 break;
 	  default:
 
@@ -342,8 +343,8 @@ public class ActivityDeviceX10Pro extends AgileBLEDevice implements Device {
 
   protected long extractStoredStepTime(byte[] readData, long currentTime){
     long time = currentTime;
-    if ((readData.length == 4) && ((readData[2] & 0xff)) != 0x80) {
-      int timeInc = ((readData[2] & 0xff)<<8) | (readData[3] & 0xff);
+    if ((readData.length == 4) /*&& ((readData[2] & 0xff)) != 0x80*/) {
+      int timeInc = ((readData[2] & 0x7f)<<8) | (readData[3] & 0xff);
       time = currentTime - (timeInc * 60 * 1000);
       logger.info("StoredStep Time: {} {}", timeInc , time  );
     }
