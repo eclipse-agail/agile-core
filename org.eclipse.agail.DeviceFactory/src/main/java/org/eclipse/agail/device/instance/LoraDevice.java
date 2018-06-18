@@ -47,18 +47,33 @@ public class LoraDevice extends DeviceImp implements Device {
   private static final String LORA_PROTOCOL_PATH = "/org/eclipse/agail/protocol/LoRa";
   
   private static final String TEMPERATURE = "Temperature";	
-	private static final String HUMIDITY = "Relative_Humidity";
+  private static final String HUMIDITY = "Relative_Humidity";
+  private static final String LATITUDE = "Latitude";
+  private static final String LONGITUDE = "Longitude";
+  private static final String ALTITUDE = "Altitude";
+  private static final String SNR = "SNR";
+  private static final String RSSI = "RSSI";
 	
   private DeviceStatusType deviceStatus = DeviceStatusType.DISCONNECTED;
 
   {
     subscribedComponents.put(TEMPERATURE, 0);		
     subscribedComponents.put(HUMIDITY, 0);
+    subscribedComponents.put(LATITUDE, 0);
+    subscribedComponents.put(LONGITUDE, 0);
+    subscribedComponents.put(ALTITUDE, 0);
+    subscribedComponents.put(SNR, 0);
+    subscribedComponents.put(RSSI, 0);
   }
 
   {   
     profile.add(new DeviceComponent(TEMPERATURE, "Degree celsius (°C)"));		
-		profile.add(new DeviceComponent(HUMIDITY, "Relative humidity (%RH)"));
+    profile.add(new DeviceComponent(LATITUDE, "Relative humidity (%RH)"));
+    profile.add(new DeviceComponent(LONGITUDE, "Decimal degrees (º)"));
+    profile.add(new DeviceComponent(ALTITUDE, "Decimal degrees (º)"));
+    profile.add(new DeviceComponent(HUMIDITY, "Decimal degrees (º)"));
+    profile.add(new DeviceComponent(HUMIDITY, "Decibel (db)"));
+    profile.add(new DeviceComponent(HUMIDITY, "Decibel-milliwatt (dBm)"));
   }
 
   public LoraDevice(DeviceOverview deviceOverview) throws DBusException {
