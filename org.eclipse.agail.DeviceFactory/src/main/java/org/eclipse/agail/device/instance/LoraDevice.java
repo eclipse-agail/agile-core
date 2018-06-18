@@ -68,12 +68,12 @@ public class LoraDevice extends DeviceImp implements Device {
 
   {   
     profile.add(new DeviceComponent(TEMPERATURE, "Degree celsius (°C)"));		
-    profile.add(new DeviceComponent(LATITUDE, "Relative humidity (%RH)"));
+    profile.add(new DeviceComponent(HUMIDITY, "Relative humidity (%RH)"));
+    profile.add(new DeviceComponent(LATITUDE, "Decimal degrees (º)"));
     profile.add(new DeviceComponent(LONGITUDE, "Decimal degrees (º)"));
-    profile.add(new DeviceComponent(ALTITUDE, "Decimal degrees (º)"));
-    profile.add(new DeviceComponent(HUMIDITY, "Decimal degrees (º)"));
-    profile.add(new DeviceComponent(HUMIDITY, "Decibel (db)"));
-    profile.add(new DeviceComponent(HUMIDITY, "Decibel-milliwatt (dBm)"));
+    profile.add(new DeviceComponent(ALTITUDE, "Decimal degrees (º)"));    
+    profile.add(new DeviceComponent(SNR, "Decibel (db)"));
+    profile.add(new DeviceComponent(RSSI, "Decibel-milliwatt (dBm)"));
   }
 
   public LoraDevice(DeviceOverview deviceOverview) throws DBusException {
