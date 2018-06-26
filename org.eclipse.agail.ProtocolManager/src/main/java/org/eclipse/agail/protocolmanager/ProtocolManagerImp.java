@@ -106,24 +106,29 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 					@Override
 					public void handle(FoundNewDeviceSignal signal) {
-                        logger.info("device "+signal.device.getId() +"@"+System.currentTimeMillis());
-                        for (int i =0; i<devices.size() ; i++) {
-                            DeviceOverview dev=devices.get(i);    
-			                if (dev.getId().equals(signal.device.getId())) {
-                                DeviceOverview devNew=new DeviceOverview(signal.device.getId(),signal.device.getProtocol(),signal.device.getName(), signal.device.getStatus() + ":" + String.valueOf(System.currentTimeMillis()));    
-                                logger.info(devNew.toString());          
-                                devices.set(i,devNew);
-                                //logger.info(devices.toString());
-				            return;
-			                }
-		                } 
-
-                        DeviceOverview devNew=new DeviceOverview(signal.device.getId(),signal.device.getProtocol(),signal.device.getName(), signal.device.getStatus() + ":" + String.valueOf(System.currentTimeMillis()));
-                        devices.add(devNew);
+						devices.add(signal.device);
 						logger.info("Found new device signal received");
 					}
 
 				});
+
+
+		connection.addSigHandler(ProtocolManager.UpdateDeviceSignal.class,
+				new DBusSigHandler<ProtocolManager.UpdateDeviceSignal>() {
+
+					@Override
+					public void handle(UpdateDeviceSignal signal) {
+                        logger.info("device update "+signal.device.getId() +"@"+System.currentTimeMillis());
+                        for (int i =0; i<devices.size() ; i++) {
+                            DeviceOverview dev=devices.get(i);    
+			                if (dev.getId().equals(signal.device.getId())) {                                         
+                                devices.set(i,signal.device);
+                                //logger.info(devices.toString());
+				            return;
+			                }
+		                }
+                    } 
+                });
 
 		logger.debug("ProtocolManager is running");
 	}
@@ -134,9 +139,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 * @see org.eclipse.agail.protocol.ble.protocolmanager.ProtocolManager#Devices()
 	 */
 	public List<DeviceOverview> Devices() {
-        return devices;
+		return devices;
 	}
-
 
 	/**
 	 *
