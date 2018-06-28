@@ -104,7 +104,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			logger.info("Device already registered:  {}", device.Id());
 		} else {
 			try {
-				logger.info("HEXIWEAR - Checking device type: " + deviceType + " and overview " + deviceOverview);
+				logger.info("Checking device type: " + deviceType + " and overview " + deviceOverview);
 
 				String objectName = "org.eclipse.agail.DeviceFactory";
 				String objectPath = "/org/eclipse/agail/DeviceFactory";
@@ -124,6 +124,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 				e.printStackTrace();
 			}
 		}
+        /* Don't connect on registration
 		// connect device
 		if (device != null) {
 			final Device dev = device;
@@ -139,6 +140,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 				}
 			}).start();
 		}
+        */
 		return registeredDev;
 	}
 
