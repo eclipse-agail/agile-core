@@ -90,6 +90,11 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 */
 	final private List<DeviceOverview> devices = new ArrayList<DeviceOverview>();
 
+    /**
+    * Set Device visibility limit to 5 min
+    */
+    final private long DEVICE_VISIBILITY_LIMIT = 5 * 60 * 1000 ; 
+
 	public static void main(String[] args) throws DBusException {
 		ProtocolManager protocolManager = new ProtocolManagerImp();
 
@@ -118,7 +123,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 					@Override
 					public void handle(UpdateDeviceSignal signal) {
-                        logger.info("device update "+signal.device.getId() +"@"+System.currentTimeMillis());
+                        logger.info("device update "+signal.device.getId()+":"+signal.device.getLastSeen() +" @"+System.currentTimeMillis());
                         for (int i =0; i<devices.size() ; i++) {
                             DeviceOverview dev=devices.get(i);    
 			                if (dev.getId().equals(signal.device.getId())) {                                         
@@ -139,7 +144,18 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 * @see org.eclipse.agail.protocol.ble.protocolmanager.ProtocolManager#Devices()
 	 */
 	public List<DeviceOverview> Devices() {
-		return devices;
+        List<DeviceOverview> recentDevices = new ArrayList<DeviceOverview>();
+        //logger.info(devices.toString());
+        for (int i =0; i<devices.size() ; i++) {
+            DeviceOverview dev=devices.get(i);    
+            long deviceDiscoveredLimitTime =  System.currentTimeMillis() - DEVICE_VISIBILITY_LIMIT;
+            logger.info(dev.getId() +" last seen @"+dev.getLastSeen() ) ;           
+            if (Long.parseLong(dev.getLastSeen()) > deviceDiscoveredLimitTime) {
+                logger.info("Showing " + dev.getId());
+                recentDevices.add(dev);                   
+            }
+        }
+		return recentDevices;
 	}
 
 	/**
