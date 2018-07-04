@@ -1,12 +1,10 @@
 /*******************************************************************************
  * Copyright (C) 2017 Create-Net / FBK.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- * 
- * SPDX-License-Identifier: EPL-2.0
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *     Create-Net / FBK - initial API and implementation
  ******************************************************************************/
@@ -17,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Calendar;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.freedesktop.dbus.DBusSigHandler;
@@ -32,90 +32,101 @@ import org.eclipse.agail.exception.AgileNoResultException;
 import org.eclipse.agail.device.base.AgileBLEDevice;
 import org.eclipse.agail.device.base.SensorUuid;
 
-public class MedicalDevice extends AgileBLEDevice implements Device {
-  protected Logger logger = LoggerFactory.getLogger(MedicalDevice.class);
+public class BeuerBPM85 extends AgileBLEDevice implements Device {
+  protected Logger logger = LoggerFactory.getLogger(BeuerBPM85.class);
   protected static final Map<String, SensorUuid> sensors = new HashMap<String, SensorUuid>();
-	private static final String SpO2 = "SpO2";
-	private static final String PULSE = "PULSE";
-	private static final String PI = "PI";
+	private static final String systolic = "Systolic";
+	private static final String diastolic = "Diastolic";
+	private static final String pulse = "Pulse";
 
+    private static int lastSystolicValue = 0 ;
+    private static int lastDiastolicValue = 0;
+	private static int lastPulseValue =0 ;
 	{
-		subscribedComponents.put(SpO2, 0);
-		subscribedComponents.put(PULSE, 0);
-		subscribedComponents.put(PI, 0);
+		subscribedComponents.put(systolic, 0);
+		subscribedComponents.put(diastolic, 0);
+		subscribedComponents.put(pulse,0);
 	}
 
  	{
-		profile.add(new DeviceComponent(SpO2, ""));
-		profile.add(new DeviceComponent(PULSE, ""));
-		profile.add(new DeviceComponent(PI, ""));
-
+		profile.add(new DeviceComponent(systolic, ""));
+		profile.add(new DeviceComponent(diastolic, ""));
+		profile.add(new DeviceComponent(pulse, ""));
 	}
- 
+
 
  	static {
-		sensors.put(PI, new SensorUuid("cdeacb80-5235-4c07-8846-93a37ee6b86d", "cdeacb81-5235-4c07-8846-93a37ee6b86d", "", ""));
-		sensors.put(PULSE,
-				new SensorUuid("cdeacb80-5235-4c07-8846-93a37ee6b86d", "cdeacb81-5235-4c07-8846-93a37ee6b86d", "", ""));
-		sensors.put(SpO2,
-				new SensorUuid("cdeacb80-5235-4c07-8846-93a37ee6b86d", "cdeacb81-5235-4c07-8846-93a37ee6b86d","", ""));
+		sensors.put(systolic,
+				new SensorUuid("00001810-0000-1000-8000-00805f9b34fb", "00002a35-0000-1000-8000-00805f9b34fb", "", ""));
+		sensors.put(diastolic,
+				new SensorUuid("00001810-0000-1000-8000-00805f9b34fb", "00002a35-0000-1000-8000-00805f9b34fb","", ""));
+		sensors.put(pulse,
+				new SensorUuid("00001810-0000-1000-8000-00805f9b34fb", "00002a35-0000-1000-8000-00805f9b34fb","", ""));
 	}
 
 	public static boolean Matches(DeviceOverview d) {
-		return d.name.contains("Medical") || d.name.contains("MyOximeter");
+		return d.name.contains("Beurer BM85");
 	}
 
-	public static String deviceTypeName = "Oximeter";
+	public static String deviceTypeName = "Beurer BM85";
 
-	public MedicalDevice(DeviceOverview deviceOverview) throws DBusException {
+	public BeuerBPM85(DeviceOverview deviceOverview) throws DBusException {
 		super(deviceOverview);
 	}
 
 
-	public MedicalDevice(DeviceDefinition devicedefinition) throws DBusException {
+	public BeuerBPM85(DeviceDefinition devicedefinition) throws DBusException {
 		super(devicedefinition);
 	}
 
 	@Override
 	public void Connect() throws DBusException {
 		super.Connect();
+		logger.info("Beuer BPM Connect()");
 		for (String componentName : subscribedComponents.keySet()) {
-			if (subscribedComponents.get(componentName) > 0) {
-				logger.info("Resubscribing to {}", componentName);
-				deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
-			}
+			//logger.info("Clear existing subscribed components" + componentName);
+			//Unsubscribe(componentName);     		
+			//logger.info("Beuer BPM subscribe() :"+componentName);
+			//Subscribe(componentName);
+  
+			//if (subscribedComponents.get(componentName) > 0) {
+			//	logger.info("Resubscribing to {}", componentName);
+			//	deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
+			//}
 		}
 	}
 
 
   @Override
   protected String DeviceRead(String componentName) {
+	logger.info("Beuer BPM Device Read " + componentName);
     if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-      if (isConnected()) {
+    //  if (isConnected()) {
         if (isSensorSupported(componentName.trim())) {
-          try {
-            byte[] result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
-            while (result.length != 4) {
-              result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
-            }
-            return formatReading(componentName, result);
-          } catch (DBusException e) {
-            e.printStackTrace();
-          }
+         switch (componentName) {
+      			case systolic:
+                	return Integer.toString(lastSystolicValue);
+      			case diastolic:
+                	return Integer.toString(lastDiastolicValue);
+				case pulse:
+					return Integer.toString(lastPulseValue);
+      			default:
+              return "";  
+		  }          
         } else {
           throw new AgileNoResultException("Sensor not supported:" + componentName);
         }
-      } else {
-        throw new AgileNoResultException("BLE Device not connected: " + deviceName);
-      }
+      //}  else {
+        //throw new AgileNoResultException("BLE Device not connected: " + deviceName);
+      //}
     } else {
       throw new AgileNoResultException("Protocol not supported: " + protocol);
     }
-    throw new AgileNoResultException("Unable to read "+componentName);
   }
-	
+
  @Override
   public synchronized void Subscribe(String componentName) {
+	logger.info ("Beuer BPM Subscribe "+componentName);
     if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
       if (isConnected()) {
         if (isSensorSupported(componentName.trim())) {
@@ -123,6 +134,7 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
             if (!hasOtherActiveSubscription(componentName)) {
               deviceProtocol.Subscribe(address, getReadValueProfile(componentName));
               addNewRecordSignalHandler();
+				logger.info("Beuer BPM added Signal Handler");
             }
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
           } catch (Exception e) {
@@ -141,8 +153,10 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 
  @Override
   public synchronized void Unsubscribe(String componentName) throws DBusException {
+	logger.info("Beuer BPM Unsubscribe: " +componentName);
     if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
-      if (isConnected()) {
+      //if (isConnected()) {
+		if (true) {
         if (isSensorSupported(componentName.trim())) {
           try {
             subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
@@ -163,7 +177,6 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
       throw new AgileNoResultException("Protocol not supported: " + protocol);
     }
   }
-  
     @Override
   public void Write(String componentName, String payload) {
             logger.debug("Device. Write not implemented");
@@ -178,6 +191,7 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
             logger.debug("Device. Commands not implemented");
             return null;
       }
+
 
 	// =======================Utility methods===========================
 
@@ -195,15 +209,13 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 	protected boolean isSensorSupported(String sensorName) {
 		return sensors.containsKey(sensorName);
 	}
-        
-        
 
 
 
 	/**
 	 * Checks if there is another active subscription on the given component of
 	 * the device
-	 * 
+	 *
 	 * @param componentName
 	 * @return
 	 */
@@ -219,42 +231,42 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 
 	@Override
 	protected String formatReading(String componentName, byte[] readData) {
-		float result = 0;
-		if ((readData.length == 11) && ((readData[0] & 0xff) == 0x88)) {
+		int result = 0;
 			switch (componentName) {
-			case SpO2:
-				break;
-			case PULSE:
-				break;
-			case PI:
-				break;
-			default:
-				break;
-			}
-		} else if (readData.length == 4 && ((readData[0] & 0xff) == 0x81)) {
-			switch (componentName) {
-			case SpO2:
-				result = readData[2] & 0xff;
-				break;
-			case PULSE:
+			case systolic:
 				result = readData[1] & 0xff;
+				lastSystolicValue = result;
 				break;
-			case PI:
-				result = (float) ((readData[3] & 0xff) / 10.0);
+			case diastolic:
+				result = readData[3] & 0xff;
+				lastDiastolicValue = result;
+				break;
+			case pulse:
+				 result=(readData[14] << 8) | readData[15] ;
+				 lastPulseValue = result;
 				break;
 			default:
 				break;
 			}
-		}
-		return Float.toString(result);
+		logger.info("Beuer BPM formatReading: "+componentName+" : " +result);
+		return Integer.toString(result);
 	}
 
-	/**
-	 * The read operation on this device returns 4 zero's after a single
-	 * non-zero read value. Therefore, in order to avoid signaling of the zero
-	 * values (w/h are not the actual read) we override this method and put this
-	 * condition to check the value
-	 */
+	protected long formatReadingTime(String componentName, byte[] readData) {
+		long result = 0;
+		int year=((readData[8] & 0xff) << 8) | (readData[7] & 0xff);
+		int month=readData[9];
+		int day=readData[10];
+		int hours=readData[11];
+		int minutes=readData[12];
+		Calendar c = Calendar.getInstance();
+        c.set(year, month-1, day, hours, minutes,0);
+		result = c.getTimeInMillis();
+    logger.info("formatReadingTime {} {} {}", componentName, c.getTime(), result);
+		return result;
+	}
+
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void addNewRecordSignalHandler() {
@@ -266,12 +278,11 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 						if (sig.address.equals(address)) {
  							for(String componentName : getComponentNames(sig.profile)){
  								String readVal = formatReading(componentName, sig.record);
- 								if (Float.parseFloat(readVal) != 0.0) {
  									RecordObject recObj = new RecordObject(deviceID, componentName,
  											formatReading(componentName, sig.record), getMeasurementUnit(componentName), "",
- 											System.currentTimeMillis());
+ 											formatReadingTime(componentName, sig.record));
  									data = recObj;
- 									logger.info("Device notification component {} value {}", componentName, recObj.value);
+ 									logger.info("Beuer BPM85 Device notification component {} value {}", componentName, recObj.value);
  									lastReadStore.put(componentName, recObj);
  									try {
  										Device.NewSubscribeValueSignal newRecordSignal = new Device.NewSubscribeValueSignal(
@@ -280,7 +291,6 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
  									} catch (DBusException e) {
  										e.printStackTrace();
  									}
- 								}
  							}
 						}
 					}
@@ -291,10 +301,10 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Given the profile of the component returns the list of component names
-	 * 
+	 *
 	 * @param uuid
 	 * @return
 	 */
@@ -309,15 +319,21 @@ public class MedicalDevice extends AgileBLEDevice implements Device {
 		}
 		return ret;
 	}
- 	
+
  	@Override
 	protected String getMeasurementUnit(String sensor) {
- 		return "Percentile(%)";
+		switch (sensor) {		
+			case diastolic:
+			case systolic:
+				return "mmHg";
+			default:		
+ 				return "";
+		}
  	}
 
   /**
    * Given the profile of the component returns the name of the sensor
-   * 
+   *
    * @param uuid
    * @return
    */
