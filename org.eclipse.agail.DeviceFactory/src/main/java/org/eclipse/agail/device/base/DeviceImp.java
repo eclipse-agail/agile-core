@@ -13,7 +13,6 @@
 
 package org.eclipse.agail.device.base;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -554,24 +553,6 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	protected String getComponentName(Map<String, String> profile) {
 		return null;
-	}
-
-	public void GetServices() throws DBusException {
-		try {
-            Class c = Protocol.class;
-            Method[] m = c.getDeclaredMethods();
-//            logger.debug("=================== here we go ========================");
-            for (int i = 0; i < c.getMethods().length; i++) {
-            	logger.debug(m[i].toString());
-            	if(m[i].toString().equals("GetSensors")) {
-            		logger.debug("method found");
-//            		logger.debug("=================== here we go ======================== {} ", address);
-            		deviceProtocol.GetSensors(address);
-            	}
-            }
-        } catch (Throwable e) {
-            System.err.println(e);
-        }
 	}
 
 }

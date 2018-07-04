@@ -31,6 +31,7 @@ import org.eclipse.agail.object.AbstractAgileObject;
 import org.eclipse.agail.object.DeviceOverview;
 import org.eclipse.agail.object.DiscoveryStatus;
 import org.eclipse.agail.object.ProtocolOverview;
+import org.eclipse.agail.protocols.BLEProtocol;
 
 /**
  * @author dagi
@@ -130,11 +131,15 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 		for (ProtocolOverview protocol : protocols) {
 			String objectPath = "/" + protocol.getDbusInterface().replace(".", "/");
 
-			Protocol protocolInstance;
 			try {
-
-				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
-				String status = protocolInstance.DiscoveryStatus();
+				String status;
+				if(BLE_PROTOCOL_ID.contains(protocol.getName())) {
+					BLEProtocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, BLEProtocol.class);
+					status = protocolInstance.DiscoveryStatus();
+				} else {
+					Protocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
+					status = protocolInstance.DiscoveryStatus();
+				}
 				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), status));
 			} catch(ServiceUnknown ex){
 				logger.info("{} protocol is not supported", protocol.name); 
@@ -157,12 +162,19 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			String objectPath = "/" + protocol.getDbusInterface().replace(".", "/");
 			logger.info("Discovery for protocol {} : {}", protocol, objectPath);
 
-			Protocol protocolInstance;
+//			Protocol protocolInstance;
 			try {
-				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
- 				protocolInstance.StartDiscovery();
+				if(BLE_PROTOCOL_ID.contains(protocol.getName())) {
+					BLEProtocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, BLEProtocol.class);
+					protocolInstance.StartDiscovery();
+				} else {
+					Protocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
+					protocolInstance.StartDiscovery();
+				}
+//				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
+// 				protocolInstance.StartDiscovery();
  			}catch(ServiceUnknown ex){
-				logger.info("{} protocol is not supported", protocol.name); 
+				logger.info("{} protocol is not supported: Exception {}", protocol.name, ex); 
  			}catch (DBusException ex) {
 				logger.error("DBus exception on protocol {}", protocol, ex);
 			}
@@ -178,10 +190,17 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			String objectPath = "/" + protocol.getDbusInterface().replace(".", "/");
 			logger.info("StopDiscovery for protocol {} : {}", protocol, objectPath);
 
-			Protocol protocolInstance;
+//			Protocol protocolInstance;
 			try {
-				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
-				protocolInstance.StopDiscovery();
+				if(BLE_PROTOCOL_ID.contains(protocol.getName())) {
+					BLEProtocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, BLEProtocol.class);
+					protocolInstance.StopDiscovery();
+				} else {
+					Protocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
+					protocolInstance.StopDiscovery();
+				}
+//				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
+//				protocolInstance.StopDiscovery();
 			}catch(ServiceUnknown ex){
 				logger.info("{} protocol is not supported", protocol.name); 
 			} catch (DBusException ex) {

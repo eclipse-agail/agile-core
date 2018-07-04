@@ -51,7 +51,7 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 			if (subscribedComponents.get(componentName) > 0) {
 				Map<String, String> readValue = getReadValueProfile(componentName);
 				logger.debug("{}", readValue);
-				deviceProtocol.Subscribe(address, readValue);
+				bleProtocol.Subscribe(address, readValue);
 			}
 		}
 		logger.debug("========== Connected ============");
@@ -60,17 +60,16 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 	@Override
 	public void Execute(String commandId) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public String DeviceRead(String sensorName) {
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (bleProtocol != null)) {
 			if (isConnected()) {
 				if (isSensorSupported(sensorName.trim())) {
 					try {
-						deviceProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
-						byte[] readValue = deviceProtocol.Read(address, getReadValueProfile(sensorName));
+						bleProtocol.Write(address, getEnableSensorProfile(sensorName), TURN_ON_SENSOR);
+						byte[] readValue = bleProtocol.Read(address, getReadValueProfile(sensorName));
 						return Arrays.toString(readValue);
 					} catch (Exception e) {
 						logger.debug("Error in reading value from Sensor {}", e);
@@ -92,11 +91,11 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 	}
 
 	public String NotificationRead(String componentName) {
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (bleProtocol != null)) {
 			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
 					try {
-						byte[] result = deviceProtocol.NotificationRead(address, getReadValueProfile(componentName));
+						byte[] result = bleProtocol.NotificationRead(address, getReadValueProfile(componentName));
 						formatReading(componentName, result);
 						return Arrays.toString(result);
 					} catch (DBusException e) {
@@ -117,15 +116,15 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 	@Override
 	public synchronized void Subscribe(String componentName) {
 		logger.info("Subscribe to {}", componentName);
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (bleProtocol != null)) {
 			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
 					try {
 						if (!hasOtherActiveSubscription()) {
 							addNewRecordSignalHandler();
 						}
-						deviceProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
-						byte[] result = deviceProtocol.Read(address, getReadValueProfile(componentName));
+						bleProtocol.Write(address, getEnableSensorProfile(componentName), TURN_ON_SENSOR);
+						byte[] result = bleProtocol.Read(address, getReadValueProfile(componentName));
 						formatReading(componentName, result);
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) + 1);
 					} catch (DBusException e) {
@@ -145,14 +144,14 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 	@Override
 	public synchronized void Unsubscribe(String componentName) throws DBusException {
 		logger.info("Unsubscribe from {}", componentName);
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (bleProtocol != null)) {
 			if (isConnected()) {
 				if (isSensorSupported(componentName.trim())) {
 					try {
 						subscribedComponents.put(componentName, subscribedComponents.get(componentName) - 1);
 						if (!hasOtherActiveSubscription(componentName)) {
 							// disable notification
-							deviceProtocol.Unsubscribe(address, getReadValueProfile(componentName));
+							bleProtocol.Unsubscribe(address, getReadValueProfile(componentName));
 						}
 						if (!hasOtherActiveSubscription()) {
 							removeNewRecordSignalHandler();
@@ -173,11 +172,11 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 
 	@Override
 	public void Write(String componentName, String payload) {
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (bleProtocol != null)) {
 			if (isConnected()) {
 
 				try {
-					deviceProtocol.Write(address, getReadValueProfile(componentName), getBytes(payload));
+					bleProtocol.Write(address, getReadValueProfile(componentName), getBytes(payload));
 				} catch (Exception ex) {
 					logger.error("Exception occured in Write: " + ex);
 				}
@@ -195,15 +194,14 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 		return null;
 	}
 
-	@Override
 	public void GetServices() throws DBusException {
 		if (!profile.isEmpty() && !subscribedComponents.isEmpty() && !sensors.isEmpty()) {
 			return;
 		}
 		Map<String, List<String>> services = null;
-		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (deviceProtocol != null)) {
+		if ((protocol.equals(BLUETOOTH_LOW_ENERGY)) && (bleProtocol != null)) {
 			if (isConnected()) {
-				services = deviceProtocol.GetSensors(address);
+				services = bleProtocol.GetSensors(address);
 				logger.info("Device connected {} have {} sensors", deviceID, services.size());
 				if (!services.isEmpty()) {
 					logger.debug("Sensors found {}", services.size());

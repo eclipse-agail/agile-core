@@ -79,7 +79,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 
 	@Override
 	public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview) {
-		List<String> ret = new ArrayList();
+		List<String> ret = new ArrayList<String>();
 		try{
                     String objectName = "org.eclipse.agail.DeviceFactory";
                     String objectPath = "/org/eclipse/agail/DeviceFactory";

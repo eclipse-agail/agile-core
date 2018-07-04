@@ -15,10 +15,10 @@ package org.eclipse.agail.device.base;
 import java.util.Map;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.eclipse.agail.Device;
-import org.eclipse.agail.Protocol;
 import org.eclipse.agail.object.DeviceDefinition;
 import org.eclipse.agail.object.DeviceOverview;
 import org.eclipse.agail.object.DeviceStatusType;
+import org.eclipse.agail.protocols.BLEProtocol;
 
 public abstract class AgileBLEDevice extends DeviceImp implements Device {
 
@@ -32,6 +32,8 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 	 * BLE Protocol imp DBus interface path
 	 */
 	private static final String BLE_PROTOCOL_PATH = "/org/eclipse/agail/protocol/BLE";
+	
+	protected BLEProtocol bleProtocol;
 
 	/**
 	 * Protocol
@@ -47,7 +49,8 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + BLE + deviceOverview.id.replace(":", "");
 
 		dbusConnect(deviceAgileID, devicePath, this);
-		deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, Protocol.class);
+		deviceProtocol = (BLEProtocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, BLEProtocol.class);
+		bleProtocol = (BLEProtocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, BLEProtocol.class);
 		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
 	}
 
@@ -58,15 +61,16 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 		String devicePath = AGILE_DEVICE_BASE_BUS_PATH + BLE + devicedefinition.address.replace(":", "");
 
 		dbusConnect(deviceAgileID, devicePath, this);
-		deviceProtocol = (Protocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, Protocol.class);
+		deviceProtocol = (BLEProtocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, BLEProtocol.class);
+		bleProtocol = (BLEProtocol) connection.getRemoteObject(BLE_PROTOCOL_ID, BLE_PROTOCOL_PATH, BLEProtocol.class);
 		logger.debug("Exposed device {} {}", deviceAgileID, devicePath);
 	}
 
 	@Override
 	public void Connect() throws DBusException {
 		try {
-			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
-				deviceProtocol.Connect(address);
+			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && bleProtocol != null) {
+				bleProtocol.Connect(address);
 				logger.info("Device connect {}", deviceID);
 			} else {
 				logger.debug("Protocol not supported: {}", protocol);
@@ -80,8 +84,8 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 
 	public void Disconnect() throws DBusException {
 		try {
-			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && deviceProtocol != null) {
-				deviceProtocol.Disconnect(address);
+			if (protocol.equals(BLUETOOTH_LOW_ENERGY) && bleProtocol != null) {
+				bleProtocol.Disconnect(address);
 				logger.info("Device disconnected {}", deviceID);
 			} else {
 				logger.debug("Protocol not supported: {}", protocol);
@@ -109,5 +113,5 @@ public abstract class AgileBLEDevice extends DeviceImp implements Device {
 		}
 		return false;
 	}
-
+	
 }
