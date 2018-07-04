@@ -59,7 +59,7 @@ public class RegisterDevice {
       
       // Register device
       DeviceDefinition dev = (deviceManager
-          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, ""), "MedicalDevice"));
+          .Register(new DeviceOverview(deviceAddress, PROTOCOL_ID, deviceName, "",""), "MedicalDevice"));
       logger.info("Device ID: {}", dev.deviceId);
     } catch (org.freedesktop.DBus.Error.UnknownMethod UM) {
       logger.debug("Unkown method");
