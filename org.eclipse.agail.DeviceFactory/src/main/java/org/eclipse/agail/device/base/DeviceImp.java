@@ -219,7 +219,7 @@ public abstract class DeviceImp extends AbstractAgileObject implements Device {
 	 */
 	public RecordObject Data() {
 	  if(data == null){
-      throw new AgileNoResultException("No data avaliable");
+      throw new AgileNoResultException("No data available");
     }
 	  return data;
 		}
