@@ -115,6 +115,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 				logger.info("Creating new device: {}", deviceType);
 				if (device != null) {
 					registeredDev = device.Definition();
+					logger.info("Device definition: {}", device.Definition());
 					db.saveDevice(deviceOverview, deviceType);
 					devices.add(registeredDev);
 					logger.info("Created new device: {}", devices);
