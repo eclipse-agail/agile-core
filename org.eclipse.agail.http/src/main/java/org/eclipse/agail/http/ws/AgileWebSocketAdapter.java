@@ -48,12 +48,15 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
   private DBusSigHandler sigHandler;
   private boolean subscribed = false;
 
+  private boolean websocketOpen = false;
+
   private ObjectMapper mapper = new ObjectMapper();
 
   protected Logger logger = LoggerFactory.getLogger(AgileWebSocketAdapter.class);
 
   @Override
   public void onWebSocketConnect(Session sess) {
+    websocketOpen = true;
     session = sess;
     String uripath = sess.getUpgradeRequest().getRequestURI().getPath();
     logger.info("New websocket connection from {} for {}", sess.getRemoteAddress(), uripath);
@@ -72,6 +75,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
         String path = "/" + Device.AGILE_INTERFACE.replace(".", "/")  + "/" + deviceID;
         Device device = connection.getRemoteObject(busname, path, Device.class);
 
+        logger.info(device.Status().getStatus());
         if (device.Status().getStatus().equals(DeviceStatusType.CONNECTED.toString())) {
           device.Subscribe(sensorName);
           subscribed = true;
@@ -82,6 +86,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
               if (sig.record.getDeviceID().equals(deviceID) && sig.record.getComponentID().equals(sensorName)) {
                 logger.debug("http: New value {}%n", sig.record);
                 try {
+                 if (websocketOpen) 
                   session.getRemote().sendString(mapper.writeValueAsString(sig.record));
                 } catch (IOException e) {
                   e.printStackTrace();
@@ -101,7 +106,8 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
           @Override
           public void handle(NewSubscribeValueSignal sig) {
             try {
-              session.getRemote().sendString(mapper.writeValueAsString(sig.record));
+              if (websocketOpen)  
+                  session.getRemote().sendString(mapper.writeValueAsString(sig.record));
             } catch (IOException e) {
               e.printStackTrace();
             }
@@ -121,6 +127,7 @@ public class AgileWebSocketAdapter extends WebSocketAdapter {
 
   @Override
   public void onWebSocketClose(int statusCode, String reason) {
+    websocketOpen=false;
     try {
       DBusConnection connection = DBusConnection.getConnection(DBusConnection.SESSION);
 
