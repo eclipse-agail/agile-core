@@ -31,6 +31,9 @@ import org.eclipse.agail.object.AbstractAgileObject;
 import org.eclipse.agail.object.DeviceOverview;
 import org.eclipse.agail.object.DiscoveryStatus;
 import org.eclipse.agail.object.ProtocolOverview;
+import org.eclipse.agail.protocolmanager.persistence.PersistenceDB;
+import org.eclipse.agail.protocolmanager.persistence.ProtocolWithConfig;
+import org.eclipse.agail.protocols.config.ProtocolConfig;
 
 /**
  * @author dagi
@@ -75,6 +78,10 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 * List of discovered devices from all the protocols
 	 */
 	final private List<DeviceOverview> devices = new ArrayList<DeviceOverview>();
+	
+	private PersistenceDB persistenceDB;
+	
+	private boolean done = false;
 
 	public static void main(String[] args) throws DBusException {
 		ProtocolManager protocolManager = new ProtocolManagerImp();
@@ -98,6 +105,8 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 				});
 		logger.debug("ProtocolManager is running");
+		
+		persistenceDB = new PersistenceDB();
 	}
 
 	/**
@@ -116,6 +125,18 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	 */
 	public List<ProtocolOverview> Protocols() {
         logger.info("protocols " + protocols.toString());
+        List<ProtocolWithConfig> protocolFromDB = persistenceDB.readData();
+		logger.info("Protocols {} fround in persistenceDB.", protocolFromDB.size());
+		for (int i = 0; i < protocolFromDB.size(); i++) {
+			ProtocolWithConfig p = protocolFromDB.get(i);
+			logger.info("ProtocolWithConfig {}", p);
+			ProtocolOverview _protocolOverview = getProtocolOverview(p.getProtocolId());
+			logger.info("ProtocolOverview {}", _protocolOverview);
+			if(_protocolOverview != null && !protocols.isEmpty() && !protocols.contains(_protocolOverview)) {
+				protocols.add(_protocolOverview);
+			}
+			LoadProtocolConfigurations(p.getProtocolId());
+		}
 		return protocols;
 	}
 
@@ -134,6 +155,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			try {
 
 				protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, Protocol.class);
+				logger.debug("ProtocolOverview: {}", protocolInstance);
 				String status = protocolInstance.DiscoveryStatus();
 				ret.add(new DiscoveryStatus(protocol.getDbusInterface(), status));
 			} catch(ServiceUnknown ex){
@@ -207,12 +229,9 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	public boolean isRemote() {
 		return false;
 	}
-
-	protected void addProtocol(String protocolId) {
-        logger.info("add protocolID "+ protocolId);
-        //Parse both full path + ID type parameters
-
-        String protocolIDFullpath = protocolId;
+	
+	ProtocolOverview getProtocolOverview(String protocolId) {
+		String protocolIDFullpath = protocolId;
         if (!protocolId.contains(".")) {
             protocolIDFullpath = "org.eclipse.agail.protocol." +protocolId; 
         } else {
@@ -224,30 +243,50 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
         }
 
         for (ProtocolOverview prot : protocols){
-           logger.info(protocolIDFullpath +"?"+prot.getId() +" : "+ prot.getName() +" : "+ prot.getDbusInterface());
+           logger.info(protocolIDFullpath +" ? "+prot.getId() +" : "+ prot.getName() +" : "+ prot.getDbusInterface());
             
             if (prot.getDbusInterface().equals(protocolIDFullpath)){
-                logger.info("already exists"+ protocolId);
-                return;
+                logger.info("already exists => "+ protocolId);
+                return null;
             }
         }
 
-
+        ProtocolOverview _protocolOverview;
 		switch (protocolIDFullpath) {
 			case BLE_PROTOCOL_ID:
-				protocols.add(new ProtocolOverview("BLE", "Bluetooth LE", protocolIDFullpath, "Avaliable"));
+				_protocolOverview = new ProtocolOverview("BLE", "Bluetooth LE", protocolIDFullpath, "Avaliable");
+				if(!done) {
+					List<ProtocolConfig> configs = new ArrayList<ProtocolConfig>();
+					configs.add(new ProtocolConfig("name", "BLE", "Protocol Name", "The name of the protocol", false));
+					configs.add(new ProtocolConfig("pins", "2,5", "Connected Pins", "Pins of module on breadboard", true));
+					configs.add(new ProtocolConfig("voltages", "2.5", "Voltages", "Voltages required for module", false));
+					SetProtocolConfigurations(protocolIDFullpath, configs);
+					done = true;
+				}
 				break;
 			case ZB_PROTOCOL_ID:
-				protocols.add(new ProtocolOverview("ZB", "Zigbee", protocolIDFullpath, "Avaliable"));
+				_protocolOverview = new ProtocolOverview("ZB", "Zigbee", protocolIDFullpath, "Avaliable");
 				break;
 			case DUMMY_PROTOCOL_ID:
-				protocols.add(new ProtocolOverview("Dummy", "Dummy", protocolIDFullpath, "Avaliable"));
+				_protocolOverview = new ProtocolOverview("Dummy", "Dummy", protocolIDFullpath, "Avaliable");
 			    break;
             default:
               // TODO check classpath?
-                protocols.add(new ProtocolOverview(protocolId,protocolId,protocolIDFullpath, "Avaliable"));
-                
+            	_protocolOverview = new ProtocolOverview(protocolId,protocolId,protocolIDFullpath, "Avaliable");
 		}
+		
+		return _protocolOverview;
+	}
+
+	protected void addProtocol(String protocolId) {
+        logger.info("add protocolID "+ protocolId);
+        //Parse both full path + ID type parameters
+        
+        ProtocolOverview _protocolOverview = getProtocolOverview(protocolId);
+		if(_protocolOverview != null) {
+			protocols.add(_protocolOverview);
+		}
+		
 	}
 
 	protected void removeProtocol(String protocolId) {
@@ -256,6 +295,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
             logger.info(prot.getId().toString());
             if (prot.getId().equals(protocolId)){
                 protocols.remove(prot);
+                persistenceDB.deletprotocol(protocolId);
                 logger.info(prot.toString() + "removed");
                 return;
             }
@@ -278,6 +318,59 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	public <A> void Set(String arg0, String arg1, A arg2) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	void LoadProtocolConfigurations(String protocolId) {
+		String objectPath = getObjectPath(protocolId);
+		if(objectPath != null) {
+			List<ProtocolConfig> configs = GetProtocolConfigurations(protocolId);
+			
+			if(configs != null && configs.size() > 0) {
+				Protocol protocolInstance = null;
+				try {
+					protocolInstance = connection.getRemoteObject(protocolId, objectPath, Protocol.class);
+					protocolInstance.SetConfiguration(configs);
+					} catch(ServiceUnknown ex) {
+						logger.info("{} protocol is not supported", protocolInstance.Name()); 
+					} catch(DBusException ex) {
+						logger.error("DBus exception on protocol {}", objectPath, ex);
+				}
+			}
+		}
+	}
+
+	@Override
+	public List<ProtocolConfig> GetProtocolConfigurations(String protocolId) {
+		ProtocolWithConfig protocolWithConfig = persistenceDB.getProtocolWithConfig(protocolId);
+		List<ProtocolConfig> configs = new ArrayList<ProtocolConfig>();
+		
+		if(protocolWithConfig != null && protocolWithConfig.getConfigurations().size() > 0) {
+			configs = protocolWithConfig.getConfigurations();
+		}
+		
+		return configs;
+	}
+
+	@Override
+	public void SetProtocolConfigurations(String protocolId, List<ProtocolConfig> protocolConfigs) {
+		
+		logger.debug("{} Procotol Configurations: {}", protocolId, protocolConfigs);
+		
+		persistenceDB.saveProtocol(protocolId, protocolConfigs);
+	}
+	
+	private String getObjectPath(String protocolId) {
+		String objectPath = "";
+		for (ProtocolOverview protocol : protocols) {
+			logger.info("ObjectPath for protocol {} : {}", protocolId, protocol.getDbusInterface());
+			if(protocol.getDbusInterface().equals(protocolId)) {
+				objectPath = "/" + protocol.getDbusInterface().replace(".", "/");
+				logger.info("ObjectPath for protocol {} : {}", protocol, objectPath);
+			}
+		}
+		
+		logger.info("Final *************************************************** {}", objectPath);
+		return objectPath;
 	}
 
 }

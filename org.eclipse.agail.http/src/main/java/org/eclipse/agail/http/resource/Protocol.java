@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.agail.http.service.DbusClient;
 import org.eclipse.agail.object.DeviceOverview;
 import org.eclipse.agail.object.RecordObject;
+import org.eclipse.agail.protocols.config.ProtocolConfig;
 
 /**
  *
@@ -120,5 +121,18 @@ public class Protocol {
     ) throws DBusException {
     getProtocol(id).Subscribe(deviceAddress, profile);
   }
+  
+  @POST
+  @Path("/config")
+  public void SaveProtocolConfig(@PathParam("id") String id, List<ProtocolConfig> configs) throws DBusException {
+    getProtocol(id).SetConfiguration(configs);
+  }
+  
+  @GET
+  @Path("/config")
+  public List<ProtocolConfig> GetProtocolConfig(@PathParam("id") String id) throws DBusException {
+    return getProtocol(id).GetConfiguration();
+  }
+
 
 }

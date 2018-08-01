@@ -33,6 +33,7 @@ import org.eclipse.agail.http.service.DbusClient;
 import org.eclipse.agail.object.DeviceOverview;
 import org.eclipse.agail.object.DiscoveryStatus;
 import org.eclipse.agail.object.ProtocolOverview;
+import org.eclipse.agail.protocols.config.ProtocolConfig;
 
 /**
  *
@@ -92,5 +93,19 @@ public class ProtocolManager {
 	public void StopDiscovery() throws DBusException {
 		getProtocolManager().StopDiscovery();
 	}
+	
+	@POST
+	@Path("/protocolconfig/{id}")
+	public void SaveProtocolConfig(@PathParam("id") String protocol, List<ProtocolConfig> protocolConfigs) throws DBusException {
+		logger.debug("{} Procotol Configurations: {}", protocol, protocolConfigs);
+		getProtocolManager().SetProtocolConfigurations(protocol, protocolConfigs);
+	}
+	  
+	@GET
+	@Path("/protocolconfig/{id}")
+	public List<ProtocolConfig> GetProtocolConfig(@PathParam("id") String protocol) throws DBusException {
+		return getProtocolManager().GetProtocolConfigurations(protocol);
+	}
+
 
 }
