@@ -81,8 +81,6 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 	
 	private PersistenceDB persistenceDB;
 	
-	private boolean done = false;
-
 	public static void main(String[] args) throws DBusException {
 		ProtocolManager protocolManager = new ProtocolManagerImp();
 
@@ -255,14 +253,6 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 		switch (protocolIDFullpath) {
 			case BLE_PROTOCOL_ID:
 				_protocolOverview = new ProtocolOverview("BLE", "Bluetooth LE", protocolIDFullpath, "Avaliable");
-				if(!done) {
-					List<ProtocolConfig> configs = new ArrayList<ProtocolConfig>();
-					configs.add(new ProtocolConfig("name", "BLE", "Protocol Name", "The name of the protocol", false));
-					configs.add(new ProtocolConfig("pins", "2,5", "Connected Pins", "Pins of module on breadboard", true));
-					configs.add(new ProtocolConfig("voltages", "2.5", "Voltages", "Voltages required for module", false));
-					SetProtocolConfigurations(protocolIDFullpath, configs);
-					done = true;
-				}
 				break;
 			case ZB_PROTOCOL_ID:
 				_protocolOverview = new ProtocolOverview("ZB", "Zigbee", protocolIDFullpath, "Avaliable");
@@ -348,15 +338,18 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			configs = protocolWithConfig.getConfigurations();
 		}
 		
+		logger.debug("GetProtocolConfig: {}", configs);
+		
 		return configs;
 	}
 
 	@Override
 	public void SetProtocolConfigurations(String protocolId, List<ProtocolConfig> protocolConfigs) {
 		
-		logger.debug("{} Procotol Configurations: {}", protocolId, protocolConfigs);
-		
-		persistenceDB.saveProtocol(protocolId, protocolConfigs);
+		if(protocolConfigs != null && protocolConfigs.size() > 0) {
+			logger.debug("{} Procotol Configurations: {}", protocolId, protocolConfigs);
+			persistenceDB.saveProtocol(protocolId, protocolConfigs);
+		}
 	}
 	
 	private String getObjectPath(String protocolId) {

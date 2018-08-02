@@ -97,8 +97,10 @@ public class ProtocolManager {
 	@POST
 	@Path("/protocolconfig/{id}")
 	public void SaveProtocolConfig(@PathParam("id") String protocol, List<ProtocolConfig> protocolConfigs) throws DBusException {
-		logger.debug("{} Procotol Configurations: {}", protocol, protocolConfigs);
-		getProtocolManager().SetProtocolConfigurations(protocol, protocolConfigs);
+		if(protocolConfigs != null && protocolConfigs.size() > 0) {
+			logger.debug("{} Procotol Configurations: {}", protocol, protocolConfigs);
+			getProtocolManager().SetProtocolConfigurations(protocol, protocolConfigs);
+		}
 	}
 	  
 	@GET
