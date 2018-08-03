@@ -14,6 +14,8 @@ package org.eclipse.agail.devicemanager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.agail.Device;
 import org.eclipse.agail.DeviceFactory;
@@ -52,6 +54,9 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	 */
 	protected final List<DeviceDefinition> devices = new ArrayList<DeviceDefinition>();
 
+	//List of available device factories
+	private static List<Map<String, String>> factoryList= new ArrayList<>();
+
 	private JsonDB db;
 
 	public static void main(String[] args) throws DBusException {
@@ -64,6 +69,10 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		logger.debug("Started Device Manager");
 
 		db = new JsonDB();
+		//TODO : get  device factories from a properties file or ...
+		Map<String,String> map = new HashMap<>();
+		map.put("org.eclipse.agail.DeviceFactory","/org/eclipse/agail/DeviceFactory");
+		AddFactoryToList(map);
 	}
 
 	/**
@@ -81,17 +90,22 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	public List<String> MatchingDeviceTypes(DeviceOverview deviceOverview) {
 		List<String> ret = new ArrayList();
 		try{
-                    String objectName = "org.eclipse.agail.DeviceFactory";
-                    String objectPath = "/org/eclipse/agail/DeviceFactory";
-                    logger.info("Connection established: "+connection);
-                    DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath, DeviceFactory.class);
-                    ret=factory.MatchingDeviceTypes(deviceOverview);
-                }
-                catch (Exception e) {
-                    logger.error("Can not connect to the DeviceFactory DBus object: {}", e.getMessage());
-                    e.printStackTrace();
-                    }
-		return ret; 
+		    String objectName = "org.eclipse.agail.DeviceFactory";
+      		    String objectPath = "/org/eclipse/agail/DeviceFactory";
+      		    logger.info("Connection established: "+connection);
+		    for (Map<String, String> m : factoryList){
+			    for (Map.Entry<String, String> entry : m.entrySet()){
+				      logger.debug("Getting device factory with name = " + entry.getKey() + ", and path = " + entry.getValue());
+					    DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(entry.getKey(), entry.getValue(),DeviceFactory.class);
+					    ret=factory.MatchingDeviceTypes(deviceOverview);
+			    }
+		    }
+        	}
+		catch (Exception e) {
+            	    logger.error("Can not connect to the DeviceFactory DBus object: {}", e.getMessage());
+    	            e.printStackTrace();
+    		}
+		return ret;
 	}
 
 
@@ -109,15 +123,21 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 				String objectName = "org.eclipse.agail.DeviceFactory";
 				String objectPath = "/org/eclipse/agail/DeviceFactory";
 				logger.info("Connection established: " + connection);
-				DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(objectName, objectPath,
-						DeviceFactory.class);
-				device = factory.getDevice(deviceType, deviceOverview);
-				logger.info("Creating new device: {}", deviceType);
-				if (device != null) {
-					registeredDev = device.Definition();
-					db.saveDevice(deviceOverview, deviceType);
-					devices.add(registeredDev);
-					logger.info("Created new device: {}", devices);
+				for (Map<String, String> m : factoryList){
+					for (Map.Entry<String, String> entry : m.entrySet())
+					{
+						  logger.debug("Getting device factory with name = " + entry.getKey() + ", and path = " + entry.getValue());
+							DeviceFactory factory = (DeviceFactory) connection.getRemoteObject(entry.getKey(), entry.getValue(),
+									DeviceFactory.class);
+							device = factory.getDevice(deviceType, deviceOverview);
+							logger.info("Creating new device: {}", deviceType);
+							if (device != null) {
+								registeredDev = device.Definition();
+								db.saveDevice(deviceOverview, deviceType);
+								devices.add(registeredDev);
+								logger.info("Created new device: {}", devices);
+							}
+					}
 				}
 			} catch (Exception e) {
 				logger.error("Can not register device: {}", e.getMessage());
@@ -272,6 +292,22 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 			return null;
 		}
 
+	}
+
+
+	/**
+	 * Add a device factory to the list.
+	 */
+	private void AddFactoryToList(Map map) {
+
+				logger.debug("Adding factory to the list");
+				if (!factoryList.contains(map)) {
+						factoryList.add(map);
+						logger.debug("Added device factory : " + map);
+					}
+					else {
+						logger.debug("Device factory "+ map +" already present");
+					}
 	}
 
 }
