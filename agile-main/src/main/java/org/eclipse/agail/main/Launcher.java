@@ -60,15 +60,6 @@ public class Launcher {
       }
     });
     
-//    executor.submit(() -> {
-//      try {
-//        new BLEProtocolImp();
-//      } catch (DBusException ex) {
-//        logger.error("BLEProtocolImp error", ex);
-//      }
-//    });
-    
-    
     executor.submit(() -> {
       try {
         (new HttpServer()).launch();
