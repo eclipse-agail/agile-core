@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>device-manager</artifactId>
+            <artifactId>http</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>http</artifactId>
+            <artifactId>device-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
