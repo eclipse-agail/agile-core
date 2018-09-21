@@ -70,5 +70,6 @@ COPY --from=0 $APATH/org.eclipse.agail.DeviceManager/target/device-manager-1.0-j
 COPY --from=0 $APATH/org.eclipse.agail.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar org.eclipse.agail.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar
 COPY --from=0 $APATH/org.eclipse.agail.DeviceFactory/target/classes/org/eclipse/agail/device/instance org.eclipse.agail.DeviceFactory/target/classes/org/eclipse/agail/device/instance
 COPY --from=0 $APATH/org.eclipse.agail.http/target/http-1.0-jar-with-dependencies.jar org.eclipse.agail.http/target/http-1.0-jar-with-dependencies.jar
+COPY --from=0 $APATH/agile-main/target/agile-main-1.0-jar-with-dependencies.jar agile-main/target/agile-main-1.0-jar-with-dependencies.jar
 
 CMD [ "bash", "/usr/src/app/scripts/start.sh" ]
