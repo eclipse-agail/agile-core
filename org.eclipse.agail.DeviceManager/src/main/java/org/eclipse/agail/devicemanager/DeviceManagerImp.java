@@ -60,7 +60,7 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 	private JsonDB db;
 
 	public static void main(String[] args) throws DBusException {
-		DeviceManager deviceManager = new DeviceManagerImp();
+		new DeviceManagerImp();
 	}
 
 	public DeviceManagerImp() throws DBusException {
@@ -91,8 +91,8 @@ public class DeviceManagerImp extends AbstractAgileObject implements DeviceManag
 		List<String> ret = new ArrayList();
 		try{
 		    String objectName = "org.eclipse.agail.DeviceFactory";
-      		    String objectPath = "/org/eclipse/agail/DeviceFactory";
-      		    logger.info("Connection established: "+connection);
+      		String objectPath = "/org/eclipse/agail/DeviceFactory";
+      		logger.info("Connection established: "+connection);
 		    for (Map<String, String> m : factoryList){
 			    for (Map.Entry<String, String> entry : m.entrySet()){
 				      logger.debug("Getting device factory with name = " + entry.getKey() + ", and path = " + entry.getValue());

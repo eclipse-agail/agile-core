@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.agail.devicefactory;
 
+import org.eclipse.agail.device.base.AgileBLEDevice;
 import org.eclipse.agail.device.base.LoadClass;
+import org.eclipse.agail.device.instance.GenericDevice;
 import org.eclipse.agail.Device;
 import org.eclipse.agail.DeviceFactory;
 import org.eclipse.agail.object.AbstractAgileObject;
@@ -335,7 +337,12 @@ public class DeviceFactoryImp extends AbstractAgileObject implements DeviceFacto
                     Class aClass = entry.getValue();
                     Constructor constructor = aClass.getConstructor(DeviceOverview.class);
                     logger.debug("The Constructor was loaded");
-                    device = (Device) constructor.newInstance(deviceOverview);
+                    if(deviceType.equals("Generic")) {
+                    	device = (GenericDevice) constructor.newInstance(deviceOverview);
+                    	device.Connect();
+                    } else {
+                    	device = (Device) constructor.newInstance(deviceOverview);
+                    }
                     logger.debug("The device was loaded");
                 }
 
