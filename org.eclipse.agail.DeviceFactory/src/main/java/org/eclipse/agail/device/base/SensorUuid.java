@@ -24,4 +24,8 @@ public class SensorUuid {
 		this.charConfigUuid = charConfig;
 		this.charFreqUuid = charFreq;
 	}
+
+	public SensorUuid() {
+		// TODO Auto-generated constructor stub
+	}
 }

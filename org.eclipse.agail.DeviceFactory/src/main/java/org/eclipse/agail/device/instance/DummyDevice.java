@@ -12,10 +12,10 @@
  ******************************************************************************/
 package org.eclipse.agail.device.instance;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +32,8 @@ import java.util.List;
 
 public class DummyDevice extends DeviceImp implements Device {
   protected Logger logger = LoggerFactory.getLogger(DummyDevice.class);
+  
+  protected static final Map<String, byte[]> commands = new HashMap<String, byte[]>();
 
   public static final String deviceTypeName = "Dummy";
 
@@ -47,10 +49,18 @@ public class DummyDevice extends DeviceImp implements Device {
   private static final String DUMMY_COMPONENT = "DummyData";
 
   private DeviceStatusType deviceStatus = DeviceStatusType.DISCONNECTED;
+  
+  private static final byte[] DUM_CMD_1 = { 0x01 };
+  private static final byte[] DUM_CMD_2 = { 0x02 };
 
   {
     profile.add(new DeviceComponent(DUMMY_COMPONENT, "dum"));
     subscribedComponents.put(DUMMY_COMPONENT, 0);
+  }
+  
+  {
+	  commands.put("Dummy Command 1", DUM_CMD_1);
+	  commands.put("Dummy Command 2", DUM_CMD_2);
   }
 
   public DummyDevice(DeviceOverview deviceOverview) throws DBusException {
@@ -183,8 +193,10 @@ public class DummyDevice extends DeviceImp implements Device {
   
   @Override
   protected String formatReading(String sensorName, byte[] readData) {
-     int result = (readData[0] & 0xFF); 
-     return String.valueOf(result);
+//     int result = (readData[0] & 0xFF); 
+//     return String.valueOf(result);
+	  String s = new String(readData);
+	  return s;
   }
   
   @Override
@@ -199,11 +211,7 @@ public class DummyDevice extends DeviceImp implements Device {
 				if (isSensorSupported(componentName.trim())) {
 					try {
 						logger.debug("Device Write: Time to step into the the moon's atmosphere without mask");
-						if(payload.equals("0")) {
-							deviceProtocol.Unsubscribe(address, new HashMap<String, String>());
-						} else {
-							deviceProtocol.Subscribe(address, new HashMap<String, String>());
-						}
+						deviceProtocol.Write(address, getProfile(), payload.getBytes());
 					} catch (Exception ex) {
 						logger.error("Exception occured in Write: " + ex);
 					}
@@ -221,11 +229,32 @@ public class DummyDevice extends DeviceImp implements Device {
   @Override
   public void Execute(String command) {
     logger.debug("Device. Execute not implemented");
+    if ((protocol.equals(DUMMY_PROTOCOL_ID)) && (deviceProtocol != null)) {
+		if (isConnected()) {
+			try {
+				deviceProtocol.Write(address, getProfile(), commands.get(command));
+			} catch (Exception ex) {
+				logger.error("Exception occured in Execute: " + ex);
+			}
+		} else {
+			throw new AgileNoResultException("Dummy Device not connected: " + deviceName);
+		}
+	} else {
+		throw new AgileNoResultException("Protocol not supported: " + protocol);
 	}
+  }
 
   @Override
   public List<String> Commands(){
-    logger.debug("Device. Commands not implemented");
-    return null;
-      }
+//    logger.debug("Device. Commands not implemented");
+//    return null;
+	  List<String> commandList = new ArrayList<>(commands.keySet());
+	  return commandList;
+  }
+  
+  private Map<String, String> getProfile() {
+	Map<String, String> profile = new HashMap<String, String>();
+	profile.put(DUMMY_COMPONENT, "dum");
+	return profile;
+  }
 }
