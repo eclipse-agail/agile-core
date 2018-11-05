@@ -80,25 +80,31 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DEPS:$DEPS/lib:/usr/lib:/usr/lib/jvm/jd
 
 mvn="mvn"
 
-if [ $MODULE = 'all' ] || [ $MODULE = 'ProtocolManager' ]; then
+if [ $MODULE = 'all' ]; then
+  ./scripts/stop.sh
+  java -jar -Djava.library.path=deps agile-main/target/agile-main-1.0-jar-with-dependencies.jar &
+  echo "Started AGILE"
+fi
+
+if [ $MODULE = 'ProtocolManager' ]; then
   ./scripts/stop.sh "ProtocolManager"
   java -jar -Djava.library.path=deps org.eclipse.agail.ProtocolManager/target/protocol-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Protocol Manager"
 fi
 
-if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceManager' ]; then
+if [ $MODULE = 'DeviceManager' ]; then
   ./scripts/stop.sh "DeviceManager"
   java -jar -Djava.library.path=deps org.eclipse.agail.DeviceManager/target/device-manager-1.0-jar-with-dependencies.jar &
   echo "Started AGILE Device Manager"
 fi
 
-if [ $MODULE = 'all' ] || [ $MODULE = 'http' ]; then
+if [ $MODULE = 'http' ]; then
   ./scripts/stop.sh "http"
   java -jar -Djava.library.path=deps org.eclipse.agail.http/target/http-1.0-jar-with-dependencies.jar &
   echo "Started AGILE HTTP API"
 fi
 
-if [ $MODULE = 'all' ] || [ $MODULE = 'DeviceFactory' ]; then
+if [ $MODULE = 'DeviceFactory' ]; then
   ./scripts/stop.sh "DeviceFactory"
   java -cp "org.eclipse.agail.DeviceFactory/target/DeviceFactory-1.0-jar-with-dependencies.jar:$PWD/plugins" \
        -Djava.library.path=deps \

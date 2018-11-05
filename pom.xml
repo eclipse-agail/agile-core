@@ -24,8 +24,8 @@
     <module>org.eclipse.agail.ProtocolManager</module>
     <module>org.eclipse.agail.DeviceManager</module>
     <module>org.eclipse.agail.http</module>
-    <module>agile-main</module>
     <module>org.eclipse.agail.DeviceFactory</module>
+    <module>agile-main</module>
   </modules>
 
   <properties>
