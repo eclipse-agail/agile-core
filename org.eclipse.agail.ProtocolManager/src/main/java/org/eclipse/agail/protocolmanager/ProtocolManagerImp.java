@@ -140,7 +140,7 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			if(_protocolOverview != null && !protocols.isEmpty() && !protocols.contains(_protocolOverview)) {
 				protocols.add(_protocolOverview);
 			}
-//			LoadProtocolConfigurations(p.getProtocolId());
+			LoadProtocolConfigurations(p.getProtocolId());
 		}
 		return protocols;
 	}
@@ -337,18 +337,13 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 			List<ProtocolConfig> configs = GetProtocolConfigurations(protocolId);
 			
 			if(configs != null && configs.size() > 0) {
-//				Protocol protocolInstance = null;
 				try {
 					if(BLE_PROTOCOL_ID.contains(protocolId)) {
-//						BLEProtocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, BLEProtocol.class);
-//						protocolInstance.StopDiscovery();
 						BLEProtocol protocolInstance = connection.getRemoteObject(protocolId, objectPath, BLEProtocol.class);
 						protocolInstance.SetConfiguration(configs);
 					} else {
 						Protocol protocolInstance = connection.getRemoteObject(protocolId, objectPath, Protocol.class);
 						protocolInstance.SetConfiguration(configs);
-//						DummyProtocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, DummyProtocol.class);
-//						protocolInstance.StopDiscovery();
 					}
 				} catch(ServiceUnknown ex) {
 					logger.info("{} protocol is not supported", protocolId); 
@@ -376,33 +371,21 @@ public class ProtocolManagerImp extends AbstractAgileObject implements ProtocolM
 
 	@Override
 	public void SetProtocolConfigurations(String protocolId, List<ProtocolConfig> protocolConfigs) {
-//	public void SetProtocolConfigurations(String protocolId) {
 		// TODO Auto-generated method stub
 		if(protocolConfigs != null && protocolConfigs.size() > 0) {
 			logger.debug("================Protocol Manager Set===============");
-//			ProtocolConfig p = new ProtocolConfig("pi", "strisdsg", "Pi3+B", "pisdafdsdf", "Pi version", "Raspberry pi version for latest version agile", true, "pi");
-//			
-//			List<ProtocolConfig> protocolConfigs = new ArrayList<>();
-//			protocolConfigs.add(p);
 			logger.debug("{} Procotol Configurations: {}", protocolId, protocolConfigs);
 			
 			String objectPath = getObjectPath(protocolId);
-//			Protocol protocolInstance = null;
 			try {
 				if(BLE_PROTOCOL_ID.contains(protocolId)) {
-//					BLEProtocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, BLEProtocol.class);
-//					protocolInstance.StopDiscovery();
 					BLEProtocol protocolInstance = connection.getRemoteObject(protocolId, objectPath, BLEProtocol.class);
 					protocolInstance.SetConfiguration(protocolConfigs);
 				} else {
 					Protocol protocolInstance = connection.getRemoteObject(protocolId, objectPath, Protocol.class);
 					protocolInstance.SetConfiguration(protocolConfigs);
-//					DummyProtocol protocolInstance = connection.getRemoteObject(protocol.getDbusInterface(), objectPath, DummyProtocol.class);
-//					protocolInstance.StopDiscovery();
 				}
-//				protocolInstance = connection.getRemoteObject(protocolId, objectPath, Protocol.class);
-//				protocolInstance.SetConfiguration(protocolConfigs);
-//				persistenceDB.saveProtocol(protocolId, protocolConfigs);
+				persistenceDB.saveProtocol(protocolId, protocolConfigs);
 			} catch(ServiceUnknown ex) {
 				logger.info("{} protocol is not supported", protocolId); 
 			} catch(DBusException ex) {
