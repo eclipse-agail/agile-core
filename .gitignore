@@ -1,4 +1,5 @@
 deps
+/agile-dbus-java-interface/
 /agile-interfaces/target/
 .settings/
 .classpath
