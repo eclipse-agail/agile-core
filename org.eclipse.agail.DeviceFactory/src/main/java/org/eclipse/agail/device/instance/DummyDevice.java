@@ -193,10 +193,8 @@ public class DummyDevice extends DeviceImp implements Device {
   
   @Override
   protected String formatReading(String sensorName, byte[] readData) {
-//     int result = (readData[0] & 0xFF); 
-//     return String.valueOf(result);
-	  String s = new String(readData);
-	  return s;
+     int result = (readData[0] & 0xFF); 
+     return String.valueOf(result);
   }
   
   @Override
