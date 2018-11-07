@@ -39,7 +39,10 @@ public class GenericDevice extends AgileBLEDevice implements Device {
 	}
 
 	public static boolean Matches(DeviceOverview d) {
-		return true;
+		if(d != null && d.protocol != null && d.protocol.contains("BLE")) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
